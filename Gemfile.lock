@@ -127,6 +127,8 @@ GEM
     mini_portile2 (2.8.1)
     minitest (5.17.0)
     nenv (0.3.0)
+    net-http (0.3.2)
+      uri
     net-imap (0.3.4)
       date
       net-protocol
@@ -250,6 +252,7 @@ GEM
     tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.4.2)
+    uri (0.12.0)
     warden (1.2.9)
       rack (>= 2.0.9)
     websocket-driver (0.7.5)
@@ -269,6 +272,7 @@ DEPENDENCIES
   guard
   guard-rspec
   listen (~> 3.3)
+  net-http
   pg (>= 0.18, < 2.0)
   puma (~> 5.0)
   rails (~> 6.1.1)
