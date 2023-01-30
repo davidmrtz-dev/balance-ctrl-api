@@ -8,6 +8,7 @@ gem 'pg', '>= 0.18', '< 2.0'
 gem 'devise_token_auth'
 gem 'devise', '~> 4.7', '>= 4.7.3'
 gem 'net-http' # Temp warn fix
+gem "rack-cors"
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
