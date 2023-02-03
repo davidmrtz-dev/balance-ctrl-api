@@ -10,13 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_01_25_032237) do
+ActiveRecord::Schema.define(version: 2023_02_03_203959) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "actives", force: :cascade do |t|
+    t.bigint "balance_id", null: false
+    t.date "income_date"
+    t.integer "income_frequency"
+    t.decimal "amount", precision: 10, scale: 2
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["balance_id"], name: "index_actives_on_balance_id"
+  end
+
   create_table "balances", force: :cascade do |t|
     t.bigint "user_id"
+    t.string "title"
     t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -48,4 +59,5 @@ ActiveRecord::Schema.define(version: 2023_01_25_032237) do
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
+  add_foreign_key "actives", "balances"
 end
