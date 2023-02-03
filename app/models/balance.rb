@@ -1,4 +1,4 @@
 class Balance < ApplicationRecord
   belongs_to :user
-  has_many :actives, dependent: :destroy
+  has_many :finance_obligations, dependent: :destroy
 end
