@@ -10,17 +10,39 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_01_25_032237) do
+ActiveRecord::Schema.define(version: 2023_02_03_215537) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "balances", force: :cascade do |t|
     t.bigint "user_id"
+    t.string "title"
     t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_balances_on_user_id"
+  end
+
+  create_table "finance_actives", force: :cascade do |t|
+    t.bigint "balance_id", null: false
+    t.integer "income_frequency"
+    t.date "income_date"
+    t.decimal "amount", precision: 10, scale: 2
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["balance_id"], name: "index_finance_actives_on_balance_id"
+  end
+
+  create_table "finance_obligations", force: :cascade do |t|
+    t.bigint "balance_id", null: false
+    t.integer "obligation_type"
+    t.integer "status"
+    t.date "charge_date"
+    t.decimal "amount", precision: 10, scale: 2
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["balance_id"], name: "index_finance_obligations_on_balance_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -48,4 +70,6 @@ ActiveRecord::Schema.define(version: 2023_01_25_032237) do
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
+  add_foreign_key "finance_actives", "balances"
+  add_foreign_key "finance_obligations", "balances"
 end
