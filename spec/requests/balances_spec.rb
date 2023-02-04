@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe "Balances", type: :request do
-  describe "GET /balance" do
+RSpec.describe Api::BalancesController, type: :controller do
+  describe "GET /balances/balance" do
     it "returns no content" do
       get :balance
       expect(response).to have_http_status(:no_content)
