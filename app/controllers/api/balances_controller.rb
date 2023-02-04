@@ -3,7 +3,8 @@ module Api
     before_action :authenticate_user!
 
     def balance
-      head :no_content
+      balance = current_user.balance
+      render json: { balance: ::Api::BalanceSerializer.json(balance) }
     end
   end
 end
