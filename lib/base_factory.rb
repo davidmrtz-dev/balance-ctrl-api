@@ -4,7 +4,7 @@ class BaseFactory
       raise NotImplementedError, 'must be implemented in a child class'
     end
 
-    def create(paramas = {})
+    def create(params = {})
       new(params).create
     end
 

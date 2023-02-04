@@ -1,4 +1,4 @@
-class BalanceFactory
+class BalanceFactory < BaseFactory
   def self.described_class
     Balance
   end

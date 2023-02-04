@@ -1,11 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe Api::BalancesController, type: :controller do
+  let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
+  let!(:balance) { BalanceFactory.create(user: user) }
+
   describe "GET /balances/balance" do
     login_user
-
     it "returns no content" do
-      balance = Balance.create!(user: User.last)
       get :balance
 
       expect(response).to have_http_status(:ok)

@@ -1,4 +1,4 @@
-class FinanceActiveFactory
+class FinanceActiveFactory < BaseFactory
   def self.described_class
     FinanceActive
   end
