@@ -8,7 +8,8 @@ abort('The Rails environment is running in production mode!') if Rails.env.produ
 
 require 'rspec/rails'
 require 'database_cleaner/active_record'
-require "support/request_helpers"
+require 'support/request'
+require 'support/authentication'
 
 Dir[Rails.root.join('lib/*.rb')].sort.each { |file| require file }
 Dir[Rails.root.join('lib/*/*.rb')].sort.each { |file| require file }
