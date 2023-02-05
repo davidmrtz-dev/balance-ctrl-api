@@ -13,6 +13,11 @@ module Api
         include: [
           :finance_actives,
           :finance_obligations
+        ],
+        methods: %i[
+          total_income
+          total_expenses
+          total_balance
         ]
       )
     end
