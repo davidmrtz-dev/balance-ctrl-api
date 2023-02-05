@@ -22,6 +22,7 @@ class BalanceFactory < BaseFactory
         amount: 4567.84
       )
     end
+    balance
   end
 
   private
