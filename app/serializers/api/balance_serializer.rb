@@ -9,7 +9,12 @@ module Api
     end
 
     def json
-      @balance.as_json
+      @balance.serializable_hash(
+        include: [
+          :finance_actives,
+          :finance_obligations
+        ]
+      )
     end
   end
 end

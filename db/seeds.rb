@@ -8,7 +8,7 @@ user = User.create!(
 
 balance = Balance.find_or_create_by!(user: user)
 
-2.times do |num|
+2.times do
   FinanceActive.create!(
     balance: balance,
     income_frequency: :monthly,
