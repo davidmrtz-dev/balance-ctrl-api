@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::BalancesController, type: :controller do
   let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
-  let!(:balance) { BalanceFactory.create(user: user) }
+  let!(:balance) { BalanceFactory.create_with_attachments(user: user) }
 
   describe "GET /balances/balance" do
     login_user
@@ -10,9 +10,8 @@ RSpec.describe Api::BalancesController, type: :controller do
       get :balance
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to eq({
-        balance: balance
-      }.to_json)
+      expect(parsed_response)
+        .to match({ balance: ::Api::BalanceSerializer.json(balance) }.as_json)
     end
   end
 end
