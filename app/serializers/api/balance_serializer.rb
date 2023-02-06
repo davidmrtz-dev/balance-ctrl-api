@@ -14,6 +14,11 @@ module Api
           total_income
           total_expenses
           total_balance
+        ],
+        except: %i[
+          user_id
+          created_at
+          updated_at
         ]
       )
     end
