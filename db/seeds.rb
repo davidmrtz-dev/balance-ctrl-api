@@ -21,8 +21,7 @@ end
   FinanceObligation.create!(
     balance: balance,
     obligation_type: [:fixed, :current].sample,
-    status: :active,
-    charge_date: [Date.today - 2.days, Date.yesterday, Date.today].sample,
+    charge_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample,
     amount: Faker::Number.decimal(l_digits: 3, r_digits: 2)
   )
 end
