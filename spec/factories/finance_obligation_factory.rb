@@ -8,8 +8,7 @@ class FinanceObligationFactory < BaseFactory
   def options(params)
     {
       balance: params.fetch(:balance, nil),
-      income_frequency: params[:obligation_type] || :fixed,
-      income_date: params[:status] || :active,
+      obligation_type: params.fetch(:obligation_type, [:fixed, :current].sample),
       charge_date: params.fetch(:charge_date, Date.today),
       amount: params.fetch(:amount, 3_500.85)
     }
