@@ -9,7 +9,7 @@ class FinanceActiveFactory < BaseFactory
     {
       balance: params.fetch(:balance, nil),
       income_frequency: params[:income_frequency] || :monthly,
-      income_date: params.fetch(:income_date, Date.today.at_beginning_of_month),
+      active_type: params.fetch(:income_date, [:fixed, :current].sample),
       amount: params.fetch(:amount, 50_000.00)
     }
   end

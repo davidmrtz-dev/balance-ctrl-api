@@ -17,7 +17,6 @@ class BalanceFactory < BaseFactory
       FinanceObligation.create!(
         balance: balance,
         obligation_type: :fixed,
-        status: :active,
         charge_date: Date.today.at_beginning_of_month,
         amount: 4567.84
       )
