@@ -6,7 +6,8 @@ RSpec.describe Api::BalancesController, type: :controller do
 
   describe "GET /balances/balance" do
     login_user
-    it "returns no content" do
+
+    it "returns balance data" do
       get :balance
 
       expect(response).to have_http_status(:ok)
