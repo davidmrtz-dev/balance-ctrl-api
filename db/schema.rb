@@ -26,6 +26,8 @@ ActiveRecord::Schema.define(version: 2023_02_03_215537) do
 
   create_table "finance_actives", force: :cascade do |t|
     t.bigint "balance_id", null: false
+    t.string "title"
+    t.string "description"
     t.integer "income_frequency"
     t.integer "active_type"
     t.decimal "amount", precision: 10, scale: 2
@@ -36,6 +38,8 @@ ActiveRecord::Schema.define(version: 2023_02_03_215537) do
 
   create_table "finance_obligations", force: :cascade do |t|
     t.bigint "balance_id", null: false
+    t.string "title"
+    t.string "description"
     t.integer "obligation_type"
     t.date "charge_date"
     t.decimal "amount", precision: 10, scale: 2
