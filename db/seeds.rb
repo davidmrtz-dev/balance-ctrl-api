@@ -6,14 +6,14 @@ user = User.create!(
   password_confirmation: 'password'
 )
 
-balance = Balance.find_or_create_by!(user: user)
+balance = Balance.find_or_create_by!(user: user, title: 'My Balance', description: 'My balance description')
 
 2.times do
   FinanceActive.create!(
     balance: balance,
     income_frequency: :monthly,
     active_type: :fixed,
-    amount: Faker::Number.decimal(l_digits: 4, r_digits: 2)
+    amount: Faker::Number.decimal(l_digits: 5, r_digits: 2)
   )
 end
 
