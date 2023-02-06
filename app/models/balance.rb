@@ -3,6 +3,9 @@ class Balance < ApplicationRecord
   has_many :finance_obligations, dependent: :destroy
   has_many :finance_actives, dependent: :destroy
 
+  delegate :fixed, to: :finance_obligations, prefix: :payments
+  delegate :current, to: :finance_obligations, prefix: :payments
+
   def total_income
     finance_actives.sum(:amount)
   end

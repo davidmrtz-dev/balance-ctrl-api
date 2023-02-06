@@ -27,7 +27,7 @@ ActiveRecord::Schema.define(version: 2023_02_03_215537) do
   create_table "finance_actives", force: :cascade do |t|
     t.bigint "balance_id", null: false
     t.integer "income_frequency"
-    t.date "income_date"
+    t.integer "active_type"
     t.decimal "amount", precision: 10, scale: 2
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -37,7 +37,6 @@ ActiveRecord::Schema.define(version: 2023_02_03_215537) do
   create_table "finance_obligations", force: :cascade do |t|
     t.bigint "balance_id", null: false
     t.integer "obligation_type"
-    t.integer "status"
     t.date "charge_date"
     t.decimal "amount", precision: 10, scale: 2
     t.datetime "created_at", precision: 6, null: false

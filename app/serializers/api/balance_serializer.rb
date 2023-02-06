@@ -10,14 +10,15 @@ module Api
 
     def json
       @balance.serializable_hash(
-        include: [
-          :finance_actives,
-          :finance_obligations
-        ],
         methods: %i[
           total_income
           total_expenses
           total_balance
+        ],
+        except: %i[
+          user_id
+          created_at
+          updated_at
         ]
       )
     end
