@@ -9,7 +9,7 @@ class BalanceFactory < BaseFactory
       FinanceActive.create!(
         balance: balance,
         income_frequency: :monthly,
-        income_date: Date.today.at_beginning_of_month,
+        active_type: :fixed,
         amount: 45000.00
       )
     end
