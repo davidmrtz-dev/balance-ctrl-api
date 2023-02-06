@@ -12,7 +12,7 @@ balance = Balance.find_or_create_by!(user: user)
   FinanceActive.create!(
     balance: balance,
     income_frequency: :monthly,
-    income_date: Date.today.at_beginning_of_month,
+    active_type: :fixed,
     amount: 45000.00
   )
 
