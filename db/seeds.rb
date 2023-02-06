@@ -13,14 +13,16 @@ balance = Balance.find_or_create_by!(user: user)
     balance: balance,
     income_frequency: :monthly,
     active_type: :fixed,
-    amount: 45000.00
+    amount: Faker::Number.decimal(l_digits: 4, r_digits: 2)
   )
+end
 
+40.times do
   FinanceObligation.create!(
     balance: balance,
-    obligation_type: :fixed,
+    obligation_type: [:fixed, :current].sample,
     status: :active,
-    charge_date: Date.today.at_beginning_of_month,
-    amount: 4567.84
+    charge_date: [Date.today - 2.days, Date.yesterday, Date.today].sample,
+    amount: Faker::Number.decimal(l_digits: 3, r_digits: 2)
   )
 end
