@@ -11,10 +11,10 @@ RSpec.describe Api::PaymentsController, type: :controller do
       get :index
 
       expect(response).to have_http_status(:ok)
-      expect(parsed_response['fixed'].map { |o| o['id'] }).to match_array(FinanceObligation.fixed.ids)
-      expect(parsed_response['total_fixed']).to eq(4)
       expect(parsed_response['current'].map { |o| o['id'] }).to match_array(FinanceObligation.current.ids)
-      expect(parsed_response['total_current']).to eq(2)
+      expect(parsed_response['fixed'].map { |o| o['id'] }).to match_array(FinanceObligation.fixed.ids)
+      expect(parsed_response['current_total_pages']).to eq(1)
+      expect(parsed_response['fixed_total_pages']).to eq(1)
     end
   end
 end

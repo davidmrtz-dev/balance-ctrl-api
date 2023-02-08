@@ -18,11 +18,13 @@ module Api
         offset: params[:offset]
       )
 
+      current_total_pages = current.count / 5
+      fixed_total_pages = fixed.count / 5
       render json: {
         current: current_page,
         fixed: fixed_page,
-        total_current: current_page.count,
-        total_fixed: fixed_page.count
+        current_total_pages: current.count % 5 > 0 ? current_total_pages + 1 : current_total_pages,
+        fixed_total_pages: fixed.count % 5 > 0 ? fixed_total_pages + 1 : fixed_total_pages,
       }
     end
   end
