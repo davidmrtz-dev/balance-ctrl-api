@@ -4,7 +4,8 @@ Rails.application.routes.draw do
   namespace :api do
     defaults(format: :json) do
       get 'balance', to: 'balances#balance'
-      resources :payments
+      get 'payments/current', to: 'payments#current'
+      get 'payments/fixed', to: 'payments#fixed'
     end
   end
 end
