@@ -11,11 +11,10 @@ module Api
         limit: params[:limit],
         offset: params[:offset]
       )
-      current_total_pages = current.count / 5
 
       render json: {
         current: current_page,
-        current_total_pages: current.count % 5 > 0 ? current_total_pages + 1 : current_total_pages
+        current_total_pages: total_pages(current.count)
       }
     end
 
@@ -26,12 +25,18 @@ module Api
         limit: params[:limit],
         offset: params[:offset]
       )
-      fixed_total_pages = fixed.count / 5
 
       render json: {
         fixed: fixed_page,
-        fixed_total_pages: fixed.count % 5 > 0 ? fixed_total_pages + 1 : fixed_total_pages
+        fixed_total_pages: total_pages(fixed.count)
       }
+    end
+
+    private
+
+    def total_pages(count)
+      total_pages = count / 5
+      count % 5 > 0 ? total_pages + 1 : total_pages
     end
   end
 end
