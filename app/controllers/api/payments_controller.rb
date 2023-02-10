@@ -13,8 +13,8 @@ module Api
       )
 
       render json: {
-        current: current_page,
-        current_total_pages: total_pages(current.count)
+        payments: current_page,
+        total_pages: total_pages(current.count)
       }
     end
 
@@ -27,8 +27,8 @@ module Api
       )
 
       render json: {
-        fixed: fixed_page,
-        fixed_total_pages: total_pages(fixed.count)
+        payments: fixed_page,
+        total_pages: total_pages(fixed.count)
       }
     end
 
