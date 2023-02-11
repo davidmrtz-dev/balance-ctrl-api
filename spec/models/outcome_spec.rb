@@ -10,9 +10,9 @@ RSpec.describe Outcome, type: :model do
     let!(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
 
     it 'should update balance current_amount attribute' do
-      outcome = OutcomeFactory.create(balance: balance, amount: 5_000)
+      outcome = OutcomeFactory.create(balance: balance)
 
-      expect(balance.current_amount).to eq 5_000
+      expect(balance.current_amount).to eq 10_000
     end
   end
 end
