@@ -6,6 +6,6 @@ class Outcome < ApplicationRecord
   private
 
   def update_current_balance
-    balance.current_amount -= self.amount
+    balance.current_amount -= 0
   end
 end

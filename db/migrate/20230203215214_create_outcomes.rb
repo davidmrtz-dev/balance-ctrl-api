@@ -5,7 +5,7 @@ class CreateOutcomes < ActiveRecord::Migration[6.1]
       t.string :title
       t.string :description
       t.date :charge_date, null: false
-      t.decimal :amount, { precision: 10, scale: 2 }, default: '0.0', null: false
+      # t.decimal :amount, { precision: 10, scale: 2 }, default: '0.0', null: false
       t.timestamps
     end
   end

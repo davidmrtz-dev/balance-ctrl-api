@@ -8,6 +8,6 @@ class Balance < ApplicationRecord
   end
 
   def total_expenses
-    outcomes.sum(:amount)
+    0
   end
 end
