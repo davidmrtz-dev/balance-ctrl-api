@@ -11,16 +11,16 @@ RSpec.describe Api::PaymentsController, type: :controller do
       get :current
 
       expect(response).to have_http_status(:ok)
-      expect(parsed_response['payments'].map { |o| o['id'] }).to match_array(Outcome.current.ids)
-      expect(parsed_response['total_pages']).to eq(1)
+      expect(parsed_response['payments'].map { |o| o['id'] }).to match_array(Outcome.ids)
+      expect(parsed_response['total_pages']).to eq(2)
     end
 
     it "returns paginated current payments" do
       get :fixed
 
       expect(response).to have_http_status(:ok)
-      expect(parsed_response['payments'].map { |o| o['id'] }).to match_array(Outcome.fixed.ids)
-      expect(parsed_response['total_pages']).to eq(1)
+      expect(parsed_response['payments'].map { |o| o['id'] }).to match_array(Outcome.ids)
+      expect(parsed_response['total_pages']).to eq(2)
     end
   end
 end

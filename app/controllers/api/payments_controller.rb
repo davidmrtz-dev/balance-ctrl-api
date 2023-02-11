@@ -5,7 +5,7 @@ module Api
     before_action :authenticate_user!
 
     def current
-      current = current_user.balance.payments_current
+      current = current_user.balance.outcomes
       current_page = paginate(
         current,
         limit: params[:limit],
@@ -19,7 +19,7 @@ module Api
     end
 
     def fixed
-      fixed = current_user.balance.payments_fixed
+      fixed = current_user.balance.outcomes
       fixed_page = paginate(
         fixed,
         limit: params[:limit],

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_02_03_215537) do
+ActiveRecord::Schema.define(version: 2023_02_11_210131) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -41,15 +41,22 @@ ActiveRecord::Schema.define(version: 2023_02_03_215537) do
 
   create_table "outcomes", force: :cascade do |t|
     t.bigint "balance_id", null: false
+    t.integer "outcome_type", null: false
     t.string "title"
     t.string "description"
-    t.date "charge_date", null: false
-    t.integer "outcome_type", null: false
-    t.decimal "amount", default: "0.0", null: false
-    t.decimal "{:precision=>10, :scale=>2}", default: "0.0", null: false
+    t.datetime "purchase_date", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["balance_id"], name: "index_outcomes_on_balance_id"
+  end
+
+  create_table "payments", force: :cascade do |t|
+    t.bigint "outcome_id", null: false
+    t.decimal "amount", default: "0.0", null: false
+    t.decimal "{:precision=>8, :scale=>2}", default: "0.0", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["outcome_id"], name: "index_payments_on_outcome_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -79,4 +86,5 @@ ActiveRecord::Schema.define(version: 2023_02_03_215537) do
 
   add_foreign_key "incomes", "balances"
   add_foreign_key "outcomes", "balances"
+  add_foreign_key "payments", "outcomes"
 end
