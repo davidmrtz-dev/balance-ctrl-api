@@ -13,8 +13,4 @@ class Balance < ApplicationRecord
   def total_expenses
     finance_obligations.sum(:amount)
   end
-
-  def total_balance
-    total_income - total_expenses
-  end
 end
