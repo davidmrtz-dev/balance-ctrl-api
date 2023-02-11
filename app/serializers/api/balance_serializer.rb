@@ -13,7 +13,6 @@ module Api
         methods: %i[
           total_income
           total_expenses
-          total_balance
         ],
         except: %i[
           user_id
