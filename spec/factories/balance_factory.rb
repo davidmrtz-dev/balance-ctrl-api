@@ -14,12 +14,12 @@ class BalanceFactory < BaseFactory
 
   def self.create_actives(balance)
     2.times do
-      FinanceActive.create!(
+      Income.create!(
         balance: balance,
         title: Faker::Lorem.sentence(word_count: 2),
         description: Faker::Lorem.sentence(word_count: 6),
         income_frequency: :monthly,
-        active_type: :fixed,
+        income_type: :fixed,
         amount: Faker::Number.decimal(l_digits: 5, r_digits: 2)
       )
     end
@@ -27,7 +27,7 @@ class BalanceFactory < BaseFactory
 
   def self.create_passives(balance)
     4.times do
-      FinanceObligation.create!(
+      Outcome.create!(
         balance: balance,
         title: Faker::Lorem.sentence(word_count: 2),
         description: Faker::Lorem.sentence(word_count: 6),
@@ -37,7 +37,7 @@ class BalanceFactory < BaseFactory
       )
     end
     2.times do
-      FinanceObligation.create!(
+      Outcome.create!(
         balance: balance,
         title: Faker::Lorem.sentence(word_count: 2),
         description: Faker::Lorem.sentence(word_count: 6),
@@ -52,7 +52,8 @@ class BalanceFactory < BaseFactory
     {
       user: params.fetch(:user, nil),
       title: params.fetch(:title, 'Balance Title'),
-      description: params.fetch(:description, 'Balance Description')
+      description: params.fetch(:description, 'Balance Description'),
+      current_amount: params.fetch(:current_amount, 1_000_000)
     }
   end
 end

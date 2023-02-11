@@ -1,6 +1,6 @@
-class FinanceObligationFactory < BaseFactory
+class OutcomeFactory < BaseFactory
   def self.described_class
-    FinanceObligation
+    Outcome
   end
 
   private
