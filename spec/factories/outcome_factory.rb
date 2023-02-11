@@ -10,7 +10,7 @@ class OutcomeFactory < BaseFactory
       balance: params.fetch(:balance, nil),
       title: params.fetch(:title, Faker::Lorem.sentence(word_count: 2)),
       description: params.fetch(:description, Faker::Lorem.sentence(word_count: 6)),
-      obligation_type: params.fetch(:obligation_type, [:fixed, :current].sample),
+      outcome_type: params.fetch(:outcome_type, [:fixed, :current].sample),
       charge_date: params.fetch(:charge_date, Date.today),
       amount: params.fetch(:amount, 3_500.85)
     }

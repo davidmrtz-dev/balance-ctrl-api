@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Outcome, type: :model do
   describe 'associations' do
     it { is_expected.to belong_to(:balance) }
-    it { should define_enum_for(:obligation_type).with_values(%i[fixed current]) }
+    it { should define_enum_for(:outcome_type).with_values(%i[fixed current]) }
   end
 
   describe '.update_current_balance' do
