@@ -8,6 +8,7 @@ class OutcomeFactory < BaseFactory
   def options(params)
     {
       balance: params.fetch(:balance, nil),
+      outcome_type: params.fetch(:outcome_type, :current),
       title: params.fetch(:title, Faker::Lorem.sentence(word_count: 2)),
       description: params.fetch(:description, Faker::Lorem.sentence(word_count: 6)),
       purchase_date: params.fetch(:purchase_date, Date.today)
