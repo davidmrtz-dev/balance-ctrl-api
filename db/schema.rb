@@ -26,7 +26,7 @@ ActiveRecord::Schema.define(version: 2023_02_03_215537) do
     t.index ["user_id"], name: "index_balances_on_user_id"
   end
 
-  create_table "finance_obligations", force: :cascade do |t|
+  create_table "outcomes", force: :cascade do |t|
     t.bigint "balance_id", null: false
     t.string "title"
     t.string "description"
@@ -36,7 +36,7 @@ ActiveRecord::Schema.define(version: 2023_02_03_215537) do
     t.decimal "{:precision=>10, :scale=>2}", default: "0.0", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["balance_id"], name: "index_finance_obligations_on_balance_id"
+    t.index ["balance_id"], name: "index_outcomes_on_balance_id"
   end
 
   create_table "incomes", force: :cascade do |t|
@@ -77,6 +77,6 @@ ActiveRecord::Schema.define(version: 2023_02_03_215537) do
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
-  add_foreign_key "finance_obligations", "balances"
+  add_foreign_key "outcomes", "balances"
   add_foreign_key "incomes", "balances"
 end

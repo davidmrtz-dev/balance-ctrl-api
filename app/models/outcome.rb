@@ -1,4 +1,4 @@
-class FinanceObligation < ApplicationRecord
+class Outcome < ApplicationRecord
   belongs_to :balance
 
   enum obligation_type: { fixed: 0, current: 1 }

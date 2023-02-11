@@ -11,7 +11,7 @@ RSpec.describe Api::PaymentsController, type: :controller do
       get :current
 
       expect(response).to have_http_status(:ok)
-      expect(parsed_response['payments'].map { |o| o['id'] }).to match_array(FinanceObligation.current.ids)
+      expect(parsed_response['payments'].map { |o| o['id'] }).to match_array(Outcome.current.ids)
       expect(parsed_response['total_pages']).to eq(1)
     end
 
@@ -19,7 +19,7 @@ RSpec.describe Api::PaymentsController, type: :controller do
       get :fixed
 
       expect(response).to have_http_status(:ok)
-      expect(parsed_response['payments'].map { |o| o['id'] }).to match_array(FinanceObligation.fixed.ids)
+      expect(parsed_response['payments'].map { |o| o['id'] }).to match_array(Outcome.fixed.ids)
       expect(parsed_response['total_pages']).to eq(1)
     end
   end

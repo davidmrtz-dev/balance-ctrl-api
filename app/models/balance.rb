@@ -1,16 +1,16 @@
 class Balance < ApplicationRecord
   belongs_to :user
-  has_many :finance_obligations, dependent: :destroy
+  has_many :outcomes, dependent: :destroy
   has_many :incomes, dependent: :destroy
 
-  delegate :fixed, to: :finance_obligations, prefix: :payments
-  delegate :current, to: :finance_obligations, prefix: :payments
+  delegate :fixed, to: :outcomes, prefix: :payments
+  delegate :current, to: :outcomes, prefix: :payments
 
   def total_income
     incomes.sum(:amount)
   end
 
   def total_expenses
-    finance_obligations.sum(:amount)
+    outcomes.sum(:amount)
   end
 end
