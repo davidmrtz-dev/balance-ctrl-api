@@ -14,7 +14,7 @@ class BalanceFactory < BaseFactory
 
   def self.create_actives(balance)
     2.times do
-      FinanceActive.create!(
+      Income.create!(
         balance: balance,
         title: Faker::Lorem.sentence(word_count: 2),
         description: Faker::Lorem.sentence(word_count: 6),
