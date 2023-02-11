@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(version: 2023_02_03_215537) do
     t.bigint "user_id"
     t.string "title"
     t.text "description"
+    t.decimal "current_amount", precision: 20, scale: 2
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_balances_on_user_id"

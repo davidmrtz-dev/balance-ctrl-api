@@ -52,7 +52,8 @@ class BalanceFactory < BaseFactory
     {
       user: params.fetch(:user, nil),
       title: params.fetch(:title, 'Balance Title'),
-      description: params.fetch(:description, 'Balance Description')
+      description: params.fetch(:description, 'Balance Description'),
+      current_amount: params.fetch(:current_amount, 10_000.50)
     }
   end
 end
