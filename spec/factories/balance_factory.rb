@@ -27,7 +27,7 @@ class BalanceFactory < BaseFactory
 
   def self.create_passives(balance)
     4.times do
-      FinanceObligation.create!(
+      Outcome.create!(
         balance: balance,
         title: Faker::Lorem.sentence(word_count: 2),
         description: Faker::Lorem.sentence(word_count: 6),
@@ -37,7 +37,7 @@ class BalanceFactory < BaseFactory
       )
     end
     2.times do
-      FinanceObligation.create!(
+      Outcome.create!(
         balance: balance,
         title: Faker::Lorem.sentence(word_count: 2),
         description: Faker::Lorem.sentence(word_count: 6),

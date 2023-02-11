@@ -25,7 +25,7 @@ balance = Balance.find_or_create_by!(
 end
 
 40.times do
-  FinanceObligation.create!(
+  Outcome.create!(
     balance: balance,
     title: Faker::Lorem.sentence(word_count: 2),
     description: Faker::Lorem.sentence(word_count: 6),
