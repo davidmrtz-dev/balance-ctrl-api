@@ -31,7 +31,7 @@ class BalanceFactory < BaseFactory
         balance: balance,
         title: Faker::Lorem.sentence(word_count: 2),
         description: Faker::Lorem.sentence(word_count: 6),
-        charge_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample,
+        purchase_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample,
       )
     end
     2.times do
@@ -39,7 +39,7 @@ class BalanceFactory < BaseFactory
         balance: balance,
         title: Faker::Lorem.sentence(word_count: 2),
         description: Faker::Lorem.sentence(word_count: 6),
-        charge_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample,
+        purchase_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample,
       )
     end
   end
