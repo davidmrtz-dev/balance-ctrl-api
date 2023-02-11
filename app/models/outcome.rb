@@ -1,16 +1,15 @@
 class Outcome < ApplicationRecord
   belongs_to :balance
 
-  enum outcome_type: { fixed: 0, current: 1 }
+  has_many :payments, dependent: :destroy
 
-  scope :fixed, -> { where(outcome_type: :fixed) }
-  scope :current, -> { where(outcome_type: :current) }
+  enum outcome_type: { current: 0, fixed: 1 }
 
-  after_create :update_current_balance
+  validate :only_one_payment_for_current_outcome
 
   private
 
-  def update_current_balance
-    balance.current_amount -= self.amount
+  def only_one_payment_for_current_outcome
+    errors.add(:payments, 'current outcome can only have one payment') if payments.size > 1 && outcome_type.eql?(:current)
   end
 end

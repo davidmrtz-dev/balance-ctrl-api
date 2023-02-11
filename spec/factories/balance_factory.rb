@@ -29,21 +29,19 @@ class BalanceFactory < BaseFactory
     4.times do
       Outcome.create!(
         balance: balance,
+        outcome_type: :current,
         title: Faker::Lorem.sentence(word_count: 2),
         description: Faker::Lorem.sentence(word_count: 6),
-        outcome_type: :fixed,
-        charge_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample,
-        amount: Faker::Number.decimal(l_digits: 3, r_digits: 2)
+        purchase_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample,
       )
     end
     2.times do
       Outcome.create!(
         balance: balance,
+        outcome_type: :fixed,
         title: Faker::Lorem.sentence(word_count: 2),
         description: Faker::Lorem.sentence(word_count: 6),
-        outcome_type: :current,
-        charge_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample,
-        amount: Faker::Number.decimal(l_digits: 3, r_digits: 2)
+        purchase_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample,
       )
     end
   end
