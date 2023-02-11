@@ -43,7 +43,7 @@ ActiveRecord::Schema.define(version: 2023_02_03_215537) do
     t.bigint "balance_id", null: false
     t.string "title"
     t.string "description"
-    t.date "charge_date", null: false
+    t.datetime "purchase_date", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["balance_id"], name: "index_outcomes_on_balance_id"
