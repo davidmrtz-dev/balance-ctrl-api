@@ -12,7 +12,7 @@ RSpec.describe Api::BalancesController, type: :controller do
 
       expect(response).to have_http_status(:ok)
       expect(parsed_response)
-        .to match({ balance: ::Api::BalanceSerializer.json(balance) }.as_json)
+        .to match({ balance: ::Api::BalanceSerializer.json(balance.reload) }.as_json)
     end
   end
 end
