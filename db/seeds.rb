@@ -27,6 +27,7 @@ end
 40.times do
   Outcome.create!(
     balance: balance,
+    outcome_type: [:current, :fixed].sample,
     title: Faker::Lorem.sentence(word_count: 2),
     description: Faker::Lorem.sentence(word_count: 6),
     purchase_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample
