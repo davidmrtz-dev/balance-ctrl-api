@@ -44,7 +44,6 @@ ActiveRecord::Schema.define(version: 2023_02_03_215537) do
     t.string "title"
     t.string "description"
     t.date "charge_date", null: false
-    t.integer "outcome_type", null: false
     t.decimal "amount", default: "0.0", null: false
     t.decimal "{:precision=>10, :scale=>2}", default: "0.0", null: false
     t.datetime "created_at", precision: 6, null: false
