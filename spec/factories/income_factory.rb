@@ -1,6 +1,6 @@
-class FinanceActiveFactory < BaseFactory
+class IncomeFactory < BaseFactory
   def self.described_class
-    FinanceActive
+    Income
   end
 
   private

@@ -25,18 +25,6 @@ ActiveRecord::Schema.define(version: 2023_02_03_215537) do
     t.index ["user_id"], name: "index_balances_on_user_id"
   end
 
-  create_table "finance_actives", force: :cascade do |t|
-    t.bigint "balance_id", null: false
-    t.string "title"
-    t.string "description"
-    t.integer "income_frequency"
-    t.integer "active_type"
-    t.decimal "amount", precision: 10, scale: 2
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["balance_id"], name: "index_finance_actives_on_balance_id"
-  end
-
   create_table "finance_obligations", force: :cascade do |t|
     t.bigint "balance_id", null: false
     t.string "title"
@@ -47,6 +35,18 @@ ActiveRecord::Schema.define(version: 2023_02_03_215537) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["balance_id"], name: "index_finance_obligations_on_balance_id"
+  end
+
+  create_table "incomes", force: :cascade do |t|
+    t.bigint "balance_id", null: false
+    t.string "title"
+    t.string "description"
+    t.integer "income_frequency"
+    t.integer "active_type"
+    t.decimal "amount", precision: 10, scale: 2
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["balance_id"], name: "index_incomes_on_balance_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -74,6 +74,6 @@ ActiveRecord::Schema.define(version: 2023_02_03_215537) do
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
-  add_foreign_key "finance_actives", "balances"
   add_foreign_key "finance_obligations", "balances"
+  add_foreign_key "incomes", "balances"
 end

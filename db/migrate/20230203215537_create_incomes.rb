@@ -1,6 +1,6 @@
-class CreateFinanceActives < ActiveRecord::Migration[6.1]
+class CreateIncomes < ActiveRecord::Migration[6.1]
   def change
-    create_table :finance_actives do |t|
+    create_table :incomes do |t|
       t.references :balance, null: false, foreign_key: true
       t.string :title
       t.string :description

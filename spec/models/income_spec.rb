@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe FinanceActive, type: :model do
+RSpec.describe Income, type: :model do
   describe 'associations' do
     it { is_expected.to belong_to(:balance) }
     it { should define_enum_for(:income_frequency).with_values(%i[weekly biweekly monthly]) }
@@ -12,7 +12,7 @@ RSpec.describe FinanceActive, type: :model do
     let!(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
 
     it 'should update balance current_amount attribute' do
-      income = FinanceActiveFactory.create(balance: balance, amount: 5_000)
+      income = IncomeFactory.create(balance: balance, amount: 5_000)
 
       expect(balance.current_amount.to_f).to eq 15_000
     end

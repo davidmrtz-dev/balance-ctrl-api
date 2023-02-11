@@ -6,10 +6,15 @@ user = User.create!(
   password_confirmation: 'password'
 )
 
-balance = Balance.find_or_create_by!(user: user, title: 'My Balance', description: 'My balance description')
+balance = Balance.find_or_create_by!(
+  user: user,
+  title: 'My Balance',
+  description: 'My balance description',
+  current_amount: 10_000
+)
 
 2.times do
-  FinanceActive.create!(
+  Income.create!(
     balance: balance,
     title: Faker::Lorem.sentence(word_count: 2),
     description: Faker::Lorem.sentence(word_count: 6),
