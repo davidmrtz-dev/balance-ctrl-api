@@ -15,6 +15,10 @@ class Payment < ApplicationRecord
       paymentable&.outcome_type.eql?('current')
 
       errors.add(:outcome, 'of type current can only have one payment') if paymentable.payments.size > 0
+    elsif paymentable.instance_of?(Income) &&
+      paymentable&.income_type.eql?('current')
+
+      errors.add(:income, 'of type current can only have one payment') if paymentable.payments.size > 0
     end
   end
 
