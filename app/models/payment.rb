@@ -1,7 +1,7 @@
 class Payment < ApplicationRecord
   belongs_to :paymentable, polymorphic: true
 
-  enum status: { pending: 0, applied: 1 }
+  enum status: { pending: 0, applied: 1 }, _default: :pending
 
   after_create { paymentable.reload }
 
