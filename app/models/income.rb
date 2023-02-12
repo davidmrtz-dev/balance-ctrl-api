@@ -4,11 +4,11 @@ class Income < ApplicationRecord
   enum income_frequency: { weekly: 0, biweekly: 1, monthly: 2 }
   enum income_type: { fixed: 0, current: 1 }
 
-  after_create :update_current_balance
+  # after_create :update_current_balance
 
-  private
+  # private
 
-  def update_current_balance
-    balance.current_amount += self.amount
-  end
+  # def update_current_balance
+  #   balance.current_amount += self.amount
+  # end
 end
