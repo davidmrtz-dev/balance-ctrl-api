@@ -24,6 +24,8 @@ class Payment < ApplicationRecord
 
       balance.current_amount -= amount
       balance.save
+    # elsif paymentable.instance_of?(Income) &&
+    #   paymentable&.income_type.eql?('current')
     end
   end
 end
