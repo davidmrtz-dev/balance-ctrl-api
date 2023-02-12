@@ -8,7 +8,7 @@ class IncomeFactory < BaseFactory
   def options(params)
     {
       balance: params.fetch(:balance, nil),
-      income_type: params.fetch(:income_date, [:fixed, :current].sample),
+      income_type: params.fetch(:income_type, [:current, :fixed].sample),
       title: params.fetch(:title, Faker::Lorem.sentence(word_count: 2)),
       description: params.fetch(:description, Faker::Lorem.sentence(word_count: 6)),
       income_frequency: params[:income_frequency] || :monthly
