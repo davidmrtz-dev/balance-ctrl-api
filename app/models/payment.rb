@@ -7,10 +7,9 @@ class Payment < ApplicationRecord
   private
 
   def one_payment_for_current_outcome
-    byebug
-    if paymentable.paymentable_type.eql?('Outcome')
-      && paymentable&.outcome_type.eql?('current')
-      errors.add(:self, 'current outcome can only have one payment') if outcome.payments.size > 0
+    if paymentable.instance_of?(Outcome) &&
+      paymentable&.outcome_type.eql?('current')
+      errors.add(:outcome, 'of type current can only have one payment') if paymentable.payments.size > 0
     end
   end
 end
