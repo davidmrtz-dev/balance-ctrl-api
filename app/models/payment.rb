@@ -7,7 +7,7 @@ class Payment < ApplicationRecord
 
   after_create { paymentable.reload }
 
-  # after_create :update_current_balance
+  after_create :update_current_balance
 
   private
 
@@ -19,17 +19,17 @@ class Payment < ApplicationRecord
     end
   end
 
-  # def update_current_balance
-  #   if paymentable.instance_of?(Outcome) &&
-  #     paymentable&.outcome_type.eql?('current')
+  def update_current_balance
+    if paymentable.instance_of?(Outcome) &&
+      paymentable.outcome_type.eql?('current')
 
-  #     balance.current_amount -= amount
-  #     balance.save
-  #   elsif paymentable.instance_of?(Income) &&
-  #     paymentable&.income_type.eql?('current')
+      balance.current_amount -= amount
+      balance.save
+    elsif paymentable.instance_of?(Income) &&
+      paymentable.income_type.eql?('current')
 
-  #     balance.current_amount += amount
-  #     balance.save
-  #   end
-  # end
+      balance.current_amount += amount
+      balance.save
+    end
+  end
 end
