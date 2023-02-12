@@ -4,5 +4,5 @@ class Transaction < ApplicationRecord
   has_many :payments, as: :paymentable, dependent: :destroy
 
   enum transaction_type: { current: 0, fixed: 1 }, _default: :current
-  enum frequency: { weekly: 0, biweekly: 1, monthly: 2 }
+  enum frequency: { weekly: 0, biweekly: 1, monthly: 2 }, _default: :monthly
 end

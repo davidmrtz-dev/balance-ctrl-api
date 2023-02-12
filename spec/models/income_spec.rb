@@ -18,7 +18,7 @@ RSpec.describe Income, type: :model do
   describe '#update_current_balance' do
     describe "when income is 'current'" do
       it 'should sum the amount to balance current_amount' do
-        Income.create(balance: balance, amount: 5_000, frequency: :monthly)
+        Income.create(balance: balance, amount: 5_000)
 
         expect(balance.reload.current_amount).to eq 15_000
       end
@@ -27,7 +27,7 @@ RSpec.describe Income, type: :model do
 
   describe '#generate_payment' do
     it "should create one payment for transaction_type 'current'" do
-      expect { Income.create(balance: balance, amount: 5_000, frequency: :monthly) }
+      expect { Income.create(balance: balance, amount: 5_000) }
         .to change { Payment.count }.by(1)
 
       expect(Payment.last.status).to eq 'applied'
