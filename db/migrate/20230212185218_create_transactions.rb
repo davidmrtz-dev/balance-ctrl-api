@@ -7,6 +7,7 @@ class CreateTransactions < ActiveRecord::Migration[6.1]
       t.string :description
       t.integer :frequency
       t.datetime :purchase_date
+      t.integer :quotas
       t.timestamps
     end
   end
