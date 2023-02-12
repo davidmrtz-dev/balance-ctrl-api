@@ -25,9 +25,11 @@ class Payment < ApplicationRecord
   def update_current_balance
     if is_current_paymentable_of?(Income, paymentable)
       balance.current_amount += amount
+      self.status = :applied
       balance.save
     elsif is_current_paymentable_of?(Outcome, paymentable)
       balance.current_amount -= amount
+      self.status = :applied
       balance.save
     end
   end

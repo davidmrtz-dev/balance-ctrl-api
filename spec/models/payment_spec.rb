@@ -41,20 +41,30 @@ RSpec.describe Payment, type: :model do
     let!(:income) { IncomeFactory.create(balance: balance, income_type: :current, income_frequency: :monthly) }
     let!(:outcome) { OutcomeFactory.create(balance: balance, outcome_type: :current, purchase_date: Time.zone.today) }
 
-    describe "when paymentable is Outcome and is 'fixed'" do
-      it 'should substract the amount from balance current_amount' do
-        payment = PaymentFactory.create(paymentable: outcome, amount: 5_000)
-
-        expect(balance.reload.current_amount).to eq 5_000
+    shared_examples 'update_status_when_apply_payment' do
+      it 'should update status to :applied' do
+        expect(payment.status).to eq 'applied'
       end
     end
 
-    describe "when paymentable is Income is 'fixed'" do
-      it 'should add the amount to balance current_amount' do
-        payment = PaymentFactory.create(paymentable: income, amount: 5_000)
+    describe "when paymentable is Outcome and is 'fixed'" do
+      let!(:payment) { PaymentFactory.create(paymentable: outcome, amount: 5_000) }
 
+      it 'should substract the amount from balance current_amount' do
+        expect(balance.reload.current_amount).to eq 5_000
+      end
+
+      include_examples 'update_status_when_apply_payment'
+    end
+
+    describe "when paymentable is Income is 'fixed'" do
+      let!(:payment) { PaymentFactory.create(paymentable: income, amount: 5_000) }
+
+      it 'should add the amount to balance current_amount' do
         expect(balance.reload.current_amount).to eq 15_000
       end
+
+      include_examples 'update_status_when_apply_payment'
     end
   end
 end
