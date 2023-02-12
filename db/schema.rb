@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_02_11_210131) do
+ActiveRecord::Schema.define(version: 2023_02_12_185218) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -26,28 +26,6 @@ ActiveRecord::Schema.define(version: 2023_02_11_210131) do
     t.index ["user_id"], name: "index_balances_on_user_id"
   end
 
-  create_table "incomes", force: :cascade do |t|
-    t.bigint "balance_id", null: false
-    t.integer "income_type", null: false
-    t.string "title"
-    t.string "description"
-    t.integer "income_frequency", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["balance_id"], name: "index_incomes_on_balance_id"
-  end
-
-  create_table "outcomes", force: :cascade do |t|
-    t.bigint "balance_id", null: false
-    t.integer "outcome_type", null: false
-    t.string "title"
-    t.string "description"
-    t.datetime "purchase_date", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["balance_id"], name: "index_outcomes_on_balance_id"
-  end
-
   create_table "payments", force: :cascade do |t|
     t.string "paymentable_type", null: false
     t.bigint "paymentable_id", null: false
@@ -56,6 +34,19 @@ ActiveRecord::Schema.define(version: 2023_02_11_210131) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["paymentable_type", "paymentable_id"], name: "index_payments_on_paymentable"
+  end
+
+  create_table "transactions", force: :cascade do |t|
+    t.bigint "balance_id", null: false
+    t.string "type", null: false
+    t.integer "transaction_type", null: false
+    t.string "description"
+    t.integer "frequency"
+    t.datetime "purchase_date"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["balance_id"], name: "index_transactions_on_balance_id"
+    t.index ["type"], name: "index_transactions_on_type"
   end
 
   create_table "users", force: :cascade do |t|
@@ -83,6 +74,5 @@ ActiveRecord::Schema.define(version: 2023_02_11_210131) do
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
-  add_foreign_key "incomes", "balances"
-  add_foreign_key "outcomes", "balances"
+  add_foreign_key "transactions", "balances"
 end
