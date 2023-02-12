@@ -31,6 +31,7 @@ ActiveRecord::Schema.define(version: 2023_02_12_185218) do
     t.bigint "paymentable_id", null: false
     t.decimal "amount", default: "0.0", null: false
     t.decimal "{:precision=>8, :scale=>2}", default: "0.0", null: false
+    t.integer "status", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["paymentable_type", "paymentable_id"], name: "index_payments_on_paymentable"
