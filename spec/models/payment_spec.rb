@@ -20,4 +20,14 @@ RSpec.describe Payment, type: :model do
       end
     end
   end
+
+  describe '#update_current_balance' do
+    describe 'when it is a current outcome' do
+      it 'should update balance current_amount' do
+        payment = Payment.create!(paymentable: outcome, amount: 5_000)
+
+        expect(balance.current_amount).to eq 5_000
+      end
+    end
+  end
 end
