@@ -23,24 +23,24 @@ end
 
 RSpec.configure do |config|
   Dir[File.join(__dir__, 'factories', '*.rb')].sort.each { |file| require file }
-  config.fixture_path = "#{::Rails.root}/spec/fixtures"
   config.use_transactional_fixtures = false
 
-  # Use transactions by default
-  config.before :each do
+  config.before(:suite) do
     DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.clean_with(:truncation)
   end
 
-  # For the javascript-enabled tests, switch to truncation, but *only on tables that were used*
-  config.before :each, :js => true do
-    DatabaseCleaner.strategy = :truncation, {:pre_count => true}
-  end
+  # config.around(:each) do |example|
+  #   DatabaseCleaner.cleaning do
+  #     example.run
+  #   end
+  # end
 
-  config.before :each do
+  config.before(:each) do
     DatabaseCleaner.start
   end
 
-  config.after :each do
+  config.after(:each) do
     DatabaseCleaner.clean
   end
 
