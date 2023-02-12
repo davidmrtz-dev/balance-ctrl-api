@@ -36,4 +36,9 @@ class Payment < ApplicationRecord
       balance.save
     end
   end
+
+  # def is_current_paymentable_of?(class, instance)
+  #   instance.instance_of?(class) &&
+  #     instance.type.eql?('current')
+  # end
 end
