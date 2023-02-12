@@ -19,8 +19,7 @@ ActiveRecord::Schema.define(version: 2023_02_12_185218) do
     t.bigint "user_id"
     t.string "title"
     t.text "description"
-    t.decimal "current_amount", default: "0.0", null: false
-    t.decimal "{:precision=>20, :scale=>2}", default: "0.0", null: false
+    t.decimal "current_amount", precision: 20, scale: 2, default: "0.0", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_balances_on_user_id"
@@ -29,8 +28,7 @@ ActiveRecord::Schema.define(version: 2023_02_12_185218) do
   create_table "payments", force: :cascade do |t|
     t.string "paymentable_type", null: false
     t.bigint "paymentable_id", null: false
-    t.decimal "amount", default: "0.0", null: false
-    t.decimal "{:precision=>8, :scale=>2}", default: "0.0", null: false
+    t.decimal "amount", precision: 8, scale: 2, default: "0.0", null: false
     t.integer "status", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -41,6 +39,7 @@ ActiveRecord::Schema.define(version: 2023_02_12_185218) do
     t.bigint "balance_id", null: false
     t.string "type", null: false
     t.integer "transaction_type", null: false
+    t.decimal "amount", precision: 10, scale: 2, default: "0.0", null: false
     t.string "description"
     t.integer "frequency"
     t.datetime "purchase_date"
