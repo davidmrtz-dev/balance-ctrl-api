@@ -26,15 +26,22 @@ RSpec.configure do |config|
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
   config.use_transactional_fixtures = false
 
-  config.before(:suite) do
+  # Use transactions by default
+  config.before :each do
     DatabaseCleaner.strategy = :transaction
-    DatabaseCleaner.clean_with(:truncation)
   end
 
-  config.around(:each) do |example|
-    DatabaseCleaner.cleaning do
-      example.run
-    end
+  # For the javascript-enabled tests, switch to truncation, but *only on tables that were used*
+  config.before :each, :js => true do
+    DatabaseCleaner.strategy = :truncation, {:pre_count => true}
+  end
+
+  config.before :each do
+    DatabaseCleaner.start
+  end
+
+  config.after :each do
+    DatabaseCleaner.clean
   end
 
   config.infer_spec_type_from_file_location!

@@ -13,13 +13,15 @@ class Payment < ApplicationRecord
   private
 
   def one_payment_for_current_outcome
+    # byebug
     errors.add(:outcome, 'of type current can only have one payment') if
-      paymentable.payments.size > 0 && paymentable&.outcome_type.eql?('current')
+      paymentable.payments.size > 0 && paymentable.outcome_type.eql?('current')
   end
 
   def one_payment_for_current_income
+    # byebug
     errors.add(:income, 'of type current can only have one payment') if
-      paymentable.payments.size > 0 && paymentable&.income_type.eql?('current')
+      paymentable.payments.size > 0 && paymentable.income_type.eql?('current')
   end
 
   # def update_current_balance
