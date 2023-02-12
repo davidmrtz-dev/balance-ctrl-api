@@ -23,7 +23,6 @@ end
 
 RSpec.configure do |config|
   Dir[File.join(__dir__, 'factories', '*.rb')].sort.each { |file| require file }
-  config.fixture_path = "#{::Rails.root}/spec/fixtures"
   config.use_transactional_fixtures = false
 
   config.before(:suite) do
