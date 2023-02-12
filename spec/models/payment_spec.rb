@@ -11,7 +11,7 @@ RSpec.describe Payment, type: :model do
   end
 
   describe 'validations' do
-    describe 'one_payment_for_current_outcome' do
+    describe 'one_payment_for_current_paymentable' do
       it 'should allow to have only one payment to current outcomes' do
         payment_01 = Payment.new(paymentable: outcome)
         expect(payment_01.valid?).to be_truthy
@@ -38,7 +38,7 @@ RSpec.describe Payment, type: :model do
         it 'should add the amount to balance current_amount' do
           payment = Payment.create!(paymentable: income, amount: 5_000)
 
-          expect(balance.current_amount).to eq 15_000
+          expect(balance.reload.current_amount).to eq 15_000
         end
       end
     end

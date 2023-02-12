@@ -1,7 +1,7 @@
 class Payment < ApplicationRecord
   belongs_to :paymentable, polymorphic: true
 
-  validate :one_payment_for_current_outcome
+  validate :one_payment_for_current_paymentable
 
   delegate :balance, to: :paymentable
 
@@ -10,7 +10,7 @@ class Payment < ApplicationRecord
 
   private
 
-  def one_payment_for_current_outcome
+  def one_payment_for_current_paymentable
     if paymentable.instance_of?(Outcome) &&
       paymentable&.outcome_type.eql?('current')
 
