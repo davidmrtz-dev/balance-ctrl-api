@@ -3,7 +3,7 @@ class CreateTransactions < ActiveRecord::Migration[6.1]
     create_table :transactions do |t|
       t.references :balance, null: false, foreign_key: true
       t.string :type, null: false, index: true
-      t.integer :transaction_type, null: false, default: :current
+      t.integer :transaction_type, null: false
       t.decimal :amount, precision: 10, scale: 2, default: '0.0', null: false
       t.string :description
       t.integer :frequency
