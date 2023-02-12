@@ -16,11 +16,10 @@ class BalanceFactory < BaseFactory
     2.times do
       Income.create!(
         balance: balance,
+        income_type: :fixed,
         title: Faker::Lorem.sentence(word_count: 2),
         description: Faker::Lorem.sentence(word_count: 6),
-        income_frequency: :monthly,
-        income_type: :fixed,
-        amount: Faker::Number.decimal(l_digits: 5, r_digits: 2)
+        income_frequency: :monthly
       )
     end
   end
@@ -32,7 +31,7 @@ class BalanceFactory < BaseFactory
         outcome_type: :current,
         title: Faker::Lorem.sentence(word_count: 2),
         description: Faker::Lorem.sentence(word_count: 6),
-        purchase_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample,
+        purchase_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample
       )
     end
     2.times do
@@ -41,7 +40,7 @@ class BalanceFactory < BaseFactory
         outcome_type: :fixed,
         title: Faker::Lorem.sentence(word_count: 2),
         description: Faker::Lorem.sentence(word_count: 6),
-        purchase_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample,
+        purchase_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample
       )
     end
   end
@@ -51,7 +50,7 @@ class BalanceFactory < BaseFactory
       user: params.fetch(:user, nil),
       title: params.fetch(:title, 'Balance Title'),
       description: params.fetch(:description, 'Balance Description'),
-      current_amount: params.fetch(:current_amount, 1_000_000)
+      current_amount: params.fetch(:current_amount, 10_000)
     }
   end
 end
