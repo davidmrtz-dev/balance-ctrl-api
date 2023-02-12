@@ -30,10 +30,22 @@ RSpec.describe Outcome, type: :model do
     end
   end
 
-  # describe '#generate_payment' do
-  #   it "should create one payment for transaction_type 'current'" do
-  #     expect { Outcome.create(balance: balance, transaction_type: :current, amount: 5_000, purchase_date: DateTime.now) }
-  #       .to change { Payment.count }.by(1)
-  #   end
-  # end
+  describe '#update_current_balance' do
+    describe "when outcome is 'current'" do
+      it 'should substract the amount from balance current_amount' do
+        Outcome.create(balance: balance, transaction_type: :current, amount: 5_000, purchase_date: DateTime.now)
+
+        expect(balance.reload.current_amount).to eq 5_000
+      end
+    end
+  end
+
+  describe '#generate_payment' do
+    it "should create one payment for transaction_type 'current'" do
+      expect { Outcome.create(balance: balance, transaction_type: :current, amount: 5_000, purchase_date: DateTime.now) }
+        .to change { Payment.count }.by(1)
+
+      expect(Payment.last.status).to eq 'applied'
+    end
+  end
 end
