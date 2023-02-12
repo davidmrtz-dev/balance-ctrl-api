@@ -9,8 +9,8 @@ RSpec.describe Payment, type: :model do
   end
 
   describe 'validations' do
-    let!(:income) { IncomeFactory.create(balance: balance, income_type: :current, income_frequency: :monthly) }
-    let!(:outcome) { OutcomeFactory.create(balance: balance, outcome_type: :current, purchase_date: Time.zone.today) }
+    let!(:income) { IncomeFactory.create(balance: balance, frequency: :monthly) }
+    let!(:outcome) { OutcomeFactory.create(balance: balance, transaction_type: :current, purchase_date: Time.zone.today) }
 
     describe 'one_payment_for_current_outcome' do
       describe "when paymentable is Income and is 'fixed'" do
@@ -38,8 +38,8 @@ RSpec.describe Payment, type: :model do
   end
 
   describe '#update_current_balance' do
-    let!(:income) { IncomeFactory.create(balance: balance, income_type: :current, income_frequency: :monthly) }
-    let!(:outcome) { OutcomeFactory.create(balance: balance, outcome_type: :current, purchase_date: Time.zone.today) }
+    let!(:income) { IncomeFactory.create(balance: balance, frequency: :monthly) }
+    let!(:outcome) { OutcomeFactory.create(balance: balance, transaction_type: :current, purchase_date: Time.zone.today) }
 
     shared_examples 'update_status_when_apply_payment' do
       it 'should update status to :applied' do

@@ -9,5 +9,6 @@ RSpec.describe Income, type: :model do
   describe 'validations' do
     it { should allow_value(:monthly).for(:frequency).on(:create) }
     it { should_not allow_value(Time.zone.today).for(:purchase_date).on(:create) }
+    it { should_not allow_value(12).for(:quotas).on(:create) }
   end
 end
