@@ -16,10 +16,9 @@ class BalanceFactory < BaseFactory
     2.times do
       Income.create!(
         balance: balance,
-        income_type: :fixed,
-        title: Faker::Lorem.sentence(word_count: 2),
+        transaction_type: :fixed,
         description: Faker::Lorem.sentence(word_count: 6),
-        income_frequency: :monthly
+        frequency: :monthly
       )
     end
   end
@@ -28,8 +27,7 @@ class BalanceFactory < BaseFactory
     4.times do
       Outcome.create!(
         balance: balance,
-        outcome_type: :current,
-        title: Faker::Lorem.sentence(word_count: 2),
+        transaction_type: :current,
         description: Faker::Lorem.sentence(word_count: 6),
         purchase_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample
       )
@@ -37,8 +35,7 @@ class BalanceFactory < BaseFactory
     2.times do
       Outcome.create!(
         balance: balance,
-        outcome_type: :fixed,
-        title: Faker::Lorem.sentence(word_count: 2),
+        transaction_type: :fixed,
         description: Faker::Lorem.sentence(word_count: 6),
         purchase_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample
       )
