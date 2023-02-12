@@ -4,9 +4,9 @@ RSpec.describe Payment, type: :model do
   let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
   let!(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
 
-  # describe 'associations' do
-  #   it { is_expected.to belong_to(:paymentable) }
-  # end
+  describe 'associations' do
+    it { is_expected.to belong_to(:paymentable) }
+  end
 
   describe 'validations' do
     describe 'one_payment_for_current_outcome' do
