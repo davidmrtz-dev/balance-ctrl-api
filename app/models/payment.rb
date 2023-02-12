@@ -1,12 +1,12 @@
 class Payment < ApplicationRecord
   belongs_to :paymentable, polymorphic: true
 
-  delegate :balance, to: :paymentable
+  # delegate :balance, to: :paymentable
 
   enum status: { pending: 0, applied: 1 }, _default: :pending
 
   after_create { paymentable.reload }
-  after_create :update_current_balance
+  # after_create :update_current_balance
 
   validate :one_payment_for_current_paymentable
 
@@ -22,17 +22,17 @@ class Payment < ApplicationRecord
     end
   end
 
-  def update_current_balance
-    if is_current_paymentable_of?(Income, paymentable)
-      balance.current_amount += amount
-      self.status = :applied
-      balance.save
-    elsif is_current_paymentable_of?(Outcome, paymentable)
-      balance.current_amount -= amount
-      self.status = :applied
-      balance.save
-    end
-  end
+  # def update_current_balance
+  #   if is_current_paymentable_of?(Income, paymentable)
+  #     balance.current_amount += amount
+  #     self.status = :applied
+  #     balance.save
+  #   elsif is_current_paymentable_of?(Outcome, paymentable)
+  #     balance.current_amount -= amount
+  #     self.status = :applied
+  #     balance.save
+  #   end
+  # end
 
   def is_current_paymentable_of?(class_of, instance)
     instance.instance_of?(class_of) &&
