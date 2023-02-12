@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Payment, type: :model do
   let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
-  let!(:balance) { BalanceFactory.create(user: user) }
+  let!(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
   let!(:outcome) { OutcomeFactory.create(balance: balance, outcome_type: :current) }
   let!(:income) { IncomeFactory.create(balance: balance, income_type: :current) }
 
@@ -11,21 +11,25 @@ RSpec.describe Payment, type: :model do
   end
 
   describe 'validations' do
-    describe 'one_payment_for_current_paymentable' do
+    describe 'one_payment_for_current_outcome' do
       describe "when paymentable is Outcome and is 'fixed'" do
         it 'should not be valid if payments > 0' do
           payment_01 = Payment.create(paymentable: outcome)
           payment_02 = Payment.new(paymentable: outcome)
+
           expect(payment_02.valid?).to be_falsey
           expect(payment_02.errors.full_messages.first).
             to eq('Outcome of type current can only have one payment')
         end
       end
+    end
 
+    describe 'one_payment_for_current_income' do
       describe "when paymentable is Income and is 'fixed'" do
         it 'should not be valid if payments > 0' do
           payment_01 = Payment.create(paymentable: income)
           payment_02 = Payment.new(paymentable: income)
+
           expect(payment_02.valid?).to be_falsey
           expect(payment_02.errors.full_messages.first).
             to eq('Income of type current can only have one payment')
