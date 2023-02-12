@@ -3,7 +3,7 @@ class Payment < ApplicationRecord
 
   delegate :balance, to: :paymentable
 
-  enum status: { pending: 0, applied: 1 }
+  enum status: { pending: 0, applied: 1 }, _default: :pending
 
   after_create { paymentable.reload }
   after_create :update_current_balance
