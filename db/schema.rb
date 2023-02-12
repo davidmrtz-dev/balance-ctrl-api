@@ -51,12 +51,13 @@ ActiveRecord::Schema.define(version: 2023_02_11_210131) do
   end
 
   create_table "payments", force: :cascade do |t|
-    t.bigint "outcome_id", null: false
+    t.string "paymentable_type", null: false
+    t.bigint "paymentable_id", null: false
     t.decimal "amount", default: "0.0", null: false
     t.decimal "{:precision=>8, :scale=>2}", default: "0.0", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["outcome_id"], name: "index_payments_on_outcome_id"
+    t.index ["paymentable_type", "paymentable_id"], name: "index_payments_on_paymentable"
   end
 
   create_table "users", force: :cascade do |t|
@@ -86,5 +87,4 @@ ActiveRecord::Schema.define(version: 2023_02_11_210131) do
 
   add_foreign_key "incomes", "balances"
   add_foreign_key "outcomes", "balances"
-  add_foreign_key "payments", "outcomes"
 end
