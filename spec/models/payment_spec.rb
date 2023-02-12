@@ -4,6 +4,7 @@ RSpec.describe Payment, type: :model do
   let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
   let!(:balance) { BalanceFactory.create(user: user) }
   let!(:outcome) { OutcomeFactory.create(balance: balance) }
+  let!(:income) { IncomeFactory.create(balance: balance) }
 
   describe 'associations' do
     it { is_expected.to belong_to(:paymentable) }
@@ -22,11 +23,23 @@ RSpec.describe Payment, type: :model do
   end
 
   describe '#update_current_balance' do
-    describe 'when it is a current outcome' do
-      it 'should update balance current_amount' do
-        payment = Payment.create!(paymentable: outcome, amount: 5_000)
+    describe 'when paymentable is Outcome' do
+      describe "when paymentable_type is 'fixed'" do
+        it 'should substract the amount from balance current_amount' do
+          payment = Payment.create!(paymentable: outcome, amount: 5_000)
 
-        expect(balance.current_amount).to eq 5_000
+          expect(balance.current_amount).to eq 5_000
+        end
+      end
+    end
+
+    describe 'when paymentable is Income' do
+      describe "when paymentable_type is 'fixed'" do
+        it 'should add the amount to balance current_amount' do
+          payment = Payment.create!(paymentable: income, amount: 5_000)
+
+          expect(balance.current_amount).to eq 15_000
+        end
       end
     end
   end
