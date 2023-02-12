@@ -7,13 +7,13 @@ RSpec.describe Outcome, type: :model do
   end
 
   describe 'validations' do
+    let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
+    let!(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
+
     it { should_not allow_value(:monthly).for(:frequency).on(:create) }
     it { should allow_value(Time.zone.today).for(:purchase_date).on(:create) }
 
     describe 'when outcome transaction_type is :fixed' do
-      let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
-      let!(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
-
       it "should validate presence of 'quotas'" do
         outcome = Outcome.new(balance: balance, transaction_type: :fixed, purchase_date: Time.zone.today)
         expect(outcome.valid?).to eq false
@@ -22,9 +22,6 @@ RSpec.describe Outcome, type: :model do
     end
 
     describe 'when outcome transaction_type is :current' do
-      let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
-      let!(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
-
       it "should validate absence of 'quotas'" do
         outcome = Outcome.new(balance: balance, transaction_type: :current, purchase_date: Time.zone.today, quotas: 12)
         expect(outcome.valid?).to eq false
@@ -32,4 +29,10 @@ RSpec.describe Outcome, type: :model do
       end
     end
   end
+
+  # describe '#generate_payment' do
+  #   it "should create one payment for transaction_type 'current'" do
+
+  #   end
+  # end
 end
