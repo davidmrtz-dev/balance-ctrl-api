@@ -28,12 +28,10 @@ ActiveRecord::Schema.define(version: 2023_02_11_210131) do
 
   create_table "incomes", force: :cascade do |t|
     t.bigint "balance_id", null: false
+    t.integer "income_type", null: false
     t.string "title"
     t.string "description"
     t.integer "income_frequency", null: false
-    t.integer "income_type", null: false
-    t.decimal "amount", default: "0.0", null: false
-    t.decimal "{:precision=>10, :scale=>2}", default: "0.0", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["balance_id"], name: "index_incomes_on_balance_id"

@@ -16,11 +16,10 @@ balance = Balance.find_or_create_by!(
 2.times do
   Income.create!(
     balance: balance,
+    income_type: :fixed,
     title: Faker::Lorem.sentence(word_count: 2),
     description: Faker::Lorem.sentence(word_count: 6),
-    income_frequency: :monthly,
-    income_type: :fixed,
-    amount: Faker::Number.decimal(l_digits: 5, r_digits: 2)
+    income_frequency: :monthly
   )
 end
 
