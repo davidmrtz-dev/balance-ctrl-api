@@ -30,10 +30,10 @@ RSpec.describe Outcome, type: :model do
     end
   end
 
-  # describe '#generate_payment' do
-  #   it "should create one payment for transaction_type 'current'" do
-  #     expect { Outcome.create(balance: balance, transaction_type: :current, amount: 5_000, purchase_date: DateTime.now) }
-  #       .to change { Payment.count }.by(1)
-  #   end
-  # end
+  describe '#generate_payment' do
+    it "should create one payment for transaction_type 'current'" do
+      expect { Outcome.create(balance: balance, transaction_type: :current, amount: 5_000, purchase_date: DateTime.now) }
+        .to change { Payment.count }.by(1)
+    end
+  end
 end
