@@ -6,6 +6,7 @@ Rails.application.routes.draw do
       get 'balance', to: 'balances#balance'
       get 'payments/current', to: 'payments#current'
       get 'payments/fixed', to: 'payments#fixed'
+      resources :payments, only: %i[create update destroy]
     end
   end
 end
