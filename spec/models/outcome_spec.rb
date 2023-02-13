@@ -11,11 +11,11 @@ RSpec.describe Outcome, type: :model do
 
   describe 'validations' do
     it { should_not allow_value(:monthly).for(:frequency).on(:create) }
-    it { should allow_value(Time.zone.today).for(:purchase_date).on(:create) }
+    it { should allow_value(DateTime.now).for(:purchase_date).on(:create) }
 
     describe 'when outcome transaction_type is :current' do
       it "should validate absence of 'quotas'" do
-        outcome = Outcome.new(balance: balance, purchase_date: Time.zone.today, quotas: 12)
+        outcome = Outcome.new(balance: balance, purchase_date: DateTime.now, quotas: 12)
         expect(outcome.valid?).to eq false
         expect(outcome.errors.full_messages.first).to eq("Quotas must be blank")
       end
@@ -23,7 +23,7 @@ RSpec.describe Outcome, type: :model do
 
     describe 'when outcome transaction_type is :fixed' do
       it "should validate presence of 'quotas'" do
-        outcome = Outcome.new(balance: balance, transaction_type: :fixed, purchase_date: Time.zone.today)
+        outcome = Outcome.new(balance: balance, transaction_type: :fixed, purchase_date: DateTime.now)
         expect(outcome.valid?).to eq false
         expect(outcome.errors.full_messages.first).to eq("Quotas can't be blank")
       end
@@ -48,8 +48,8 @@ RSpec.describe Outcome, type: :model do
   end
 
   describe '#generate_payments' do
-    it "'should create 'quotas' payments for 'fixed' outcome" do
-      expect(true).to eq true
+    it "'should create n 'quotas' payments for 'fixed' outcome" do
+      expect { Outcome.create(balance: balance, amount: 12_000, transaction_type: :fixed, purchase_date: DateTime.now) }
     end
   end
 end
