@@ -33,11 +33,11 @@ RSpec.describe Outcome, type: :model do
 
 
   describe 'when transaction_type is :current' do
-    let!(:outcome) do
-      Outcome.create!(balance: balance, amount: 5_000, purchase_date: Time.zone.now)
-    end
-
     describe '#after_create' do
+      let!(:outcome) do
+        Outcome.create!(balance: balance, amount: 5_000, purchase_date: Time.zone.now)
+      end
+
       describe '#update_balance_amount' do
         it 'should substract update balance current_amount' do
           expect(balance.current_amount).to eq 5_000
@@ -51,8 +51,6 @@ RSpec.describe Outcome, type: :model do
         end
 
         it "should create one payment with state as 'applied'" do
-          outcome = Outcome.create!(balance: balance, amount: 5_000, purchase_date: Time.zone.now)
-
           expect(outcome.payments.first.status).to eq 'applied'
         end
       end
@@ -72,6 +70,16 @@ RSpec.describe Outcome, type: :model do
   describe 'when transaction_type is :fixed' do
     describe '#after_create' do
       describe '#generate_payments' do
+        let(:outcome) do
+          OutcomeFactory.create(
+            balance: balance,
+            amount: 12_000,
+            transaction_type: :fixed,
+            purchase_date: Time.zone.now,
+            quotas: 12
+          )
+        end
+
         it "'should create n 'quotas' payments" do
           expect do
             Outcome.create!(
@@ -84,24 +92,12 @@ RSpec.describe Outcome, type: :model do
           end.to change { Payment.count }.by 12
         end
 
-        describe 'created payments state and amount' do
-          let!(:outcome) do
-            OutcomeFactory.create(
-              balance: balance,
-              amount: 12_000,
-              transaction_type: :fixed,
-              purchase_date: Time.zone.now,
-              quotas: 12
-            )
-          end
+        it "should create payments with state as 'pending'" do
+          expect(outcome.payments.pluck(:status).uniq.first).to eq 'pending'
+        end
 
-          it "should create payments with state as 'pending'" do
-            expect(outcome.payments.pluck(:status).uniq.first).to eq 'pending'
-          end
-
-          it 'should create payment with amount as outcome.amount / outcome.quotas' do
-            expect(outcome.payments.last.amount).to eq outcome.amount / outcome.quotas
-          end
+        it 'should create payment with amount as outcome.amount / outcome.quotas' do
+          expect(outcome.payments.last.amount).to eq outcome.amount / outcome.quotas
         end
       end
     end
