@@ -1,5 +1,5 @@
 module Api
-  class PaymentsController < ApiController
+  class OutcomesController < ApiController
     include Pagination
 
     before_action :authenticate_user!
@@ -16,7 +16,7 @@ module Api
       )
 
       render json: {
-        payments: current_page,
+        outcomes: current_page,
         total_pages: total_pages(current_outcomes.count)
       }
     end
@@ -33,7 +33,7 @@ module Api
       )
 
       render json: {
-        payments: fixed_page,
+        outcomes: fixed_page,
         total_pages: total_pages(fixed_outcomes.count)
       }
     end
@@ -42,7 +42,7 @@ module Api
       outcome = Outcome.new(outcome_params)
 
       if outcome.save
-        render json: { payment: outcome }, status: :created
+        render json: { outcome: outcome }, status: :created
       else
         render json: { errors: outcome.errors.full_messages }, status: :unprocessable_entity
       end
