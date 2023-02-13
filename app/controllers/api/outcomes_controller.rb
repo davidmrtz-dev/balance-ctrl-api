@@ -1,5 +1,5 @@
 module Api
-  class PaymentsController < ApiController
+  class OutcomesController < ApiController
     include Pagination
 
     before_action :authenticate_user!
