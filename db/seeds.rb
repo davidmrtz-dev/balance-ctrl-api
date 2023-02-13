@@ -16,7 +16,6 @@ balance = Balance.find_or_create_by!(
 2.times do
   Income.create!(
     balance: balance,
-    transaction_type: :fixed,
     description: Faker::Lorem.sentence(word_count: 4),
     frequency: :monthly
   )
@@ -25,7 +24,6 @@ end
 40.times do
   Outcome.create!(
     balance: balance,
-    transaction_type: :current,
     description: Faker::Lorem.sentence(word_count: 4),
     purchase_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample
   )
