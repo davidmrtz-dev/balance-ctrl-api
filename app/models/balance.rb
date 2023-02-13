@@ -3,4 +3,14 @@ class Balance < ApplicationRecord
   has_many :transactions, dependent: :destroy
   has_many :incomes, dependent: :destroy
   has_many :outcomes, dependent: :destroy
+
+  private
+
+  def total_income
+    incomes.sum(:amount)
+  end
+
+  def total_outcomes
+    outcomes.sum(:amount)
+  end
 end

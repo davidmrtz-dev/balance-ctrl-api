@@ -10,6 +10,10 @@ module Api
 
     def json
       @balance.serializable_hash(
+        methods: %i[
+          total_income
+          total_outcomes
+        ],
         except: %i[
           user_id
           created_at

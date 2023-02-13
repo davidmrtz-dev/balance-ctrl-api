@@ -6,18 +6,19 @@ user = User.create!(
   password_confirmation: 'password'
 )
 
-balance = Balance.find_or_create_by!(
+balance = Balance.create!(
   user: user,
   title: 'My Balance',
   description: 'My balance description',
   current_amount: 10_000
 )
 
-2.times do
+10.times do
   Income.create!(
     balance: balance,
     description: Faker::Lorem.sentence(word_count: 4),
-    frequency: :monthly
+    frequency: :monthly,
+    amount: Faker::Number.decimal(l_digits: 4, r_digits: 2)
   )
 end
 
@@ -25,6 +26,7 @@ end
   Outcome.create!(
     balance: balance,
     description: Faker::Lorem.sentence(word_count: 4),
-    purchase_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample
+    purchase_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample,
+    amount: Faker::Number.decimal(l_digits: 3, r_digits: 2)
   )
 end
