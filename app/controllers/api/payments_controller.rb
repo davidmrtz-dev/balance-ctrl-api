@@ -38,7 +38,26 @@ module Api
       }
     end
 
+    def create
+      outcome = Outcome.new(outcome_params)
+
+      if outcome.save
+        render json: { payment: outcome }
+      else
+        render json: { errors: outcome.errors.full_messages }, status: :unprocessable_entity
+      end
+    end
+
     private
+
+    def outcome_params
+      params.require(:outcome).permit(
+        :balance_id,
+        :amount,
+        :description,
+        :purchase_date
+      )
+    end
 
     def total_pages(count)
       total_pages = count / 5
