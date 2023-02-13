@@ -48,7 +48,17 @@ module Api
       end
     end
 
+    def destroy
+      find_outcome.destroy!
+
+      head :no_content
+    end
+
     private
+
+    def find_outcome
+      Outcome.find(params[:id])
+    end
 
     def outcome_params
       params.require(:outcome).permit(
