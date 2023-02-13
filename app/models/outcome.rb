@@ -6,7 +6,8 @@ class Outcome < Transaction
   validate :purchase_date_not_after_today, on: :create
 
   scope :with_balance_and_user, -> { joins(balance: :user) }
-  scope :current_type, -> { where(transaction_type: :current) }
+  scope :current_types, -> { where(transaction_type: :current) }
+  scope :fixed_types, -> { where(transaction_type: :fixed) }
   scope :from_user, lambda { |user|
     where({ balance: { user: user }})
   }
