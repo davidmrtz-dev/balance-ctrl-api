@@ -3,11 +3,18 @@ class Outcome < Transaction
   validates :purchase_date, presence: true
   validates :quotas, absence: true, if: -> { transaction_type.eql?('current') }
   validates :quotas, presence: true, if: -> { transaction_type.eql?('fixed') }
+  validate :purchase_date_not_after_today, on: :create
 
   after_create :update_balance_amount, if: -> { transaction_type.eql?('current') }
   after_create :generate_payments, if: -> { transaction_type.eql?('fixed') }
 
   private
+
+  def purchase_date_not_after_today
+    return if purchase_date.nil? || purchase_date < Time.zone.now
+
+    errors.add(:purchase_date, 'can not be after today')
+  end
 
   def update_balance_amount
     balance.current_amount -= amount
