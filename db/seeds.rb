@@ -26,7 +26,9 @@ end
   Outcome.create!(
     balance: balance,
     description: Faker::Lorem.sentence(word_count: 4),
-    purchase_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample,
+    purchase_date: [
+      Time.zone.now - 2.days, Time.zone.now - 1.day, Time.zone.now
+    ].sample,
     amount: Faker::Number.decimal(l_digits: 3, r_digits: 2)
   )
 end
