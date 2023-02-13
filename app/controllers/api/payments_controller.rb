@@ -5,16 +5,18 @@ module Api
     before_action :authenticate_user!
 
     def current
-      current = current_user.balance.outcomes
+      current_outcomes =
+        Outcome.with_balance.from_user(current_user).current
+
       current_page = paginate(
-        current,
+        current_outcomes,
         limit: params[:limit],
         offset: params[:offset]
       )
 
       render json: {
         payments: current_page,
-        total_pages: total_pages(current.count)
+        total_pages: total_pages(current_outcomes.count)
       }
     end
 
