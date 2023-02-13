@@ -10,7 +10,7 @@ RSpec.describe Payment, type: :model do
 
   describe 'validations' do
     let!(:income) { IncomeFactory.create(balance: balance, frequency: :monthly) }
-    let!(:outcome) { OutcomeFactory.create(balance: balance, transaction_type: :current, purchase_date: Time.zone.today) }
+    let!(:outcome) { OutcomeFactory.create(balance: balance, purchase_date: Time.zone.today) }
 
     describe 'one_payment_for_current_outcome' do
       describe "when paymentable is Income and is 'current'" do
@@ -19,7 +19,7 @@ RSpec.describe Payment, type: :model do
 
           expect(payment_02.valid?).to be_falsey
           expect(payment_02.errors.full_messages.first).
-            to eq('Income of type current can only have one payment')
+            to eq('Paymentable of type current can only have one payment')
         end
       end
 
@@ -29,7 +29,7 @@ RSpec.describe Payment, type: :model do
 
           expect(payment_02.valid?).to be_falsey
           expect(payment_02.errors.full_messages.first).
-          to eq('Outcome of type current can only have one payment')
+          to eq('Paymentable of type current can only have one payment')
         end
       end
     end

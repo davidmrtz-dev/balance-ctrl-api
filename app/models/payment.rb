@@ -10,17 +10,9 @@ class Payment < ApplicationRecord
   private
 
   def one_payment_for_current_paymentable
-    if is_current_paymentable_of?(Income, paymentable) &&
+    if paymentable&.transaction_type.eql?('current') &&
         paymentable.payments.count > 0
-      errors.add(:income, 'of type current can only have one payment')
-    elsif is_current_paymentable_of?(Outcome, paymentable) &&
-        paymentable.payments.count > 0
-      errors.add(:outcome, 'of type current can only have one payment')
+      errors.add(:paymentable, 'of type current can only have one payment')
     end
-  end
-
-  def is_current_paymentable_of?(class_of, instance)
-    instance.instance_of?(class_of) &&
-      instance.transaction_type.eql?('current')
   end
 end
