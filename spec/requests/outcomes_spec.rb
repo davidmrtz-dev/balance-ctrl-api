@@ -61,7 +61,43 @@ RSpec.describe Api::OutcomesController, type: :controller do
     end
   end
 
-  describe 'DESTROY /api/outcomes/:id' do
+  describe 'PUT /api/outcomes/:id' do
+    let!(:outcome) do
+      OutcomeFactory.create(
+        balance: balance,
+        purchase_date: Time.zone.today,
+        description: 'Grocery',
+        amount: 4000
+      )
+    end
+
+    subject(:action) do
+      put :update, params: {
+        id: outcome.id,
+        outcome: {
+          description: 'Clothes',
+          amount: 6000
+        }
+      }
+    end
+
+    login_user
+
+    it 'calls to update the outcome' do
+      expect(outcome.description).to eq 'Grocery'
+      expect(outcome.amount).to eq 4000
+
+      action
+
+      outcome.reload
+
+      expect(response).to have_http_status(:ok)
+      expect(outcome.description).to eq 'Clothes'
+      expect(outcome.amount).to eq 6000
+    end
+  end
+
+  describe 'DELETE /api/outcomes/:id' do
     let!(:outcome) { OutcomeFactory.create(balance: balance, purchase_date: Time.zone.today) }
 
     subject(:action) { delete :destroy, params: { id: outcome.id } }

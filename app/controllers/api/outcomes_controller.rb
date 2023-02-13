@@ -48,6 +48,12 @@ module Api
       end
     end
 
+    def update
+      find_outcome.update!(outcome_params)
+
+      head :ok
+    end
+
     def destroy
       find_outcome.destroy!
 
