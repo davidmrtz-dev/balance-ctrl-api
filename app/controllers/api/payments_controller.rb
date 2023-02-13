@@ -6,7 +6,8 @@ module Api
 
     def current
       current_outcomes = Outcome.
-        with_balance_and_user.from_user(current_user).current_type
+        with_balance_and_user.
+          from_user(current_user).current_types
 
       current_page = paginate(
         current_outcomes,
@@ -21,16 +22,19 @@ module Api
     end
 
     def fixed
-      fixed = current_user.balance.outcomes
+      fixed_outcomes = Outcome.
+        with_balance_and_user.
+          from_user(current_user).fixed_types
+
       fixed_page = paginate(
-        fixed,
+        fixed_outcomes,
         limit: params[:limit],
         offset: params[:offset]
       )
 
       render json: {
         payments: fixed_page,
-        total_pages: total_pages(fixed.count)
+        total_pages: total_pages(fixed_outcomes.count)
       }
     end
 
