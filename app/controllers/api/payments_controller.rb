@@ -42,7 +42,7 @@ module Api
       outcome = Outcome.new(outcome_params)
 
       if outcome.save
-        render json: { payment: outcome }
+        render json: { payment: outcome }, status: :created
       else
         render json: { errors: outcome.errors.full_messages }, status: :unprocessable_entity
       end

@@ -23,4 +23,41 @@ RSpec.describe Api::PaymentsController, type: :controller do
       expect(parsed_response['total_pages']).to eq(1)
     end
   end
+
+  describe 'POST /payments' do
+    subject(:action) {
+      post :create, params: {
+        outcome: {
+          balance_id: balance.id,
+          amount: 4500,
+          description: 'Clothes',
+          purchase_date: Time.zone.now
+        }
+      }
+    }
+
+    login_user
+
+    it 'creates an outcome and returns it' do
+      action
+
+      outcome = Outcome.last
+
+      expect(response).to have_http_status(:created)
+      expect(parsed_response[:payment][:id]).to eq(outcome.id)
+    end
+
+    it 'handles validation error' do
+      post :create,
+           params: {
+             outcome: {
+               balance_id: nil,
+               purchase_date: nil
+             }
+           }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(parsed_response[:id]).to be_nil
+    end
+  end
 end
