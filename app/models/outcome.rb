@@ -5,6 +5,12 @@ class Outcome < Transaction
   validates :quotas, presence: true, if: -> { transaction_type.eql?('fixed') }
   validate :purchase_date_not_after_today, on: :create
 
+  scope :with_balance_and_user, -> { joins(balance: :user) }
+  scope :current_type, -> { where(transaction_type: :current) }
+  scope :from_user, lambda { |user|
+    where({ balance: { user: user }})
+  }
+
   before_destroy :add_balance_amount, if: -> { transaction_type.eql?('current') }
   after_create :substract_balance_amount, if: -> { transaction_type.eql?('current') }
   after_create :generate_payments, if: -> { transaction_type.eql?('fixed') }
