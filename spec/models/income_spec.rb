@@ -15,20 +15,38 @@ RSpec.describe Income, type: :model do
     it { should_not allow_value(12).for(:quotas).on(:create) }
   end
 
-  describe '#update_balance_amount' do
-    it 'should sum the amount to balance current_amount' do
-      Income.create(balance: balance, amount: 5_000, frequency: :monthly)
-
-      expect(balance.reload.current_amount).to eq 15_000
+  describe 'when income is :current' do
+    let!(:income) do
+      Income.create!(balance: balance, amount: 5_000, frequency: :monthly)
     end
-  end
 
-  describe '#generate_payment' do
-    it "should create one payment for transaction_type 'current'" do
-      expect { Income.create(balance: balance, amount: 5_000, frequency: :monthly) }
-        .to change { Payment.count }.by(1)
+    describe '#after_create' do
+      describe '#generate_payment' do
+        it "should create one payment for transaction_type 'current'" do
+          expect { Income.create(balance: balance, amount: 5_000, frequency: :monthly) }
+            .to change { Payment.count }.by(1)
+        end
 
-      expect(Payment.last.status).to eq 'applied'
+        it "should create one payment with state as 'applied'" do
+          expect(income.payments.first.status).to eq 'applied'
+        end
+      end
+
+      describe '#add_balance_amount' do
+        it 'should sum the amount to balance current_amount' do
+          expect(balance.current_amount).to eq 15_000
+        end
+      end
+    end
+
+    describe '#before_destroy' do
+      describe '#substract_balance_amount' do
+        it 'should return the amount to balance current_amount' do
+          income.destroy!
+
+          expect(balance.current_amount).to eq 10_000
+        end
+      end
     end
   end
 end

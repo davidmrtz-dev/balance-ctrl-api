@@ -14,7 +14,7 @@ RSpec.describe Outcome, type: :model do
     it { should allow_value(Time.zone.now).for(:purchase_date).on(:create) }
     it { should_not allow_value(Time.zone.now + 1.day).for(:purchase_date).on(:create) }
 
-    describe 'when outcome transaction_type is :current' do
+    describe 'when outcome is :current' do
       it "should validate absence of 'quotas'" do
         outcome = Outcome.new(balance: balance, purchase_date: Time.zone.now, quotas: 12)
         expect(outcome.valid?).to eq false
@@ -22,7 +22,7 @@ RSpec.describe Outcome, type: :model do
       end
     end
 
-    describe 'when outcome transaction_type is :fixed' do
+    describe 'when outcome is :fixed' do
       it "should validate presence of 'quotas'" do
         outcome = Outcome.new(balance: balance, transaction_type: :fixed, purchase_date: Time.zone.now)
         expect(outcome.valid?).to eq false
@@ -32,18 +32,12 @@ RSpec.describe Outcome, type: :model do
   end
 
 
-  describe 'when transaction_type is :current' do
+  describe 'when outcome is :current' do
     let!(:outcome) do
       Outcome.create!(balance: balance, amount: 5_000, purchase_date: Time.zone.now)
     end
 
     describe '#after_create' do
-      describe '#substract_balance_amount' do
-        it 'should substract update balance current_amount' do
-          expect(balance.current_amount).to eq 5_000
-        end
-      end
-
       describe '#generate_payment' do
         it 'should create one payment' do
           expect { Outcome.create!(balance: balance, amount: 5_000, purchase_date: Time.zone.now) }
@@ -52,6 +46,12 @@ RSpec.describe Outcome, type: :model do
 
         it "should create one payment with state as 'applied'" do
           expect(outcome.payments.first.status).to eq 'applied'
+        end
+      end
+
+      describe '#substract_balance_amount' do
+        it 'should substract update balance current_amount' do
+          expect(balance.current_amount).to eq 5_000
         end
       end
     end
@@ -67,7 +67,7 @@ RSpec.describe Outcome, type: :model do
     end
   end
 
-  describe 'when transaction_type is :fixed' do
+  describe 'when outcome is :fixed' do
     describe '#after_create' do
       describe '#generate_payments' do
         let(:outcome) do
