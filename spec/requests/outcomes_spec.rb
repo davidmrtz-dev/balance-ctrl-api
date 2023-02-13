@@ -1,30 +1,30 @@
 require 'rails_helper'
 
-RSpec.describe Api::PaymentsController, type: :controller do
+RSpec.describe Api::OutcomesController, type: :controller do
   let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
   let!(:balance) { BalanceFactory.create_with_attachments(user: user) }
 
-  describe "GET /payments/current" do
+  describe "GET /outcomes/current" do
     login_user
 
-    it "returns paginated current payments" do
+    it "returns paginated current outcomes" do
       get :current
 
       expect(response).to have_http_status(:ok)
-      expect(parsed_response['payments'].map { |o| o['id'] }).to match_array(Outcome.current.ids)
+      expect(parsed_response['outcomes'].map { |o| o['id'] }).to match_array(Outcome.current.ids)
       expect(parsed_response['total_pages']).to eq(1)
     end
 
-    it "returns paginated current payments" do
+    it "returns paginated current outcomes" do
       get :fixed
 
       expect(response).to have_http_status(:ok)
-      expect(parsed_response['payments'].map { |o| o['id'] }).to match_array(Outcome.fixed.ids)
+      expect(parsed_response['outcomes'].map { |o| o['id'] }).to match_array(Outcome.fixed.ids)
       expect(parsed_response['total_pages']).to eq(1)
     end
   end
 
-  describe 'POST /payments' do
+  describe 'POST /outcomes' do
     subject(:action) {
       post :create, params: {
         outcome: {
@@ -44,7 +44,7 @@ RSpec.describe Api::PaymentsController, type: :controller do
       outcome = Outcome.last
 
       expect(response).to have_http_status(:created)
-      expect(parsed_response[:payment][:id]).to eq(outcome.id)
+      expect(parsed_response[:outcome][:id]).to eq(outcome.id)
     end
 
     it 'handles validation error' do
