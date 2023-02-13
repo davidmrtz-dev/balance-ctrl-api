@@ -3,8 +3,6 @@ class Payment < ApplicationRecord
 
   enum status: { pending: 0, applied: 1 }, _default: :pending
 
-  after_create { paymentable.reload }
-
   validate :one_payment_for_current_paymentable
 
   private
