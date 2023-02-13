@@ -5,7 +5,8 @@ class Outcome < Transaction
   validates :quotas, presence: true, if: -> { transaction_type.eql?('fixed') }
   validate :purchase_date_not_after_today, on: :create
 
-  after_create :update_balance_amount, if: -> { transaction_type.eql?('current') }
+  before_destroy :add_balance_amount, if: -> { transaction_type.eql?('current') }
+  after_create :substract_balance_amount, if: -> { transaction_type.eql?('current') }
   after_create :generate_payments, if: -> { transaction_type.eql?('fixed') }
 
   private
@@ -16,7 +17,12 @@ class Outcome < Transaction
     errors.add(:purchase_date, 'can not be after today')
   end
 
-  def update_balance_amount
+  def add_balance_amount
+    balance.current_amount += amount
+    balance.save
+  end
+
+  def substract_balance_amount
     balance.current_amount -= amount
     balance.save
   end
