@@ -31,57 +31,78 @@ RSpec.describe Outcome, type: :model do
     end
   end
 
-  describe '#update_balance_amount' do
-    it 'should substract update balance current_amount' do
+
+  describe 'when transaction_type is :current' do
+    let!(:outcome) do
       Outcome.create!(balance: balance, amount: 5_000, purchase_date: Time.zone.now)
+    end
 
-      expect(balance.reload.current_amount).to eq 5_000
+    describe '#after_create' do
+      describe '#update_balance_amount' do
+        it 'should substract update balance current_amount' do
+          expect(balance.current_amount).to eq 5_000
+        end
+      end
+
+      describe '#generate_payment' do
+        it 'should create one payment' do
+          expect { Outcome.create!(balance: balance, amount: 5_000, purchase_date: Time.zone.now) }
+            .to change { Payment.count }.by 1
+        end
+
+        it "should create one payment with state as 'applied'" do
+          outcome = Outcome.create!(balance: balance, amount: 5_000, purchase_date: Time.zone.now)
+
+          expect(outcome.payments.first.status).to eq 'applied'
+        end
+      end
+    end
+
+    xdescribe '#after_destroy' do
+      describe '#update_balance_amount' do
+        it 'should return back amount to balance current_amount' do
+          Outcome.create!(balance: balance, amount: 5_000, purchase_date: Time.zone.now)
+
+          expect(balance.reload.current_amount).to eq 5_000
+        end
+      end
     end
   end
 
-  describe '#generate_payment' do
-    it "should create one payment for 'current' outcome" do
-      expect { Outcome.create!(balance: balance, amount: 5_000, purchase_date: Time.zone.now) }
-        .to change { Payment.count }.by 1
-    end
+  describe 'when transaction_type is :fixed' do
+    describe '#after_create' do
+      describe '#generate_payments' do
+        it "'should create n 'quotas' payments" do
+          expect do
+            Outcome.create!(
+              balance: balance,
+              amount: 12_000,
+              transaction_type: :fixed,
+              purchase_date: Time.zone.now,
+              quotas: 12
+            )
+          end.to change { Payment.count }.by 12
+        end
 
-    it "should create payment with state as 'applied'" do
-      outcome = Outcome.create!(balance: balance, amount: 5_000, purchase_date: Time.zone.now)
+        describe 'created payments state and amount' do
+          let!(:outcome) do
+            OutcomeFactory.create(
+              balance: balance,
+              amount: 12_000,
+              transaction_type: :fixed,
+              purchase_date: Time.zone.now,
+              quotas: 12
+            )
+          end
 
-      expect(outcome.payments.first.status).to eq 'applied'
-    end
-  end
+          it "should create payments with state as 'pending'" do
+            expect(outcome.payments.pluck(:status).uniq.first).to eq 'pending'
+          end
 
-  describe '#generate_payments' do
-    it "'should create n 'quotas' payments for 'fixed' outcome" do
-      expect do
-        Outcome.create!(
-          balance: balance,
-          amount: 12_000,
-          transaction_type: :fixed,
-          purchase_date: Time.zone.now,
-          quotas: 12
-        )
-      end.to change { Payment.count }.by 12
-    end
-
-    describe 'payment state and amount' do
-      let!(:outcome) do
-        OutcomeFactory.create(
-          balance: balance,
-          amount: 12_000,
-          transaction_type: :fixed,
-          purchase_date: Time.zone.now,
-          quotas: 12
-        )
-      end
-
-      it "should create payments with state as 'pending'" do
-        expect(outcome.payments.pluck(:status).uniq.first).to eq 'pending'
-      end
-
-      it 'should create payment with amount as outcome.amount / outcome.quotas' do
-        expect(outcome.payments.last.amount).to eq outcome.amount / outcome.quotas
+          it 'should create payment with amount as outcome.amount / outcome.quotas' do
+            expect(outcome.payments.last.amount).to eq outcome.amount / outcome.quotas
+          end
+        end
       end
     end
   end
