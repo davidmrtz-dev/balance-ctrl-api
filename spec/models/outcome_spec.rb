@@ -33,12 +33,12 @@ RSpec.describe Outcome, type: :model do
 
 
   describe 'when transaction_type is :current' do
-    describe '#after_create' do
-      let!(:outcome) do
-        Outcome.create!(balance: balance, amount: 5_000, purchase_date: Time.zone.now)
-      end
+    let!(:outcome) do
+      Outcome.create!(balance: balance, amount: 5_000, purchase_date: Time.zone.now)
+    end
 
-      describe '#update_balance_amount' do
+    describe '#after_create' do
+      describe '#substract_balance_amount' do
         it 'should substract update balance current_amount' do
           expect(balance.current_amount).to eq 5_000
         end
@@ -56,12 +56,12 @@ RSpec.describe Outcome, type: :model do
       end
     end
 
-    xdescribe '#after_destroy' do
-      describe '#update_balance_amount' do
-        it 'should return back amount to balance current_amount' do
-          Outcome.create!(balance: balance, amount: 5_000, purchase_date: Time.zone.now)
+    describe '#before_destroy' do
+      describe '#add_balance_amount' do
+        it 'should return the amount to balance current_amount' do
+          outcome.destroy!
 
-          expect(balance.reload.current_amount).to eq 5_000
+          expect(balance.current_amount).to eq 10_000
         end
       end
     end
