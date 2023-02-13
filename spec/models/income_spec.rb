@@ -15,13 +15,11 @@ RSpec.describe Income, type: :model do
     it { should_not allow_value(12).for(:quotas).on(:create) }
   end
 
-  describe '#update_current_balance' do
-    describe "when income is 'current'" do
-      it 'should sum the amount to balance current_amount' do
-        Income.create(balance: balance, amount: 5_000, frequency: :monthly)
+  describe '#update_balance_amount' do
+    it 'should sum the amount to balance current_amount' do
+      Income.create(balance: balance, amount: 5_000, frequency: :monthly)
 
-        expect(balance.reload.current_amount).to eq 15_000
-      end
+      expect(balance.reload.current_amount).to eq 15_000
     end
   end
 
