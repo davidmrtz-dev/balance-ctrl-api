@@ -6,7 +6,7 @@ class Balance < ApplicationRecord
 
   private
 
-  def total_income
+  def total_incomes
     incomes.sum(:amount)
   end
 

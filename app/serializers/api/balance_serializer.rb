@@ -11,7 +11,7 @@ module Api
     def json
       @balance.serializable_hash(
         methods: %i[
-          total_income
+          total_incomes
           total_outcomes
         ],
         except: %i[
