@@ -5,8 +5,8 @@ module Api
     before_action :authenticate_user!
 
     def current
-      current_outcomes =
-        Outcome.with_balance.from_user(current_user).current
+      current_outcomes = Outcome.
+        with_balance_and_user.from_user(current_user).current_type
 
       current_page = paginate(
         current_outcomes,
