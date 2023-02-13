@@ -4,6 +4,9 @@ class Balance < ApplicationRecord
   has_many :incomes, dependent: :destroy
   has_many :outcomes, dependent: :destroy
 
+  scope :with_outcomes, -> { joins(:outcomes) }
+  scope :current_outcomes, -> { where({ outcomes: { transaction_type: :current } }) }
+
   private
 
   def total_incomes
