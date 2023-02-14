@@ -42,7 +42,7 @@ ActiveRecord::Schema.define(version: 2023_02_12_185218) do
     t.decimal "amount", precision: 10, scale: 2, default: "0.0", null: false
     t.string "description"
     t.integer "frequency"
-    t.datetime "purchase_date"
+    t.date "purchase_date"
     t.integer "quotas"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
