@@ -7,7 +7,8 @@ module Api
     def current
       current_outcomes = Outcome.
         with_balance_and_user.
-          from_user(current_user).current_types
+          from_user(current_user).
+            current_types.by_purchase_date
 
       current_page = paginate(
         current_outcomes,
@@ -24,7 +25,8 @@ module Api
     def fixed
       fixed_outcomes = Outcome.
         with_balance_and_user.
-          from_user(current_user).fixed_types
+          from_user(current_user).
+            fixed_types.by_purchase_date
 
       fixed_page = paginate(
         fixed_outcomes,
