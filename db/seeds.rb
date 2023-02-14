@@ -3,7 +3,8 @@ return unless Rails.env.development? || Rails.env.staging?
 user = User.create!(
   email: 'user@example.com',
   password: 'password',
-  password_confirmation: 'password'
+  password_confirmation: 'password',
+  name: 'David'
 )
 
 balance = Balance.create!(
