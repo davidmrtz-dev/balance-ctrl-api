@@ -69,6 +69,7 @@ module Api
     def outcome_params
       params.require(:outcome).permit(
         :balance_id,
+        :transaction_type,
         :amount,
         :description,
         :purchase_date
