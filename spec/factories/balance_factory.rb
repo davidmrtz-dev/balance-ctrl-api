@@ -29,7 +29,7 @@ class BalanceFactory < BaseFactory
         balance: balance,
         transaction_type: :current,
         description: Faker::Lorem.sentence(word_count: 6),
-        purchase_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample
+        purchase_date: [Time.zone.now - 2.days, Time.zone.now - 1.day, Time.zone.now].sample
       )
     end
     2.times do
@@ -37,7 +37,7 @@ class BalanceFactory < BaseFactory
         balance: balance,
         transaction_type: :fixed,
         description: Faker::Lorem.sentence(word_count: 6),
-        purchase_date: [Date.today - 2.days, Date.today - 1.day, Date.today].sample,
+        purchase_date: [Time.zone.now - 2.days, Time.zone.now - 1.day, Time.zone.now].sample,
         quotas: 12
       )
     end
