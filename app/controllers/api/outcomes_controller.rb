@@ -41,7 +41,8 @@ module Api
     end
 
     def create
-      outcome = Outcome.new(outcome_params)
+      outcome =
+        Outcome.new(outcome_params.merge(balance_id: current_user.balance.id))
 
       if outcome.save
         render json: { outcome: outcome }, status: :created
@@ -70,7 +71,6 @@ module Api
 
     def outcome_params
       params.require(:outcome).permit(
-        :balance_id,
         :transaction_type,
         :amount,
         :description,
