@@ -74,7 +74,8 @@ module Api
         :transaction_type,
         :amount,
         :description,
-        :purchase_date
+        :purchase_date,
+        :quotas
       )
     end
 
