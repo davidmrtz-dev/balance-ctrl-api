@@ -28,7 +28,7 @@ RSpec.describe Api::OutcomesController, type: :controller do
     subject(:action) {
       post :create, params: {
         outcome: {
-          balance_id: balance.id,
+          transaction_type: 'current',
           amount: 4500,
           description: 'Clothes',
           purchase_date: Time.zone.now

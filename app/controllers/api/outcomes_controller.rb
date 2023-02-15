@@ -7,7 +7,8 @@ module Api
     def current
       current_outcomes = Outcome.
         with_balance_and_user.
-          from_user(current_user).current_types
+          from_user(current_user).
+            current_types.by_purchase_date
 
       current_page = paginate(
         current_outcomes,
@@ -24,7 +25,8 @@ module Api
     def fixed
       fixed_outcomes = Outcome.
         with_balance_and_user.
-          from_user(current_user).fixed_types
+          from_user(current_user).
+            fixed_types.by_purchase_date
 
       fixed_page = paginate(
         fixed_outcomes,
@@ -39,7 +41,8 @@ module Api
     end
 
     def create
-      outcome = Outcome.new(outcome_params)
+      outcome =
+        Outcome.new(outcome_params.merge(balance_id: current_user.balance.id))
 
       if outcome.save
         render json: { outcome: outcome }, status: :created
@@ -68,11 +71,11 @@ module Api
 
     def outcome_params
       params.require(:outcome).permit(
-        :balance_id,
         :transaction_type,
         :amount,
         :description,
-        :purchase_date
+        :purchase_date,
+        :quotas
       )
     end
 
