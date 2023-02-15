@@ -11,7 +11,7 @@ class Outcome < Transaction
   scope :from_user, lambda { |user|
     where({ balance: { user: user }})
   }
-  scope :by_purchase_date, -> { order(purchase_date: :desc) }
+  scope :by_purchase_date, -> { order(purchase_date: :desc, id: :desc) }
 
   before_destroy :add_balance_amount, if: -> { transaction_type.eql?('current') }
   after_create :substract_balance_amount, if: -> { transaction_type.eql?('current') }
