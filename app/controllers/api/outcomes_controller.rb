@@ -52,9 +52,13 @@ module Api
     end
 
     def update
-      find_outcome.update!(outcome_params)
+      outcome = find_outcome
 
-      head :ok
+      if outcome.update(outcome_params)
+        render json: { outcome: outcome }, status: :ok
+      else
+        render json: { errors: outcome.errors.full_messages }, status: :unprocessable_entity
+      end
     end
 
     def destroy
