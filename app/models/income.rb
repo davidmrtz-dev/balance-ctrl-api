@@ -3,8 +3,8 @@ class Income < Transaction
   validates :purchase_date, absence: true
   validates :quotas, absence: true
 
-  before_destroy :substract_balance_amount, if: -> { transaction_type.eql?('current') }
   after_create :add_balance_amount, if: -> { transaction_type.eql?('current') }
+  before_destroy :substract_balance_amount, if: -> { transaction_type.eql?('current') }
 
   private
 
