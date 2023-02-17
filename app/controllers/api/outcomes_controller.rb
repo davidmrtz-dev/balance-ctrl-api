@@ -17,7 +17,7 @@ module Api
       )
 
       render json: {
-        outcomes: current_page,
+        outcomes: ::Api::OutcomesSerializer.json(current_page),
         total_pages: total_pages(current_outcomes.count)
       }
     end
