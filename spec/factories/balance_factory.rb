@@ -18,7 +18,8 @@ class BalanceFactory < BaseFactory
         balance: balance,
         transaction_type: :fixed,
         description: Faker::Lorem.sentence(word_count: 6),
-        frequency: :monthly
+        frequency: :monthly,
+        amount: 1
       )
     end
   end
@@ -29,7 +30,8 @@ class BalanceFactory < BaseFactory
         balance: balance,
         transaction_type: :current,
         description: Faker::Lorem.sentence(word_count: 6),
-        purchase_date: [Time.zone.now - 2.days, Time.zone.now - 1.day, Time.zone.now].sample
+        purchase_date: [Time.zone.now - 2.days, Time.zone.now - 1.day, Time.zone.now].sample,
+        amount: 1
       )
     end
     2.times do
@@ -38,7 +40,8 @@ class BalanceFactory < BaseFactory
         transaction_type: :fixed,
         description: Faker::Lorem.sentence(word_count: 6),
         purchase_date: [Time.zone.now - 2.days, Time.zone.now - 1.day, Time.zone.now].sample,
-        quotas: 12
+        quotas: 12,
+        amount: 1
       )
     end
   end

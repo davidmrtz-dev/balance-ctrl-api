@@ -11,7 +11,7 @@ class OutcomeFactory < BaseFactory
       transaction_type: params.fetch(:transaction_type, :current),
       description: params.fetch(:description, Faker::Lorem.sentence(word_count: 6)),
       purchase_date: params.fetch(:purchase_date, Time.zone.now),
-      amount: params.fetch(:amount, 0),
+      amount: params.fetch(:amount, 1),
       quotas: params.fetch(:quotas, nil)
     }
   end
