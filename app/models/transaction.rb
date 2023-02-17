@@ -8,7 +8,7 @@ class Transaction < ApplicationRecord
 
   after_create :generate_payment, if: -> { transaction_type.eql?('current') }
 
-  validates :amount, numericality: { greater_than_or_equal_to: 1 }, on: %i[create update]
+  validates :amount, numericality: { greater_than: 0 }, on: %i[create update]
 
   private
 
