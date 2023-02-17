@@ -35,7 +35,7 @@ module Api
       )
 
       render json: {
-        outcomes: fixed_page,
+        outcomes: ::Api::OutcomesSerializer.json(fixed_page),
         total_pages: total_pages(fixed_outcomes.count)
       }
     end
@@ -45,7 +45,7 @@ module Api
         Outcome.new(outcome_params.merge(balance_id: current_user.balance.id))
 
       if outcome.save
-        render json: { outcome: outcome }, status: :created
+        render json: { outcome: ::Api::OutcomeSerializer.json(outcome) }, status: :created
       else
         render json: { errors: outcome.errors.full_messages }, status: :unprocessable_entity
       end
