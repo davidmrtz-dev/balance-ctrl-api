@@ -79,7 +79,8 @@ module Api
         :amount,
         :description,
         :purchase_date,
-        :quotas
+        :quotas,
+        :frequency
       )
     end
 
