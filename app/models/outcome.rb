@@ -13,8 +13,9 @@ class Outcome < Transaction
   }
   scope :by_purchase_date, -> { order(purchase_date: :desc, id: :desc) }
 
-  before_destroy :add_balance_amount, if: -> { transaction_type.eql?('current') }
   after_create :substract_balance_amount, if: -> { transaction_type.eql?('current') }
+  before_save :update_balance_amount, if: -> { transaction_type.eql?('current') && amount_was > 0.0 }
+  before_destroy :add_balance_amount, if: -> { transaction_type.eql?('current') }
   after_create :generate_payments, if: -> { transaction_type.eql?('fixed') }
 
   private
@@ -25,13 +26,18 @@ class Outcome < Transaction
     errors.add(:purchase_date, 'can not be after today')
   end
 
-  def add_balance_amount
-    balance.current_amount += amount
+  def substract_balance_amount
+    balance.current_amount -= amount
     balance.save
   end
 
-  def substract_balance_amount
-    balance.current_amount -= amount
+  def update_balance_amount
+    balance.current_amount += (amount_was - amount)
+    balance.save
+  end
+
+  def add_balance_amount
+    balance.current_amount += amount
     balance.save
   end
 
