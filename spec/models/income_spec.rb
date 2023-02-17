@@ -13,6 +13,15 @@ RSpec.describe Income, type: :model do
     it { should allow_value(:monthly).for(:frequency).on(:create) }
     it { should_not allow_value(Time.zone.now).for(:purchase_date).on(:create) }
     it { should_not allow_value(12).for(:quotas).on(:create) }
+    it { is_expected.to validate_numericality_of(:amount) }
+    [
+      1,
+      50,
+      1000
+    ].each do |value|
+      it { should allow_value(value).for(:amount).on(:create) }
+      it { should allow_value(value).for(:amount).on(:update) }
+    end
   end
 
   describe 'when income is :current' do
