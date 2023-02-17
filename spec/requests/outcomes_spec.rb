@@ -51,7 +51,6 @@ RSpec.describe Api::OutcomesController, type: :controller do
       post :create,
            params: {
              outcome: {
-               balance_id: nil,
                purchase_date: nil
              }
            }
@@ -92,8 +91,22 @@ RSpec.describe Api::OutcomesController, type: :controller do
       outcome.reload
 
       expect(response).to have_http_status(:ok)
+      expect(parsed_response[:outcome][:id]).to eq outcome.id
       expect(outcome.description).to eq 'Clothes'
       expect(outcome.amount).to eq 6000
+    end
+
+    it 'handles validation error' do
+      put :update,
+        params: {
+          id: outcome.id,
+          outcome: {
+            purchase_date: nil
+          }
+        }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(parsed_response[:errors].first).to eq "Purchase date can't be blank"
     end
   end
 
