@@ -38,13 +38,12 @@ RSpec.describe Api::OutcomesController, type: :controller do
 
     login_user
 
-    it 'creates an outcome and returns it' do
+    it 'creates an outcome' do
+      expect { action }.to change { Outcome.count }.by 1
+
       action
 
-      outcome = Outcome.last
-
-      expect(response).to have_http_status(:created)
-      expect(parsed_response[:outcome][:id]).to eq(outcome.id)
+      expect(response).to have_http_status(:no_content)
     end
 
     it 'handles validation error' do
@@ -121,7 +120,15 @@ RSpec.describe Api::OutcomesController, type: :controller do
       expect { action }.to change { Outcome.count }.by -1
 
       action
+
       expect(response).to have_http_status(:no_content)
     end
+
+    # this one will require error handling
+    # it 'handles not found' do
+    #   delete :destroy, params: { id: 0 }
+
+    #   expect(response).to have_http_status(:not_found)
+    # end
   end
 end

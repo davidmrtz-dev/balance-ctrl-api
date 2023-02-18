@@ -45,7 +45,7 @@ module Api
         Outcome.new(outcome_params.merge(balance_id: current_user.balance.id))
 
       if outcome.save
-        render json: { outcome: ::Api::OutcomeSerializer.json(outcome) }, status: :created
+        head :no_content
       else
         render json: { errors: outcome.errors.full_messages }, status: :unprocessable_entity
       end
