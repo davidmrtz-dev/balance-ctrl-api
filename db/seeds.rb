@@ -39,10 +39,10 @@ end
     balance: balance,
     transaction_type: 'fixed',
     quotas: [6, 12, 24].sample,
-    description: Faker::Commerce.department(max: 1, fixed_amount: true),
+    description: Faker::Commerce.department(max: 2, fixed_amount: true),
     purchase_date: [
       Time.zone.now - 2.days, Time.zone.now - 1.day, Time.zone.now
     ].sample,
-    amount: Faker::Number.decimal(l_digits: 5, r_digits: 2)
+    amount: Faker::Number.decimal(l_digits: 4, r_digits: 2)
   )
 end
