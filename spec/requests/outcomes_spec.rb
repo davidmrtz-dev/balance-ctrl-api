@@ -14,8 +14,12 @@ RSpec.describe Api::OutcomesController, type: :controller do
       expect(parsed_response['outcomes'].map { |o| o['id'] }).to match_array(Outcome.current.ids)
       expect(parsed_response['total_pages']).to eq(1)
     end
+  end
 
-    it "returns paginated current outcomes" do
+  describe 'GET /api/outcomes/fixed' do
+    login_user
+
+    it "returns paginated fixed outcomes" do
       get :fixed
 
       expect(response).to have_http_status(:ok)
