@@ -4,6 +4,23 @@ module Api
 
     before_action :authenticate_user!
 
+    def index
+      outcomes = Outcome.
+        with_balance_and_user.
+          from_user(current_user).
+            by_purchase_date
+
+      page = paginate(
+        outcomes,
+        limit: params[:limit],
+        offset: params[:offset]
+      )
+
+      render json: {
+        outcomes: ::Api::OutcomesSerializer.json(page)
+      }
+    end
+
     def current
       current_outcomes = Outcome.
         with_balance_and_user.
