@@ -4,6 +4,17 @@ RSpec.describe Api::OutcomesController, type: :controller do
   let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
   let!(:balance) { BalanceFactory.create_with_attachments(user: user) }
 
+  describe 'GET /api/outcomes' do
+    login_user
+
+    it 'return paginates outcomes' do
+      get :index
+
+      expect(response).to have_http_status(:ok)
+      expect(parsed_response[:outcomes].map { |o| o['id'] }).to match_array(Outcome.ids)
+    end
+  end
+
   describe "GET /api/outcomes/current" do
     login_user
 
@@ -11,16 +22,20 @@ RSpec.describe Api::OutcomesController, type: :controller do
       get :current
 
       expect(response).to have_http_status(:ok)
-      expect(parsed_response['outcomes'].map { |o| o['id'] }).to match_array(Outcome.current.ids)
-      expect(parsed_response['total_pages']).to eq(1)
+      expect(parsed_response[:outcomes].map { |o| o['id'] }).to match_array(Outcome.current.ids)
+      expect(parsed_response[:total_pages]).to eq 1
     end
+  end
 
-    it "returns paginated current outcomes" do
+  describe 'GET /api/outcomes/fixed' do
+    login_user
+
+    it "returns paginated fixed outcomes" do
       get :fixed
 
       expect(response).to have_http_status(:ok)
-      expect(parsed_response['outcomes'].map { |o| o['id'] }).to match_array(Outcome.fixed.ids)
-      expect(parsed_response['total_pages']).to eq(1)
+      expect(parsed_response[:outcomes].map { |o| o['id'] }).to match_array(Outcome.fixed.ids)
+      expect(parsed_response[:total_pages]).to eq 1
     end
   end
 
