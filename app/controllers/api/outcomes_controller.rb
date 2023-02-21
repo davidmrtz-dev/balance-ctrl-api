@@ -39,6 +39,22 @@ module Api
       }
     end
 
+    def search
+      balance = current_user.balance
+      query_result = Query::OutcomesSearchService.call(balance, search_params[:keyword])
+
+      query_page = paginate(
+        query_result,
+        limit: params[:limit],
+        offset: params[:offset]
+      )
+
+      render json: {
+        outcomes: ::Api::OutcomesSerializer.json(query_page),
+        total_pages: total_pages(query_result.count)
+      }
+    end
+
     def fixed
       fixed_outcomes = Outcome.
         with_balance_and_user.
@@ -99,6 +115,10 @@ module Api
         :quotas,
         :frequency
       )
+    end
+
+    def search_params
+      params.permit(:keyword)
     end
 
     def total_pages(count)

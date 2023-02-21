@@ -6,7 +6,11 @@ Rails.application.routes.draw do
       get 'balance', to: 'balances#balance'
       get 'outcomes/current', to: 'outcomes#current'
       get 'outcomes/fixed', to: 'outcomes#fixed'
-      resources :outcomes, only: %i[index create update destroy]
+      resources :outcomes, only: %i[index create update destroy] do
+        collection do
+          get :search
+        end
+      end
     end
   end
 end
