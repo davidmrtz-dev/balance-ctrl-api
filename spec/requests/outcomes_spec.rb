@@ -44,7 +44,7 @@ RSpec.describe Api::OutcomesController, type: :controller do
 
     it 'return paginated outcomes based on keyword for description' do
       get :search, params: {
-        name: 'house'
+        keyword: 'Baby'
       }
 
       expect(response).to have_http_status(:ok)
