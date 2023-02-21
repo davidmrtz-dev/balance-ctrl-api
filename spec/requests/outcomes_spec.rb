@@ -39,6 +39,18 @@ RSpec.describe Api::OutcomesController, type: :controller do
     end
   end
 
+  describe 'GET /api/outcomes/search' do
+    login_user
+
+    it 'return paginated outcomes based on keyword for description' do
+      get :search, params: {
+        name: 'house'
+      }
+
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
   describe 'POST /api/outcomes' do
     subject(:action) {
       post :create, params: {
