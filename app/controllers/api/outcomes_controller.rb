@@ -39,6 +39,8 @@ module Api
       }
     end
 
+    def search; end
+
     def fixed
       fixed_outcomes = Outcome.
         with_balance_and_user.
