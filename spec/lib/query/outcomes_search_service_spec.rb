@@ -11,7 +11,7 @@ describe Query::OutcomesSearchService do
   describe 'when params are not valid' do
     it 'should raise an error' do
       expect do
-        described_class.call(balance, { start_date: today.days_ago(2) })
+        described_class.new(balance, { start_date: today.days_ago(2) }).call
       end.to raise_error(Errors::InvalidParameters)
     end
   end
@@ -19,7 +19,7 @@ describe Query::OutcomesSearchService do
   describe 'when params are valid' do
     describe 'when dates params are not provided but keyword' do
       it 'should return matching outcomes based on description' do
-        result = described_class.call(balance, { keyword: 'Baby' })
+        result = described_class.new(balance, { keyword: 'Baby' }).call
 
         expect(result.count).to eq 1
         expect(result.first.id).to eq outcome.id
