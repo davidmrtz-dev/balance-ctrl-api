@@ -1,9 +1,9 @@
 module Query
   class OutcomesSearchService
     class << self
-      def call(balance, word)
+      def call(balance, params)
         Outcome.where(balance: balance).
-          where('LOWER(description) LIKE :word', word: "%#{word.downcase}%")
+          where('LOWER(description) LIKE :word', word: "%#{params[:keyword].downcase}%")
       end
     end
   end
