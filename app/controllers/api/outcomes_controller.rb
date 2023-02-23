@@ -41,7 +41,7 @@ module Api
 
     def search
       balance = current_user.balance
-      query_result = Query::OutcomesSearchService.call(balance, search_params[:keyword])
+      query_result = Query::OutcomesSearchService.call(balance, search_params)
 
       query_page = paginate(
         query_result,
@@ -118,7 +118,11 @@ module Api
     end
 
     def search_params
-      params.permit(:keyword)
+      params.permit(
+        :keyword,
+        :stard_date,
+        :end_date
+      )
     end
 
     def total_pages(count)
