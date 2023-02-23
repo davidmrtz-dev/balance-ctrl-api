@@ -120,7 +120,7 @@ module Api
     def search_params
       params.permit(
         :keyword,
-        :stard_date,
+        :start_date,
         :end_date
       )
     end

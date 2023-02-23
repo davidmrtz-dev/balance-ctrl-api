@@ -6,12 +6,12 @@ describe Query::OutcomesSearchService do
   let(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
   let(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
   let!(:outcome) { OutcomeFactory.create(balance: balance, purchase_date: today, description: 'Baby Clothes') }
-  let!(:other_outcome) { OutcomeFactory.create(balance: balance, purchase_date: today.days_ago(2), description: 'Computer Desk') }
+  let!(:old_outcome) { OutcomeFactory.create(balance: balance, purchase_date: today.days_ago(2), description: 'Computer Desk') }
 
   describe 'when params are not valid' do
     it 'should raise an error' do
       expect do
-        described_class.new(balance, { start_date: today.days_ago(2) }).call
+        described_class.new(balance, { keyword: 'Baby', start_date: today.days_ago(2).to_s, end_date: '' }).call
       end.to raise_error(Errors::InvalidParameters)
     end
   end
@@ -19,7 +19,7 @@ describe Query::OutcomesSearchService do
   describe 'when params are valid' do
     describe 'when dates params are not provided but keyword' do
       it 'should return matching outcomes based on description' do
-        result = described_class.new(balance, { keyword: 'Baby' }).call
+        result = described_class.new(balance, { keyword: 'Baby', start_date: '', end_date: '' }).call
 
         expect(result.count).to eq 1
         expect(result.first.id).to eq outcome.id
