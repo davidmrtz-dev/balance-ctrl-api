@@ -8,11 +8,11 @@ describe Query::OutcomesSearchService do
   let!(:outcome) { OutcomeFactory.create(balance: balance, purchase_date: today, description: 'Baby Clothes') }
   let!(:other_outcome) { OutcomeFactory.create(balance: balance, purchase_date: today.days_ago(2), description: 'Computer Desk') }
 
-  xdescribe 'when params are not valid' do
+  describe 'when params are not valid' do
     it 'should raise an error' do
       expect do
         described_class.call(balance, { start_date: today.days_ago(2) })
-      end.to raise_error
+      end.to raise_error(Errors::InvalidParameters)
     end
   end
 
