@@ -36,28 +36,34 @@ module Query
     end
 
     def valid_params
-      byebug
-      return true if query_by_keyword?
-      return true if query_by_dates?
-      return true if query_by_keyword_and_dates?
+      return true if query_by_keyword? ||
+        query_by_dates? || query_by_key_and_dates?
 
       false
     end
 
     def query_by_keyword?
-      params[:keyword]&.present? && empty_dates?
+      with_keyword? && !with_start_date? && !with_end_date?
     end
 
     def query_by_dates?
-      params[:keyword]&.empty? && !empty_dates?
+      !with_keyword? && with_start_date? && with_end_date?
     end
 
-    def query_by_keyword_and_dates?
-      params[:keyword]&.present? && !empty_dates?
+    def query_by_key_and_dates?
+      with_keyword? && with_start_date? && with_end_date?
     end
 
-    def empty_dates?
-      params[:start_date]&.empty? && params[:end_date]&.empty?
+    def with_keyword?
+      params[:keyword]&.present?
+    end
+
+    def with_start_date?
+      params[:start_date]&.present?
+    end
+
+    def with_end_date?
+      params[:end_date]&.present?
     end
   end
 end
