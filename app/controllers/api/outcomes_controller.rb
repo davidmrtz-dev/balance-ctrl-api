@@ -41,7 +41,7 @@ module Api
 
     def search
       balance = current_user.balance
-      query_result = Query::OutcomesSearchService.call(balance, search_params)
+      query_result = Query::OutcomesSearchService.new(balance, search_params).call
 
       query_page = paginate(
         query_result,

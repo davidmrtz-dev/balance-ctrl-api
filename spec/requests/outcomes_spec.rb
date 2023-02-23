@@ -39,7 +39,7 @@ RSpec.describe Api::OutcomesController, type: :controller do
     end
   end
 
-  xdescribe 'GET /api/outcomes/search' do
+  describe 'GET /api/outcomes/search' do
     login_user
 
     it 'return paginated outcomes based on keyword for description' do
