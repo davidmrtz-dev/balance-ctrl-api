@@ -19,7 +19,6 @@ RSpec.describe Api::IncomesController, type: :controller do
     subject(:action) {
       post :create, params: {
         income: {
-          transaction_type: 'current',
           amount: 10_000,
           description: 'Salary',
           frequency: :monthly
@@ -46,6 +45,55 @@ RSpec.describe Api::IncomesController, type: :controller do
           frequency: nil
         }
       }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
+  end
+
+  describe 'PUT /api/incomes/:id' do
+    let!(:income) do
+      IncomeFactory.create(
+        balance: balance,
+        description: 'Salary',
+        amount: 10_000,
+        frequency: :monthly
+      )
+    end
+
+    subject(:action) do
+      put :update, params: {
+        id: income.id,
+        income: {
+          description: 'Bonus',
+          amount: 20_000
+        }
+      }
+    end
+
+    login_user
+
+    it 'calls to update the income' do
+      expect(income.description).to eq 'Salary'
+      expect(income.amount).to eq 10_000
+
+      action
+
+      income.reload
+
+      expect(response).to have_http_status(:ok)
+      expect(parsed_response[:income][:id]).to eq income.id
+      expect(income.description).to eq 'Bonus'
+      expect(income.amount).to eq 20_000
+    end
+
+    it 'handles validation error' do
+      put :update,
+        params: {
+          id: income.id,
+          income: {
+            frequency: nil
+          }
+        }
 
       expect(response).to have_http_status(:unprocessable_entity)
     end
