@@ -11,7 +11,7 @@ Rails.application.routes.draw do
           get :search
         end
       end
-      resources :incomes, only: %i[index create]
+      resources :incomes, only: %i[index create update]
     end
   end
 end
