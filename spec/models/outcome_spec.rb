@@ -96,9 +96,8 @@ RSpec.describe Outcome, type: :model do
         let(:outcome) do
           OutcomeFactory.create(
             balance: balance,
-            amount: 12_000,
             transaction_type: :fixed,
-            purchase_date: Time.zone.now,
+            amount: 12_000,
             quotas: 12
           )
         end
