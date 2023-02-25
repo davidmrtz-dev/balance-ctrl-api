@@ -34,7 +34,10 @@ RSpec.describe Api::IncomesController, type: :controller do
 
       action
 
-      expect(response).to have_http_status(:no_content)
+      income = Income.last
+
+      expect(response).to have_http_status(:created)
+      expect(parsed_response[:income][:id]).to eq income.id
     end
 
     it 'handles validation error' do

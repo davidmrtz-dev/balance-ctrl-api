@@ -25,7 +25,7 @@ module Api
         Income.new(income_params.merge(balance_id: current_user.balance_id))
 
       if income.save
-        head :no_content
+        render json: { income: ::Api::IncomeSerializer.json(income) }, status: :created
       else
         render json: { errors: income.errors.full_messages }, status: :unprocessable_entity
       end
