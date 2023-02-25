@@ -48,6 +48,20 @@ RSpec.describe Income, type: :model do
       end
     end
 
+    describe '#before_save' do
+      it 'should add the diff from the amount when is negative' do
+        expect(balance.current_amount).to eq 15_000
+        income.update!(amount: 10_000)
+        expect(balance.current_amount).to eq 20_000
+      end
+
+      it 'should substract the diff from the amount when is positive' do
+        expect(balance.current_amount).to eq 15_000
+        income.update!(amount: 1_000)
+        expect(balance.current_amount).to eq 11_000
+      end
+    end
+
     describe '#before_destroy' do
       describe '#substract_balance_amount' do
         it 'should return the amount to balance current_amount' do
