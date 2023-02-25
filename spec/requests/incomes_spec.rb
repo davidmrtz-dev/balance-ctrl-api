@@ -55,8 +55,7 @@ RSpec.describe Api::IncomesController, type: :controller do
       IncomeFactory.create(
         balance: balance,
         description: 'Salary',
-        amount: 10_000,
-        frequency: :monthly
+        amount: 10_000
       )
     end
 
@@ -98,4 +97,8 @@ RSpec.describe Api::IncomesController, type: :controller do
       expect(response).to have_http_status(:unprocessable_entity)
     end
   end
+
+  # describe 'DELETE /api/incomes/:id' do
+  #   let!(:income) { IncomeFactory.create(balance: balance, ) }
+  # end
 end
