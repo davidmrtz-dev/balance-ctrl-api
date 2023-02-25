@@ -6,4 +6,6 @@ class User < ActiveRecord::Base
   include DeviseTokenAuth::Concerns::User
 
   has_one :balance, dependent: :destroy
+
+  delegate :id, to: :balance, prefix: true
 end
