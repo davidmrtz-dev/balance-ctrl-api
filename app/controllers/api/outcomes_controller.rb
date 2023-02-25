@@ -75,7 +75,7 @@ module Api
 
     def create
       outcome =
-        Outcome.new(outcome_params.merge(balance_id: current_user.balance.id))
+        Outcome.new(outcome_params.merge(balance_id: current_user.balance_id))
 
       if outcome.save
         head :no_content
@@ -112,8 +112,7 @@ module Api
         :amount,
         :description,
         :purchase_date,
-        :quotas,
-        :frequency
+        :quotas
       )
     end
 
