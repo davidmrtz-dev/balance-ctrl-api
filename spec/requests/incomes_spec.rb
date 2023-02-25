@@ -98,7 +98,24 @@ RSpec.describe Api::IncomesController, type: :controller do
     end
   end
 
-  # describe 'DELETE /api/incomes/:id' do
-  #   let!(:income) { IncomeFactory.create(balance: balance, ) }
-  # end
+  describe 'DELETE /api/incomes/:id' do
+    let!(:income) { IncomeFactory.create(balance: balance) }
+
+    subject(:action) { delete :destroy, params: { id: income.id }}
+
+    login_user
+
+    it 'calls to delete the income' do
+      expect { action }.to change { Income.count }.by -1
+
+      action
+
+      expect(response).to have_http_status(:no_content)
+    end
+
+    it 'handles not found' do
+      expect { delete :destroy, params: { id: 0 } }
+        .to raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
 end
