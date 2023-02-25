@@ -19,5 +19,8 @@ module Api
         incomes: ::Api::IncomesSerializer.json(page)
       }
     end
+
+    def create
+    end
   end
 end
