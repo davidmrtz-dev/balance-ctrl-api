@@ -41,6 +41,12 @@ module Api
       end
     end
 
+    def destroy
+      find_income.destroy!
+
+      head :no_content
+    end
+
     private
 
     def find_income
