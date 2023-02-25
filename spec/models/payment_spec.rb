@@ -9,8 +9,8 @@ RSpec.describe Payment, type: :model do
   end
 
   describe 'validations' do
-    let!(:income) { IncomeFactory.create(balance: balance, frequency: :monthly) }
-    let!(:outcome) { OutcomeFactory.create(balance: balance, purchase_date: Time.zone.today) }
+    let!(:income) { IncomeFactory.create(balance: balance) }
+    let!(:outcome) { OutcomeFactory.create(balance: balance) }
 
     describe 'one_payment_for_current_outcome' do
       describe "when paymentable is Income and is 'current'" do
