@@ -31,7 +31,7 @@ RSpec.describe Income, type: :model do
 
     describe '#after_create' do
       describe '#generate_payment' do
-        it "should create one payment for transaction_type 'current'" do
+        it 'should create one payment' do
           expect { Income.create(balance: balance, amount: 5_000, frequency: :monthly) }
             .to change { Payment.count }.by(1)
         end
