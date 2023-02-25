@@ -10,8 +10,7 @@ user = User.create!(
 balance = Balance.create!(
   user: user,
   title: 'My Balance',
-  description: 'My balance description',
-  current_amount: 10_000
+  description: 'My balance description'
 )
 
 10.times do

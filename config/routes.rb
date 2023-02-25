@@ -4,10 +4,10 @@ Rails.application.routes.draw do
   namespace :api do
     defaults(format: :json) do
       get 'balance', to: 'balances#balance'
-      get 'outcomes/current', to: 'outcomes#current'
-      get 'outcomes/fixed', to: 'outcomes#fixed'
       resources :outcomes, only: %i[index create update destroy] do
         collection do
+          get 'current', to: 'outcomes#current'
+          get 'fixed', to: 'outcomes#fixed'
           get :search
         end
       end
