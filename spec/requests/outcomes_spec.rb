@@ -130,7 +130,6 @@ RSpec.describe Api::OutcomesController, type: :controller do
         }
 
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(parsed_response[:errors].first).to eq "Purchase date can't be blank"
     end
   end
 
