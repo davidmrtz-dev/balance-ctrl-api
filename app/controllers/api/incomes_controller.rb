@@ -14,6 +14,10 @@ module Api
         limit: params[:limit],
         offset: params[:offset]
       )
+
+      render json: {
+        incomes: ::Api::IncomesSerializer.json(page)
+      }
     end
   end
 end
