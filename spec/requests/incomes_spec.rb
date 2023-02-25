@@ -37,7 +37,7 @@ RSpec.describe Api::IncomesController, type: :controller do
       expect(response).to have_http_status(:no_content)
     end
 
-    xit 'handles validation error' do
+    it 'handles validation error' do
       post :create, params: {
         income: {
           frequency: nil
