@@ -31,7 +31,7 @@ RSpec.describe Income, type: :model do
 
     describe '#after_create' do
       describe '#generate_payment' do
-        it "should create one payment for transaction_type 'current'" do
+        it 'should create one payment' do
           expect { Income.create(balance: balance, amount: 5_000, frequency: :monthly) }
             .to change { Payment.count }.by(1)
         end
@@ -45,6 +45,20 @@ RSpec.describe Income, type: :model do
         it 'should sum the amount to balance current_amount' do
           expect(balance.current_amount).to eq 15_000
         end
+      end
+    end
+
+    describe '#before_save' do
+      it 'should add the diff from the amount when is negative' do
+        expect(balance.current_amount).to eq 15_000
+        income.update!(amount: 10_000)
+        expect(balance.current_amount).to eq 20_000
+      end
+
+      it 'should substract the diff from the amount when is positive' do
+        expect(balance.current_amount).to eq 15_000
+        income.update!(amount: 1_000)
+        expect(balance.current_amount).to eq 11_000
       end
     end
 
