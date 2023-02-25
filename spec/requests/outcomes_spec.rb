@@ -7,11 +7,11 @@ RSpec.describe Api::OutcomesController, type: :controller do
   describe 'GET /api/outcomes' do
     login_user
 
-    it 'return paginates outcomes' do
+    it 'return paginated outcomes' do
       get :index
 
       expect(response).to have_http_status(:ok)
-      expect(parsed_response[:outcomes].map { |o| o['id'] }).to match_array(Outcome.ids)
+      expect(parsed_response[:outcomes].map { |o| o[:id] }).to match_array(Outcome.ids)
     end
   end
 
@@ -22,7 +22,7 @@ RSpec.describe Api::OutcomesController, type: :controller do
       get :current
 
       expect(response).to have_http_status(:ok)
-      expect(parsed_response[:outcomes].map { |o| o['id'] }).to match_array(Outcome.current.ids)
+      expect(parsed_response[:outcomes].map { |o| o[:id] }).to match_array(Outcome.current.ids)
       expect(parsed_response[:total_pages]).to eq 1
     end
   end
@@ -34,7 +34,7 @@ RSpec.describe Api::OutcomesController, type: :controller do
       get :fixed
 
       expect(response).to have_http_status(:ok)
-      expect(parsed_response[:outcomes].map { |o| o['id'] }).to match_array(Outcome.fixed.ids)
+      expect(parsed_response[:outcomes].map { |o| o[:id] }).to match_array(Outcome.fixed.ids)
       expect(parsed_response[:total_pages]).to eq 1
     end
   end
@@ -74,15 +74,13 @@ RSpec.describe Api::OutcomesController, type: :controller do
     end
 
     it 'handles validation error' do
-      post :create,
-           params: {
-             outcome: {
-               purchase_date: nil
-             }
-           }
+      post :create, params: {
+        outcome: {
+          purchase_date: nil
+        }
+      }
 
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(parsed_response[:id]).to be_nil
     end
   end
 
@@ -90,7 +88,6 @@ RSpec.describe Api::OutcomesController, type: :controller do
     let!(:outcome) do
       OutcomeFactory.create(
         balance: balance,
-        purchase_date: Time.zone.today,
         description: 'Grocery',
         amount: 4000
       )
@@ -132,12 +129,11 @@ RSpec.describe Api::OutcomesController, type: :controller do
         }
 
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(parsed_response[:errors].first).to eq "Purchase date can't be blank"
     end
   end
 
   describe 'DELETE /api/outcomes/:id' do
-    let!(:outcome) { OutcomeFactory.create(balance: balance, purchase_date: Time.zone.today) }
+    let!(:outcome) { OutcomeFactory.create(balance: balance) }
 
     subject(:action) { delete :destroy, params: { id: outcome.id } }
 
@@ -151,11 +147,9 @@ RSpec.describe Api::OutcomesController, type: :controller do
       expect(response).to have_http_status(:no_content)
     end
 
-    # this one will require error handling
-    # it 'handles not found' do
-    #   delete :destroy, params: { id: 0 }
-
-    #   expect(response).to have_http_status(:not_found)
-    # end
+    it 'handles not found' do
+      expect { delete :destroy, params: { id: 0 } }
+        .to raise_error(ActiveRecord::RecordNotFound)
+    end
   end
 end

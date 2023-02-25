@@ -75,7 +75,7 @@ module Api
 
     def create
       outcome =
-        Outcome.new(outcome_params.merge(balance_id: current_user.balance.id))
+        Outcome.new(outcome_params.merge(balance_id: current_user.balance_id))
 
       if outcome.save
         head :no_content
@@ -88,7 +88,7 @@ module Api
       outcome = find_outcome
 
       if outcome.update(outcome_params)
-        render json: { outcome: ::Api::OutcomeSerializer.json(outcome) }, status: :ok
+        render json: { outcome: ::Api::OutcomeSerializer.json(outcome) }
       else
         render json: { errors: outcome.errors.full_messages }, status: :unprocessable_entity
       end
@@ -112,8 +112,7 @@ module Api
         :amount,
         :description,
         :purchase_date,
-        :quotas,
-        :frequency
+        :quotas
       )
     end
 
