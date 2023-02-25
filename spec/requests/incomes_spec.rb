@@ -1,7 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe Api::IncomesController, type: :controller do
-  xdescribe 'GET /api/incomes' do
+  let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
+  let!(:balance) { BalanceFactory.create_with_attachments(user: user) }
+
+  describe 'GET /api/incomes' do
     login_user
 
     it 'returns paginated incomes' do
