@@ -10,6 +10,9 @@ class Transaction < ApplicationRecord
 
   validates :amount, numericality: { greater_than: 0 }, on: %i[create update]
 
+  scope :with_balance_and_user, -> { joins(balance: :user) }
+  scope :from_user, -> (user) { where({ balance: { user: user }}) }
+
   private
 
   def generate_payment
