@@ -88,7 +88,6 @@ RSpec.describe Api::OutcomesController, type: :controller do
     let!(:outcome) do
       OutcomeFactory.create(
         balance: balance,
-        purchase_date: Time.zone.today,
         description: 'Grocery',
         amount: 4000
       )
@@ -134,7 +133,7 @@ RSpec.describe Api::OutcomesController, type: :controller do
   end
 
   describe 'DELETE /api/outcomes/:id' do
-    let!(:outcome) { OutcomeFactory.create(balance: balance, purchase_date: Time.zone.today) }
+    let!(:outcome) { OutcomeFactory.create(balance: balance) }
 
     subject(:action) { delete :destroy, params: { id: outcome.id } }
 
