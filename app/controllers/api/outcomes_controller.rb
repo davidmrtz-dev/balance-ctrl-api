@@ -88,7 +88,7 @@ module Api
       outcome = find_outcome
 
       if outcome.update(outcome_params)
-        render json: { outcome: ::Api::OutcomeSerializer.json(outcome) }, status: :ok
+        render json: { outcome: ::Api::OutcomeSerializer.json(outcome) }
       else
         render json: { errors: outcome.errors.full_messages }, status: :unprocessable_entity
       end

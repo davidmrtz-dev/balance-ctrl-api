@@ -31,9 +31,21 @@ module Api
       end
     end
 
-    def update; end
+    def update
+      income = find_income
+
+      if income.update(income_params)
+        render json: { income: ::Api::IncomeSerializer.json(income) }
+      else
+        render json: { errors: income.errors.full_messages }, status: :unprocessable_entity
+      end
+    end
 
     private
+
+    def find_income
+      Income.find(params[:id])
+    end
 
     def income_params
       params.require(:income).permit(
