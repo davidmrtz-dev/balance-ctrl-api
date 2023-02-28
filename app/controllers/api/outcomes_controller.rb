@@ -78,7 +78,7 @@ module Api
         Outcome.new(outcome_params.merge(balance_id: current_user.balance_id))
 
       if outcome.save
-        head :no_content
+        head :created
       else
         render json: { errors: outcome.errors.full_messages }, status: :unprocessable_entity
       end

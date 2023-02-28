@@ -70,7 +70,7 @@ RSpec.describe Api::OutcomesController, type: :controller do
 
       action
 
-      expect(response).to have_http_status(:no_content)
+      expect(response).to have_http_status(:created)
     end
 
     it 'handles validation error' do
