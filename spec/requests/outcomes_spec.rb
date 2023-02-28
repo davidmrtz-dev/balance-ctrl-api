@@ -70,7 +70,12 @@ RSpec.describe Api::OutcomesController, type: :controller do
 
       action
 
+      outcome = Outcome.last
+
       expect(response).to have_http_status(:created)
+      expect(parsed_response[:outcome][:id]).to eq outcome.id
+      expect(outcome.description).to eq 'Clothes'
+      expect(outcome.amount).to eq 4500
     end
 
     it 'handles validation error' do
