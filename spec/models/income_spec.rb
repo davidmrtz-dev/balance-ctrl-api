@@ -10,7 +10,6 @@ RSpec.describe Income, type: :model do
   end
 
   describe 'validations' do
-    it { should allow_value(:monthly).for(:frequency).on(:create) }
     it { should_not allow_value(Time.zone.now).for(:purchase_date).on(:create) }
     it { should_not allow_value(12).for(:quotas).on(:create) }
     it { is_expected.to validate_numericality_of(:amount) }
@@ -22,17 +21,33 @@ RSpec.describe Income, type: :model do
       it { should allow_value(value).for(:amount).on(:create) }
       it { should allow_value(value).for(:amount).on(:update) }
     end
+
+    context 'when income is :current' do
+      it 'should not allow value of frequency' do
+        income = Income.new(balance: balance, amount: 1_000, frequency: :monthly)
+
+        expect(income.valid?).to be_falsey
+      end
+    end
+
+    context 'when income is :fixed' do
+      it 'should require value of frequency' do
+        income = Income.new(balance: balance, amount: 1_000, frequency: :monthly, transaction_type: :fixed)
+
+        expect(income.valid?).to be_truthy
+      end
+    end
   end
 
-  describe 'when income is :current' do
+  context 'when income is :current' do
     let!(:income) do
-      Income.create!(balance: balance, amount: 5_000, frequency: :monthly)
+      Income.create!(balance: balance, amount: 5_000)
     end
 
     describe '#after_create' do
       describe '#generate_payment' do
         it 'should create one payment' do
-          expect { Income.create(balance: balance, amount: 5_000, frequency: :monthly) }
+          expect { Income.create(balance: balance, amount: 5_000) }
             .to change { Payment.count }.by(1)
         end
 
