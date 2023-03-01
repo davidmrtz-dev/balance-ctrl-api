@@ -20,8 +20,7 @@ RSpec.describe Api::IncomesController, type: :controller do
       post :create, params: {
         income: {
           amount: 10_000,
-          description: 'Salary',
-          frequency: :monthly
+          description: 'Salary'
         }
       }
     }
