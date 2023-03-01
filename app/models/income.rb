@@ -1,8 +1,8 @@
 class Income < Transaction
-  validates :frequency, presence: true, if: -> { transaction_type.eql?('fixed') }
-  validates :frequency, absence: true, if: -> { transaction_type.eql?('current') }
-  validates :purchase_date, absence: true
   validates :quotas, absence: true
+  validates :purchase_date, absence: true
+  validates :frequency, absence: true, if: -> { transaction_type.eql?('current') }
+  validates :frequency, presence: true, if: -> { transaction_type.eql?('fixed') }
 
   after_create :add_balance_amount, if: -> { transaction_type.eql?('current') }
   before_destroy :substract_balance_amount, if: -> { transaction_type.eql?('current') }

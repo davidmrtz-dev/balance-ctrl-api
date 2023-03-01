@@ -3,6 +3,7 @@ class Outcome < Transaction
   validates :purchase_date, presence: true
   validates :quotas, absence: true, if: -> { transaction_type.eql?('current') }
   validates :quotas, presence: true, if: -> { transaction_type.eql?('fixed') }
+
   validate :purchase_date_not_after_today, on: :create
 
   scope :current_types, -> { where(transaction_type: :current) }
