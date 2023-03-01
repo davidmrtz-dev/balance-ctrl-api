@@ -7,6 +7,8 @@ class Income < Transaction
   before_destroy :substract_balance_amount, if: -> { transaction_type.eql?('current') }
   before_save :update_balance_amount, if: -> { transaction_type.eql?('current') && amount_was > 0 }
 
+  default_scope -> { order(created_at: :desc) }
+
   private
 
   def substract_balance_amount
