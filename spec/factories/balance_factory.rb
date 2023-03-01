@@ -6,7 +6,7 @@ class BalanceFactory < BaseFactory
   def self.create_with_attachments(params)
     balance = create(params)
     create_actives(balance)
-    create_passives(balance)
+    create_fixed_passives(balance)
     balance
   end
 
@@ -17,13 +17,12 @@ class BalanceFactory < BaseFactory
       Income.create!(
         balance: balance,
         description: Faker::Lorem.sentence(word_count: 6),
-        frequency: :monthly,
         amount: 1
       )
     end
   end
 
-  def self.create_passives(balance)
+  def self.create_fixed_passives(balance)
     4.times do
       Outcome.create!(
         balance: balance,
