@@ -21,9 +21,25 @@ RSpec.describe Income, type: :model do
       it { should allow_value(value).for(:amount).on(:create) }
       it { should allow_value(value).for(:amount).on(:update) }
     end
+
+    context 'when income is :current' do
+      it 'should not allow value of frequency' do
+        income = Income.new(balance: balance, amount: 1_000, frequency: :monthly)
+
+        expect(income.valid?).to be_falsey
+      end
+    end
+
+    context 'when income is :fixed' do
+      it 'should require value of frequency' do
+        income = Income.new(balance: balance, amount: 1_000, frequency: :monthly, transaction_type: :fixed)
+
+        expect(income.valid?).to be_truthy
+      end
+    end
   end
 
-  describe 'when income is :current' do
+  context 'when income is :current' do
     let!(:income) do
       Income.create!(balance: balance, amount: 5_000)
     end
