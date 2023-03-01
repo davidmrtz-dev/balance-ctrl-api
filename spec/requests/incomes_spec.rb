@@ -33,7 +33,7 @@ RSpec.describe Api::IncomesController, type: :controller do
 
       action
 
-      income = Income.last
+      income = Income.first
 
       expect(response).to have_http_status(:created)
       expect(parsed_response[:income][:id]).to eq income.id
@@ -90,7 +90,8 @@ RSpec.describe Api::IncomesController, type: :controller do
         params: {
           id: income.id,
           income: {
-            frequency: nil
+            frequency: nil,
+            transaction_type: 'fixed'
           }
         }
 
