@@ -20,7 +20,8 @@ RSpec.describe Api::IncomesController, type: :controller do
       post :create, params: {
         income: {
           amount: 10_000,
-          description: 'Salary'
+          description: 'Salary',
+          transaction_date: Time.zone.now
         }
       }
     }

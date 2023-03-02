@@ -17,6 +17,7 @@ class BalanceFactory < BaseFactory
       Income.create!(
         balance: balance,
         description: Faker::Lorem.sentence(word_count: 6),
+        transaction_date: Time.zone.now,
         amount: 1
       )
     end
