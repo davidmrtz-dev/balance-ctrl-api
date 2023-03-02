@@ -10,7 +10,7 @@ RSpec.describe Income, type: :model do
   end
 
   describe 'validations' do
-    it { should_not allow_value(Time.zone.now).for(:purchase_date).on(:create) }
+    it { should_not allow_value(Time.zone.now).for(:transaction_date).on(:create) }
     it { should_not allow_value(12).for(:quotas).on(:create) }
     it { is_expected.to validate_numericality_of(:amount) }
     [

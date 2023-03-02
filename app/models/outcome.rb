@@ -1,14 +1,14 @@
 class Outcome < Transaction
   validates :frequency, absence: true
-  validates :purchase_date, presence: true
+  validates :transaction_date, presence: true
   validates :quotas, absence: true, if: -> { transaction_type.eql?('current') }
   validates :quotas, presence: true, if: -> { transaction_type.eql?('fixed') }
 
-  validate :purchase_date_not_after_today, on: :create
+  validate :transaction_date_not_after_today, on: :create
 
   scope :current_types, -> { where(transaction_type: :current) }
   scope :fixed_types, -> { where(transaction_type: :fixed) }
-  scope :by_purchase_date, -> { order(purchase_date: :desc, id: :desc) }
+  scope :by_transaction_date, -> { order(transaction_date: :desc, id: :desc) }
 
   after_create :substract_balance_amount, if: -> { transaction_type.eql?('current') }
   before_destroy :add_balance_amount, if: -> { transaction_type.eql?('current') }
@@ -17,10 +17,10 @@ class Outcome < Transaction
 
   private
 
-  def purchase_date_not_after_today
-    return if purchase_date.nil? || purchase_date < Time.zone.now
+  def transaction_date_not_after_today
+    return if transaction_date.nil? || transaction_date < Time.zone.now
 
-    errors.add(:purchase_date, 'can not be after today')
+    errors.add(:transaction_date, 'can not be after today')
   end
 
   def substract_balance_amount

@@ -18,14 +18,14 @@ module Query
         end_date = Date.parse(params[:end_date])
 
         return Outcome.where(balance: balance).
-          where(purchase_date: start_date..end_date)
+          where(transaction_date: start_date..end_date)
       else
         start_date = Date.parse(params[:start_date])
         end_date = Date.parse(params[:end_date])
 
         return Outcome.where(balance: balance).
           where('LOWER(description) LIKE :word', word: "%#{params[:keyword].downcase}%").
-          where(purchase_date: start_date..end_date)
+          where(transaction_date: start_date..end_date)
       end
     end
 
