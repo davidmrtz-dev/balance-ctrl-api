@@ -58,7 +58,7 @@ RSpec.describe Api::OutcomesController, type: :controller do
           transaction_type: 'current',
           amount: 4500,
           description: 'Clothes',
-          purchase_date: Time.zone.now
+          transaction_date: Time.zone.now
         }
       }
     }
@@ -81,7 +81,7 @@ RSpec.describe Api::OutcomesController, type: :controller do
     it 'handles validation error' do
       post :create, params: {
         outcome: {
-          purchase_date: nil
+          transaction_date: nil
         }
       }
 
@@ -129,7 +129,7 @@ RSpec.describe Api::OutcomesController, type: :controller do
         params: {
           id: outcome.id,
           outcome: {
-            purchase_date: nil
+            transaction_date: nil
           }
         }
 

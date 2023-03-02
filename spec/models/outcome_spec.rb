@@ -6,13 +6,13 @@ RSpec.describe Outcome, type: :model do
 
   describe 'associations' do
     it { is_expected.to belong_to(:balance) }
-    it { should have_db_column(:purchase_date).of_type(:date) }
+    it { should have_db_column(:transaction_date).of_type(:date) }
   end
 
   describe 'validations' do
     it { should_not allow_value(:monthly).for(:frequency).on(:create) }
-    it { should allow_value(Time.zone.now).for(:purchase_date).on(:create) }
-    it { should_not allow_value(Time.zone.now + 1.day).for(:purchase_date).on(:create) }
+    it { should allow_value(Time.zone.now).for(:transaction_date).on(:create) }
+    it { should_not allow_value(Time.zone.now + 1.day).for(:transaction_date).on(:create) }
     it { is_expected.to validate_numericality_of(:amount) }
     [
       1,
@@ -25,7 +25,7 @@ RSpec.describe Outcome, type: :model do
 
     describe 'when outcome is :current' do
       it "should validate absence of 'quotas'" do
-        outcome = Outcome.new(balance: balance, purchase_date: Time.zone.now, quotas: 12, amount: 1)
+        outcome = Outcome.new(balance: balance, transaction_date: Time.zone.now, quotas: 12, amount: 1)
         expect(outcome.valid?).to eq false
         expect(outcome.errors.full_messages.first).to eq("Quotas must be blank")
       end
@@ -33,7 +33,7 @@ RSpec.describe Outcome, type: :model do
 
     describe 'when outcome is :fixed' do
       it "should validate presence of 'quotas'" do
-        outcome = Outcome.new(balance: balance, transaction_type: :fixed, purchase_date: Time.zone.now, amount: 1)
+        outcome = Outcome.new(balance: balance, transaction_type: :fixed, transaction_date: Time.zone.now, amount: 1)
         expect(outcome.valid?).to eq false
         expect(outcome.errors.full_messages.first).to eq("Quotas can't be blank")
       end
@@ -43,13 +43,13 @@ RSpec.describe Outcome, type: :model do
 
   describe 'when outcome is :current' do
     let!(:outcome) do
-      Outcome.create!(balance: balance, amount: 5_000, purchase_date: Time.zone.now)
+      Outcome.create!(balance: balance, amount: 5_000, transaction_date: Time.zone.now)
     end
 
     describe '#after_create' do
       describe '#generate_payment' do
         it 'should create one payment' do
-          expect { Outcome.create!(balance: balance, amount: 5_000, purchase_date: Time.zone.now) }
+          expect { Outcome.create!(balance: balance, amount: 5_000, transaction_date: Time.zone.now) }
             .to change { Payment.count }.by 1
         end
 
@@ -108,7 +108,7 @@ RSpec.describe Outcome, type: :model do
               balance: balance,
               amount: 12_000,
               transaction_type: :fixed,
-              purchase_date: Time.zone.now,
+              transaction_date: Time.zone.now,
               quotas: 12
             )
           end.to change { Payment.count }.by 12
