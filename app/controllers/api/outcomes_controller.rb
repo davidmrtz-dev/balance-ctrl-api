@@ -8,7 +8,7 @@ module Api
       outcomes = Outcome.
         with_balance_and_user.
           from_user(current_user).
-            by_purchase_date
+            by_transaction_date
 
       page = paginate(
         outcomes,
@@ -25,7 +25,7 @@ module Api
       current_outcomes = Outcome.
         with_balance_and_user.
           from_user(current_user).
-            current_types.by_purchase_date
+            current_types.by_transaction_date
 
       current_page = paginate(
         current_outcomes,
@@ -59,7 +59,7 @@ module Api
       fixed_outcomes = Outcome.
         with_balance_and_user.
           from_user(current_user).
-            fixed_types.by_purchase_date
+            fixed_types.by_transaction_date
 
       fixed_page = paginate(
         fixed_outcomes,
@@ -111,7 +111,7 @@ module Api
         :transaction_type,
         :amount,
         :description,
-        :purchase_date,
+        :transaction_date,
         :quotas
       )
     end

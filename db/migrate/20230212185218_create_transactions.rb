@@ -7,7 +7,7 @@ class CreateTransactions < ActiveRecord::Migration[6.1]
       t.decimal :amount, precision: 10, scale: 2, default: '0.0', null: false
       t.string :description
       t.integer :frequency
-      t.date :purchase_date
+      t.date :transaction_date
       t.integer :quotas
       t.timestamps
     end

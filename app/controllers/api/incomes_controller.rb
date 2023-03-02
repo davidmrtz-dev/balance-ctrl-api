@@ -58,6 +58,7 @@ module Api
         :transaction_type,
         :amount,
         :description,
+        :transaction_date,
         :frequency
       )
     end

@@ -6,10 +6,10 @@ describe Query::OutcomesSearchService do
   let(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
   let(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
   let!(:outcome) do
-    OutcomeFactory.create(balance: balance, purchase_date: today, description: 'Baby Clothes')
+    OutcomeFactory.create(balance: balance, transaction_date: today, description: 'Baby Clothes')
   end
   let!(:old_outcome) do
-    OutcomeFactory.create(balance: balance, purchase_date: today.days_ago(2), description: 'Computer Desk')
+    OutcomeFactory.create(balance: balance, transaction_date: today.days_ago(2), description: 'Computer Desk')
   end
 
   describe 'when params are not valid' do
@@ -53,7 +53,7 @@ describe Query::OutcomesSearchService do
 
     describe 'when dates and keyword params are provided' do
       let!(:other_old_outcome) do
-        OutcomeFactory.create(balance: balance, purchase_date: today.days_ago(3), description: 'Clothes')
+        OutcomeFactory.create(balance: balance, transaction_date: today.days_ago(3), description: 'Clothes')
       end
 
       it 'should return matching outcomes based on dates and keyword' do
