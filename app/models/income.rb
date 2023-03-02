@@ -1,6 +1,6 @@
 class Income < Transaction
   validates :quotas, absence: true
-  validates :transaction_date, absence: true
+  validates :transaction_date, presence: true
   validates :frequency, absence: true, if: -> { transaction_type.eql?('current') }
   validates :frequency, presence: true, if: -> { transaction_type.eql?('fixed') }
 

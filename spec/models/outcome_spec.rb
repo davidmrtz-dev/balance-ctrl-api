@@ -12,7 +12,6 @@ RSpec.describe Outcome, type: :model do
   describe 'validations' do
     it { should_not allow_value(:monthly).for(:frequency).on(:create) }
     it { should allow_value(Time.zone.now).for(:transaction_date).on(:create) }
-    it { should_not allow_value(Time.zone.now + 1.day).for(:transaction_date).on(:create) }
     it { is_expected.to validate_numericality_of(:amount) }
     [
       1,
@@ -22,6 +21,7 @@ RSpec.describe Outcome, type: :model do
       it { should allow_value(value).for(:amount).on(:create) }
       it { should allow_value(value).for(:amount).on(:update) }
     end
+    it { should_not allow_value(Time.zone.now + 1.day).for(:transaction_date).on(:create) }
 
     describe 'when outcome is :current' do
       it "should validate absence of 'quotas'" do
