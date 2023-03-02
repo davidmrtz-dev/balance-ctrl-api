@@ -17,7 +17,8 @@ balance = Balance.create!(
   Income.create!(
     balance: balance,
     description: Faker::Commerce.department(max: 1, fixed_amount: true),
-    amount: Faker::Number.decimal(l_digits: 4, r_digits: 2)
+    amount: Faker::Number.decimal(l_digits: 4, r_digits: 2),
+    transaction_date: Time.zone.now
   )
 end
 
