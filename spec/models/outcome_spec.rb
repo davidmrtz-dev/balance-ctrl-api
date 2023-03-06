@@ -90,6 +90,10 @@ RSpec.describe Outcome, type: :model do
 
           expect(balance.current_amount).to eq 10_000
         end
+
+        it 'should match the payment amount' do
+          expect(outcome.payments.last.amount).to eq 5_000
+        end
       end
     end
   end

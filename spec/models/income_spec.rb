@@ -67,7 +67,7 @@ RSpec.describe Income, type: :model do
           expect(balance.current_amount).to eq 15_000
         end
         
-        it 'should match the payment amounts' do
+        it 'should match the payment amount' do
           expect(income.payments.last.amount).to eq 5_000
         end
       end
@@ -95,6 +95,10 @@ RSpec.describe Income, type: :model do
           income.destroy!
 
           expect(balance.current_amount).to eq 10_000
+        end
+
+        it 'should match the payment amount' do
+          expect(income.payments.last.amount).to eq 5_000
         end
       end
     end
