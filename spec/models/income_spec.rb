@@ -86,6 +86,9 @@ RSpec.describe Income, type: :model do
           income.update!(amount: 1_000)
           expect(balance.current_amount).to eq 11_000
         end
+
+        # it 'should update the corresponding payment amount' do
+        # end
       end
     end
 
