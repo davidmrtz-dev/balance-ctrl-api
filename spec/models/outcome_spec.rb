@@ -82,8 +82,10 @@ RSpec.describe Outcome, type: :model do
         expect(balance.current_amount).to eq 2_500
       end
 
-      # it 'should update the corresponding payment amount' do
-      # end
+      it 'should update the corresponding payment amount' do
+        outcome.update!(amount: 2_500)
+        expect(outcome.payments.first.amount).to eq 2_500
+      end
     end
 
     context '#before_destroy' do
