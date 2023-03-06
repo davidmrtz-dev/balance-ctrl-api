@@ -9,9 +9,10 @@ class Outcome < Transaction
   scope :fixed_types, -> { where(transaction_type: :fixed) }
   scope :by_transaction_date, -> { order(transaction_date: :desc, id: :desc) }
 
-  after_create :substract_balance_amount, if: -> { transaction_type.eql?('current') }
   before_destroy :add_balance_amount, if: -> { transaction_type.eql?('current') }
+  after_create :substract_balance_amount, if: -> { transaction_type.eql?('current') }
   before_save :update_balance_amount, if: -> { transaction_type.eql?('current') && amount_was > 0 }
+
   after_create :generate_payments, if: -> { transaction_type.eql?('fixed') }
 
   private
