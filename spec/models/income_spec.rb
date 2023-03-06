@@ -50,7 +50,7 @@ RSpec.describe Income, type: :model do
       Income.create!(balance: balance, amount: 5_000, transaction_date: Time.zone.now)
     end
 
-    describe '#after_create' do
+    context '#after_create' do
       describe '#generate_payment' do
         it 'should create one payment' do
           expect { Income.create(balance: balance, amount: 5_000, transaction_date: Time.zone.now) }
@@ -66,29 +66,44 @@ RSpec.describe Income, type: :model do
         it 'should sum the amount to balance current_amount' do
           expect(balance.current_amount).to eq 15_000
         end
+        
+        it 'should match the payment amount' do
+          expect(income.payments.first.amount).to eq 5_000
+        end
       end
     end
 
-    describe '#before_save' do
-      it 'should add the diff from the amount when is negative' do
-        expect(balance.current_amount).to eq 15_000
-        income.update!(amount: 10_000)
-        expect(balance.current_amount).to eq 20_000
-      end
+    context '#before_save' do
+      describe '#update_balance_amount' do
+        it 'should add the diff from the amount when is negative' do
+          expect(balance.current_amount).to eq 15_000
+          income.update!(amount: 10_000)
+          expect(balance.current_amount).to eq 20_000
+        end
 
-      it 'should substract the diff from the amount when is positive' do
-        expect(balance.current_amount).to eq 15_000
-        income.update!(amount: 1_000)
-        expect(balance.current_amount).to eq 11_000
+        it 'should substract the diff from the amount when is positive' do
+          expect(balance.current_amount).to eq 15_000
+          income.update!(amount: 1_000)
+          expect(balance.current_amount).to eq 11_000
+        end
+
+        it 'should update the corresponding payment amount' do
+          income.update!(amount: 10_000)
+          expect(income.payments.first.amount).to eq 10_000
+        end
       end
     end
 
-    describe '#before_destroy' do
+    context '#before_destroy' do
       describe '#substract_balance_amount' do
         it 'should return the amount to balance current_amount' do
           income.destroy!
 
           expect(balance.current_amount).to eq 10_000
+        end
+
+        it 'should match the payment amount' do
+          expect(income.payments.first.amount).to eq 5_000
         end
       end
     end
