@@ -66,7 +66,7 @@ RSpec.describe Income, type: :model do
         it 'should sum the amount to balance current_amount' do
           expect(balance.current_amount).to eq 15_000
         end
-        
+
         it 'should match the payment amount' do
           expect(income.payments.first.amount).to eq 5_000
         end

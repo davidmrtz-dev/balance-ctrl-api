@@ -103,8 +103,8 @@ RSpec.describe Outcome, type: :model do
     end
   end
 
-  describe 'when outcome is :fixed' do
-    describe '#after_create' do
+  context 'when outcome is :fixed' do
+    context '#after_create' do
       describe '#generate_payments' do
         let(:outcome) do
           OutcomeFactory.create(
