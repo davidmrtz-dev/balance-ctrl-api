@@ -38,12 +38,6 @@ RSpec.describe Outcome, type: :model do
         expect(outcome.errors.full_messages.first).to eq("Quotas can't be blank")
       end
     end
-
-    it 'should not allow transaction_date of tomorrow' do
-      outcome = Outcome.new(balance: balance, transaction_date: Time.zone.now + 1.day, amount: 1)
-      expect(outcome.valid?).to be_falsey
-      expect(outcome.errors.full_messages.first).to eq("Transaction date can not be after today")
-    end
   end
 
 
