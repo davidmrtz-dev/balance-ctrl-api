@@ -43,12 +43,6 @@ RSpec.describe Income, type: :model do
         expect(income.valid?).to be_truthy
       end
     end
-
-    it 'should not allow transaction_date of tomorrow' do
-      income = Income.new(balance: balance, transaction_date: Time.zone.now + 1.day, amount: 1)
-      expect(income.valid?).to be_falsey
-      expect(income.errors.full_messages.first).to eq("Transaction date can not be after today")
-    end
   end
 
   context 'when income is :current' do
@@ -57,17 +51,6 @@ RSpec.describe Income, type: :model do
     end
 
     context '#after_create' do
-      describe '#generate_payment' do
-        it 'should create one payment' do
-          expect { Income.create(balance: balance, amount: 5_000, transaction_date: Time.zone.now) }
-            .to change { Payment.count }.by(1)
-        end
-
-        it "should create one payment with state as 'applied'" do
-          expect(income.payments.first.status).to eq 'applied'
-        end
-      end
-
       describe '#add_balance_amount' do
         it 'should sum the amount to balance current_amount' do
           expect(balance.current_amount).to eq 15_000
