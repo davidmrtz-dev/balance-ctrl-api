@@ -18,9 +18,9 @@ group :development, :test do
   gem 'guard'
   gem 'guard-rspec', require: false
   gem 'rspec-rails'
-  gem 'rubocop'
-  gem 'rubocop-rails'
-  gem 'rubocop-rspec'
+  # gem 'rubocop'
+  # gem 'rubocop-rails'
+  # gem 'rubocop-rspec'
   gem 'shoulda-matchers'
 end
 
