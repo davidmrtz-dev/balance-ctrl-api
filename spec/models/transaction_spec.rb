@@ -13,6 +13,20 @@ RSpec.describe Transaction, type: :model do
     it { should define_enum_for(:frequency).with_values(%i[weekly biweekly monthly]) }
   end
 
+  describe 'validations' do
+    it 'should not allow transaction_date of tomorrow' do
+      transaction = Transaction.new(
+        balance: balance,
+        transaction_date: Time.zone.now + 1.day,
+        amount: 10_000,
+        type: type
+      )
+
+      expect(transaction.valid?).to be_falsey
+      expect(transaction.errors.full_messages.first).to eq("Transaction date can not be after today")
+    end
+  end
+
   context '#after_create' do
     let!(:transaction) do
       Transaction.create!(
