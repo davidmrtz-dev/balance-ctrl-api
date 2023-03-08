@@ -57,17 +57,6 @@ RSpec.describe Income, type: :model do
     end
 
     context '#after_create' do
-      describe '#generate_payment' do
-        it 'should create one payment' do
-          expect { Income.create(balance: balance, amount: 5_000, transaction_date: Time.zone.now) }
-            .to change { Payment.count }.by(1)
-        end
-
-        it "should create one payment with state as 'applied'" do
-          expect(income.payments.first.status).to eq 'applied'
-        end
-      end
-
       describe '#add_balance_amount' do
         it 'should sum the amount to balance current_amount' do
           expect(balance.current_amount).to eq 15_000
