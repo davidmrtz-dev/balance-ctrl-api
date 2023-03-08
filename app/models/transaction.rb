@@ -1,6 +1,5 @@
 class Transaction < ApplicationRecord
   belongs_to :balance
-
   has_many :payments, as: :paymentable, dependent: :destroy
 
   enum transaction_type: { current: 0, fixed: 1 }, _default: :current
@@ -10,11 +9,24 @@ class Transaction < ApplicationRecord
 
   validates :transaction_date, presence: true
   validates :amount, numericality: { greater_than: 0 }, on: %i[create update]
+  validate :transaction_date_not_after_today, :transaction_date_current_month
 
   scope :with_balance_and_user, -> { joins(balance: :user) }
   scope :from_user, -> (user) { where({ balance: { user: user }}) }
 
   private
+
+  def transaction_date_not_after_today
+    return if transaction_date.nil? || transaction_date < Time.zone.now
+
+    errors.add(:transaction_date, 'can not be after today')
+  end
+
+  def transaction_date_current_month
+    return if transaction_date.nil? || transaction_date.month == Time.zone.now.month
+
+    errors.add(:transaction_date, 'should be in current month')
+  end
 
   def generate_payment
     payments.create!(amount: self.amount, status: :applied)

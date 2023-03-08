@@ -1,27 +1,18 @@
 class Outcome < Transaction
+  after_create :substract_balance_amount, if: -> { transaction_type.eql?('current') }
+  after_create :generate_payments, if: -> { transaction_type.eql?('fixed') }
+  before_save :update_balance_amount, if: -> { transaction_type.eql?('current') && amount_was > 0 }
+  before_destroy :add_balance_amount, if: -> { transaction_type.eql?('current') }
+
   validates :frequency, absence: true
   validates :quotas, absence: true, if: -> { transaction_type.eql?('current') }
   validates :quotas, presence: true, if: -> { transaction_type.eql?('fixed') }
-
-  validate :transaction_date_not_after_today, on: :create
 
   scope :current_types, -> { where(transaction_type: :current) }
   scope :fixed_types, -> { where(transaction_type: :fixed) }
   scope :by_transaction_date, -> { order(transaction_date: :desc, id: :desc) }
 
-  before_destroy :add_balance_amount, if: -> { transaction_type.eql?('current') }
-  after_create :substract_balance_amount, if: -> { transaction_type.eql?('current') }
-  before_save :update_balance_amount, if: -> { transaction_type.eql?('current') && amount_was > 0 }
-
-  after_create :generate_payments, if: -> { transaction_type.eql?('fixed') }
-
   private
-
-  def transaction_date_not_after_today
-    return if transaction_date.nil? || transaction_date < Time.zone.now
-
-    errors.add(:transaction_date, 'can not be after today')
-  end
 
   def substract_balance_amount
     balance.current_amount -= amount
