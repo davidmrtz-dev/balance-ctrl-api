@@ -23,7 +23,21 @@ RSpec.describe Transaction, type: :model do
       )
 
       expect(transaction.valid?).to be_falsey
-      expect(transaction.errors.full_messages.first).to eq("Transaction date can not be after today")
+      expect(transaction.errors.full_messages.first).to eq('Transaction date can not be after today')
+    end
+
+    context 'when transaction_date is not in current month' do
+      it 'should add a validation error' do
+        transaction = Transaction.new(
+          balance: balance,
+          transaction_date: Time.zone.now.prev_month,
+          amount: 10_000,
+          type: type
+        )
+
+        expect(transaction.valid?).to be_falsey
+        expect(transaction.errors.full_messages.first).to eq('Transaction date should be in current month')
+      end
     end
   end
 
