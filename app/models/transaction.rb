@@ -10,7 +10,7 @@ class Transaction < ApplicationRecord
   after_create :generate_payment, if: -> { transaction_type.eql?('current') }
 
   validates :transaction_date, presence: true
-  validates :amount, numericality: { greater_than: 0 }, on: %i[create update]
+  validates :amount, numericality: { greater_than: 0 }
   validate :transaction_date_not_after_today, :transaction_date_current_month
 
   scope :with_balance_and_user, -> { joins(balance: :user) }
