@@ -1,4 +1,6 @@
 class Transaction < ApplicationRecord
+  include Discard::Model
+
   belongs_to :balance
   has_many :payments, as: :paymentable, dependent: :destroy
 
