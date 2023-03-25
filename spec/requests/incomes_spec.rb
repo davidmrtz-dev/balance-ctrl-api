@@ -90,7 +90,7 @@ RSpec.describe Api::IncomesController, type: :controller do
         params: {
           id: income.id,
           income: {
-            frequency: nil,
+            frequency: 'monthly',
             transaction_type: 'fixed'
           }
         }
@@ -107,7 +107,7 @@ RSpec.describe Api::IncomesController, type: :controller do
     login_user
 
     it 'calls to delete the income' do
-      expect { action }.to change { Income.count }.by -1
+      expect { action }.to change { Income.count }.by (-1)
 
       action
 

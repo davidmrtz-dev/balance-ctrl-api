@@ -34,7 +34,7 @@ module Api
     def update
       income = find_income
 
-      if income.update(income_params)
+      if income.update(income_params.except(:transaction_type, :transaction_date))
         render json: { income: ::Api::IncomeSerializer.json(income) }
       else
         render json: { errors: income.errors.full_messages }, status: :unprocessable_entity

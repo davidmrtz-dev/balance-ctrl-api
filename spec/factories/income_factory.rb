@@ -13,7 +13,6 @@ class IncomeFactory < BaseFactory
       transaction_date: params.fetch(:transaction_date, Time.zone.now),
       frequency: params.fetch(:frequency, nil),
       amount: params.fetch(:amount, 1)
-
     }
   end
 end
