@@ -100,13 +100,13 @@ RSpec.describe Api::IncomesController, type: :controller do
   end
 
   describe 'DELETE /api/incomes/:id' do
-    let!(:income) { IncomeFactory.create(balance: balance) }
-
     subject(:action) { delete :destroy, params: { id: income.id }}
 
     login_user
 
     context 'when current income' do
+      let!(:income) { IncomeFactory.create(balance: balance) }
+
       it 'calls to delete the income' do
         expect { action }.to change { Income.count }.by (-1)
 
@@ -117,6 +117,8 @@ RSpec.describe Api::IncomesController, type: :controller do
     end
 
     context 'when fixed income' do
+      let!(:income) { IncomeFactory.create(balance: balance, transaction_type: :fixed, frequency: :monthly) }
+
       it 'calls to delete the income' do
         expect { action }.to_not change { Income.count }
 
