@@ -9,7 +9,7 @@ class Payment < ApplicationRecord
 
   def one_payment_for_current_paymentable
     if paymentable&.transaction_type.eql?('current') &&
-        paymentable.payments.count > 0
+       paymentable.payments.count.positive?
       errors.add(:paymentable, 'of type current can only have one payment')
     end
   end

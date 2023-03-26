@@ -1,7 +1,5 @@
-# frozen_string_literal: true
-
-class User < ActiveRecord::Base
-  devise :database_authenticatable, :recoverable #, :trackable, :rememberable
+class User < ApplicationRecord
+  devise :database_authenticatable, :recoverable # , :trackable, :rememberable
 
   include DeviseTokenAuth::Concerns::User
 
