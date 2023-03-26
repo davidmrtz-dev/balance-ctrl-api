@@ -107,11 +107,19 @@ RSpec.describe Api::IncomesController, type: :controller do
     login_user
 
     it 'calls to delete the income' do
-      expect { action }.to change { Income.count }.by (-1)
+      expect { action }.to_not change { Income.count }
 
       action
 
       expect(response).to have_http_status(:no_content)
+    end
+
+    it 'calls marks income as discarded' do
+      action
+
+      income.reload
+
+      expect(income.discarded?).to be_truthy
     end
 
     it 'handles not found' do

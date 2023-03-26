@@ -42,7 +42,7 @@ module Api
     end
 
     def destroy
-      find_income.destroy!
+      find_income.discard!
 
       head :no_content
     end
