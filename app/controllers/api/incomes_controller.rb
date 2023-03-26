@@ -42,7 +42,13 @@ module Api
     end
 
     def destroy
-      find_income.discard!
+      income = find_income
+
+      if income.current?
+        income.destroy!
+      else
+        income.discard!
+      end
 
       head :no_content
     end
