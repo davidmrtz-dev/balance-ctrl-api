@@ -11,21 +11,21 @@ module Query
       raise_invalid_params unless valid_params
 
       if query_by_keyword?
-        return Outcome.where(balance: balance).
-          where('LOWER(description) LIKE :word', word: "%#{params[:keyword].downcase}%")
+        Outcome.where(balance: balance)
+          .where('LOWER(description) LIKE :word', word: "%#{params[:keyword].downcase}%")
       elsif query_by_dates?
         start_date = Date.parse(params[:start_date])
         end_date = Date.parse(params[:end_date])
 
-        return Outcome.where(balance: balance).
-          where(transaction_date: start_date..end_date)
+        Outcome.where(balance: balance)
+          .where(transaction_date: start_date..end_date)
       else
         start_date = Date.parse(params[:start_date])
         end_date = Date.parse(params[:end_date])
 
-        return Outcome.where(balance: balance).
-          where('LOWER(description) LIKE :word', word: "%#{params[:keyword].downcase}%").
-          where(transaction_date: start_date..end_date)
+        Outcome.where(balance: balance)
+          .where('LOWER(description) LIKE :word', word: "%#{params[:keyword].downcase}%")
+          .where(transaction_date: start_date..end_date)
       end
     end
 
@@ -37,7 +37,7 @@ module Query
 
     def valid_params
       return true if query_by_keyword? ||
-        query_by_dates? || query_by_key_and_dates?
+                     query_by_dates? || query_by_key_and_dates?
 
       false
     end
