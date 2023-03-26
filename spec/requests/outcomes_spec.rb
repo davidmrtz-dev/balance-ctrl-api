@@ -144,7 +144,7 @@ RSpec.describe Api::OutcomesController, type: :controller do
     login_user
 
     it 'calls to delete the outcome' do
-      expect { action }.to change { Outcome.count }.by -1
+      expect { action }.to change { Outcome.count }.by (-1)
 
       action
 
@@ -152,8 +152,9 @@ RSpec.describe Api::OutcomesController, type: :controller do
     end
 
     it 'handles not found' do
-      expect { delete :destroy, params: { id: 0 } }
-        .to raise_error(ActiveRecord::RecordNotFound)
+      delete :destroy, params: { id: 0 }
+
+      expect(response).to have_http_status(:not_found)
     end
   end
 end

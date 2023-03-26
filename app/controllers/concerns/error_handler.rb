@@ -7,7 +7,7 @@ module ErrorHandler
     end
   end
 
-  protected
+  private
 
   def handle_exception(exception)
     general_logger(exception)
