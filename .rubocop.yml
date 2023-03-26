@@ -81,9 +81,6 @@ Rails/UniqueValidationWithoutIndex:
 Rails/EnvironmentVariableAccess:
   Enabled: false
 
-Rails/FilePath:
-  Enabled: false
-
 Rails/SkipsModelValidations:
   Exclude:
     - spec/**/*

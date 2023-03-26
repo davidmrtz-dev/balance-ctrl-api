@@ -104,7 +104,7 @@ RSpec.describe Api::IncomesController, type: :controller do
 
     login_user
 
-    context 'when current income' do
+    context 'when income is current' do
       let!(:income) { IncomeFactory.create(balance: balance) }
 
       it 'calls to delete the income' do
@@ -116,22 +116,15 @@ RSpec.describe Api::IncomesController, type: :controller do
       end
     end
 
-    context 'when fixed income' do
+    context 'when income is fixed' do
       let!(:income) { IncomeFactory.create(balance: balance, transaction_type: :fixed, frequency: :monthly) }
-
-      it 'calls to delete the income' do
-        expect { action }.to_not change(-> { Income.count })
-
-        action
-
-        expect(response).to have_http_status(:no_content)
-      end
 
       it 'does mark the income as discarded' do
         action
 
         income.reload
 
+        expect(response).to have_http_status(:no_content)
         expect(income.discarded?).to be_truthy
       end
     end
