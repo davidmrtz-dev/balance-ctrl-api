@@ -1,7 +1,7 @@
 class Outcome < Transaction
+  before_save :update_balance_amount, if: -> { transaction_type.eql?('current') && amount_was.positive? }
   after_create :generate_payments, if: -> { transaction_type.eql?('fixed') }
   after_create :substract_balance_amount, if: -> { transaction_type.eql?('current') }
-  before_save :update_balance_amount, if: -> { transaction_type.eql?('current') && amount_was > 0 }
   before_destroy :add_balance_amount, if: -> { transaction_type.eql?('current') }
 
   validates :frequency, absence: true

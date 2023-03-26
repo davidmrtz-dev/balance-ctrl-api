@@ -1,6 +1,6 @@
 class Income < Transaction
+  before_save :update_balance_amount, if: -> { transaction_type.eql?('current') && amount_was.positive? }
   after_create :add_balance_amount, if: -> { transaction_type.eql?('current') }
-  before_save :update_balance_amount, if: -> { transaction_type.eql?('current') && amount_was > 0 }
   before_destroy :substract_balance_amount, if: -> { transaction_type.eql?('current') }
 
   validates :quotas, absence: true
