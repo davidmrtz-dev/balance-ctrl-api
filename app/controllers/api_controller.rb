@@ -1,4 +1,4 @@
 class ApiController < ActionController::API
-	include DeviseTokenAuth::Concerns::SetUserByToken
-	include ErrorHandler
+  include DeviseTokenAuth::Concerns::SetUserByToken
+  include ErrorHandler
 end

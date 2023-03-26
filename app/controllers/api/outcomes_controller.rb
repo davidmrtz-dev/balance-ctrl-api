@@ -5,10 +5,10 @@ module Api
     before_action :authenticate_user!
 
     def index
-      outcomes = Outcome.
-        with_balance_and_user.
-          from_user(current_user).
-            by_transaction_date
+      outcomes = Outcome
+        .with_balance_and_user
+        .from_user(current_user)
+        .by_transaction_date
 
       page = paginate(
         outcomes,
@@ -22,10 +22,10 @@ module Api
     end
 
     def current
-      current_outcomes = Outcome.
-        with_balance_and_user.
-          from_user(current_user).
-            current_types.by_transaction_date
+      current_outcomes = Outcome
+        .with_balance_and_user
+        .from_user(current_user)
+        .current_types.by_transaction_date
 
       current_page = paginate(
         current_outcomes,
@@ -56,10 +56,10 @@ module Api
     end
 
     def fixed
-      fixed_outcomes = Outcome.
-        with_balance_and_user.
-          from_user(current_user).
-            fixed_types.by_transaction_date
+      fixed_outcomes = Outcome
+        .with_balance_and_user
+        .from_user(current_user)
+        .fixed_types.by_transaction_date
 
       fixed_page = paginate(
         fixed_outcomes,
@@ -126,7 +126,7 @@ module Api
 
     def total_pages(count)
       total_pages = count / 5
-      count % 5 > 0 ? total_pages + 1 : total_pages
+      (count % 5).positive? ? total_pages + 1 : total_pages
     end
   end
 end

@@ -11,12 +11,12 @@ RSpec.describe Api::IncomesController, type: :controller do
       get :index
 
       expect(response).to have_http_status(:ok)
-      expect(parsed_response[:incomes].map { |i| i[:id] }).to match_array(Income.ids)
+      expect(parsed_response[:incomes].pluck(:id)).to match_array(Income.ids)
     end
   end
 
   describe 'POST /api/incomes' do
-    subject(:action) {
+    subject(:action) do
       post :create, params: {
         income: {
           amount: 10_000,
@@ -24,7 +24,7 @@ RSpec.describe Api::IncomesController, type: :controller do
           transaction_date: Time.zone.now
         }
       }
-    }
+    end
 
     login_user
 
@@ -87,20 +87,20 @@ RSpec.describe Api::IncomesController, type: :controller do
 
     it 'handles validation error' do
       put :update,
-        params: {
-          id: income.id,
-          income: {
-            frequency: 'monthly',
-            transaction_type: 'fixed'
+          params: {
+            id: income.id,
+            income: {
+              frequency: 'monthly',
+              transaction_type: 'fixed'
+            }
           }
-        }
 
       expect(response).to have_http_status(:unprocessable_entity)
     end
   end
 
   describe 'DELETE /api/incomes/:id' do
-    subject(:action) { delete :destroy, params: { id: income.id }}
+    subject(:action) { delete :destroy, params: { id: income.id } }
 
     login_user
 
@@ -108,7 +108,7 @@ RSpec.describe Api::IncomesController, type: :controller do
       let!(:income) { IncomeFactory.create(balance: balance) }
 
       it 'calls to delete the income' do
-        expect { action }.to change { Income.count }.by (-1)
+        expect { action }.to change { Income.count }.by(-1)
 
         action
 
@@ -120,7 +120,7 @@ RSpec.describe Api::IncomesController, type: :controller do
       let!(:income) { IncomeFactory.create(balance: balance, transaction_type: :fixed, frequency: :monthly) }
 
       it 'calls to delete the income' do
-        expect { action }.to_not change { Income.count }
+        expect { action }.to_not change(-> { Income.count })
 
         action
 

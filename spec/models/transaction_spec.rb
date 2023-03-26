@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Transaction, type: :model do
   let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
   let!(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
-  let!(:type) { ['Outcome', 'Income'].sample }
+  let!(:type) { %w[Outcome Income].sample }
 
   describe 'associations' do
     it { is_expected.to belong_to(:balance) }
@@ -17,7 +17,7 @@ RSpec.describe Transaction, type: :model do
     it 'should not allow transaction_date of tomorrow' do
       transaction = Transaction.new(
         balance: balance,
-        transaction_date: Time.zone.now + 1.day,
+        transaction_date: 1.day.from_now,
         amount: 10_000,
         type: type
       )

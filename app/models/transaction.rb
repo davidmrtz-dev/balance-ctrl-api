@@ -14,7 +14,7 @@ class Transaction < ApplicationRecord
   validate :transaction_date_not_after_today, :transaction_date_current_month
 
   scope :with_balance_and_user, -> { joins(balance: :user) }
-  scope :from_user, -> (user) { where({ balance: { user: user }}) }
+  scope :from_user, ->(user) { where({ balance: { user: user } }) }
 
   private
 
@@ -31,6 +31,6 @@ class Transaction < ApplicationRecord
   end
 
   def generate_payment
-    payments.create!(amount: self.amount, status: :applied)
+    payments.create!(amount: amount, status: :applied)
   end
 end

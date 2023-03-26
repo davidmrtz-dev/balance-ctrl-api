@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 def parsed_response
   body = JSON.parse(response.body)
 

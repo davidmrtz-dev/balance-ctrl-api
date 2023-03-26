@@ -2,7 +2,7 @@ require 'rails_helper'
 require 'query/outcomes_search_service'
 
 describe Query::OutcomesSearchService do
-  let!(:today) { Date.today }
+  let!(:today) { Time.zone.today }
   let(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
   let(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
   let!(:outcome) do

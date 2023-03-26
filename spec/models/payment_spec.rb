@@ -18,8 +18,8 @@ RSpec.describe Payment, type: :model do
           payment_02 = Payment.new(paymentable: income)
 
           expect(payment_02.valid?).to be_falsey
-          expect(payment_02.errors.full_messages.first).
-            to eq('Paymentable of type current can only have one payment')
+          expect(payment_02.errors.full_messages.first)
+            .to eq('Paymentable of type current can only have one payment')
         end
       end
 
@@ -28,8 +28,8 @@ RSpec.describe Payment, type: :model do
           payment_02 = Payment.new(paymentable: outcome)
 
           expect(payment_02.valid?).to be_falsey
-          expect(payment_02.errors.full_messages.first).
-          to eq('Paymentable of type current can only have one payment')
+          expect(payment_02.errors.full_messages.first)
+            .to eq('Paymentable of type current can only have one payment')
         end
       end
     end
