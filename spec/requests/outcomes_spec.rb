@@ -11,18 +11,18 @@ RSpec.describe Api::OutcomesController, type: :controller do
       get :index
 
       expect(response).to have_http_status(:ok)
-      expect(parsed_response[:outcomes].map { |o| o[:id] }).to match_array(Outcome.ids)
+      expect(parsed_response[:outcomes].pluck(:id)).to match_array(Outcome.ids)
     end
   end
 
-  describe "GET /api/outcomes/current" do
+  describe 'GET /api/outcomes/current' do
     login_user
 
-    it "returns paginated current outcomes" do
+    it 'returns paginated current outcomes' do
       get :current
 
       expect(response).to have_http_status(:ok)
-      expect(parsed_response[:outcomes].map { |o| o[:id] }).to match_array(Outcome.current.ids)
+      expect(parsed_response[:outcomes].pluck(:id)).to match_array(Outcome.current.ids)
       expect(parsed_response[:total_pages]).to eq 1
     end
   end
@@ -30,11 +30,11 @@ RSpec.describe Api::OutcomesController, type: :controller do
   describe 'GET /api/outcomes/fixed' do
     login_user
 
-    it "returns paginated fixed outcomes" do
+    it 'returns paginated fixed outcomes' do
       get :fixed
 
       expect(response).to have_http_status(:ok)
-      expect(parsed_response[:outcomes].map { |o| o[:id] }).to match_array(Outcome.fixed.ids)
+      expect(parsed_response[:outcomes].pluck(:id)).to match_array(Outcome.fixed.ids)
       expect(parsed_response[:total_pages]).to eq 1
     end
   end
@@ -52,7 +52,7 @@ RSpec.describe Api::OutcomesController, type: :controller do
   end
 
   describe 'POST /api/outcomes' do
-    subject(:action) {
+    subject(:action) do
       post :create, params: {
         outcome: {
           amount: 4500,
@@ -60,7 +60,7 @@ RSpec.describe Api::OutcomesController, type: :controller do
           transaction_date: Time.zone.now
         }
       }
-    }
+    end
 
     login_user
 
@@ -125,12 +125,12 @@ RSpec.describe Api::OutcomesController, type: :controller do
 
     it 'handles validation error' do
       put :update,
-        params: {
-          id: outcome.id,
-          outcome: {
-            transaction_date: nil
+          params: {
+            id: outcome.id,
+            outcome: {
+              transaction_date: nil
+            }
           }
-        }
 
       expect(response).to have_http_status(:unprocessable_entity)
     end
@@ -144,7 +144,7 @@ RSpec.describe Api::OutcomesController, type: :controller do
     login_user
 
     it 'calls to delete the outcome' do
-      expect { action }.to change { Outcome.count }.by (-1)
+      expect { action }.to change { Outcome.count }.by(-1)
 
       action
 

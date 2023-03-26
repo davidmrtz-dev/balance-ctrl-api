@@ -21,13 +21,13 @@ RSpec.describe Outcome, type: :model do
       it { should allow_value(value).for(:amount).on(:create) }
       it { should allow_value(value).for(:amount).on(:update) }
     end
-    it { should_not allow_value(Time.zone.now + 1.day).for(:transaction_date).on(:create) }
+    it { should_not allow_value(1.day.from_now).for(:transaction_date).on(:create) }
 
     context 'when outcome is :current' do
       it "should validate absence of 'quotas'" do
         outcome = Outcome.new(balance: balance, transaction_date: Time.zone.now, quotas: 12, amount: 1)
         expect(outcome.valid?).to be_falsey
-        expect(outcome.errors.full_messages.first).to eq("Quotas must be blank")
+        expect(outcome.errors.full_messages.first).to eq('Quotas must be blank')
       end
     end
 
@@ -39,7 +39,6 @@ RSpec.describe Outcome, type: :model do
       end
     end
   end
-
 
   context 'when outcome is :current' do
     let!(:outcome) do
