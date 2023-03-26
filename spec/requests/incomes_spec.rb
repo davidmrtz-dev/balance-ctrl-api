@@ -117,6 +117,8 @@ RSpec.describe Api::IncomesController, type: :controller do
     it 'calls marks income as discarded' do
       action
 
+      income.reload
+
       expect(income.discarded?).to be_truthy
     end
 
