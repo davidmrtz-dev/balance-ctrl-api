@@ -100,26 +100,40 @@ RSpec.describe Api::IncomesController, type: :controller do
   end
 
   describe 'DELETE /api/incomes/:id' do
-    let!(:income) { IncomeFactory.create(balance: balance) }
-
     subject(:action) { delete :destroy, params: { id: income.id }}
 
     login_user
 
-    it 'calls to delete the income' do
-      expect { action }.to_not change { Income.count }
+    context 'when current income' do
+      let!(:income) { IncomeFactory.create(balance: balance) }
 
-      action
+      it 'calls to delete the income' do
+        expect { action }.to change { Income.count }.by (-1)
 
-      expect(response).to have_http_status(:no_content)
+        action
+
+        expect(response).to have_http_status(:no_content)
+      end
     end
 
-    it 'calls marks income as discarded' do
-      action
+    context 'when fixed income' do
+      let!(:income) { IncomeFactory.create(balance: balance, transaction_type: :fixed, frequency: :monthly) }
 
-      income.reload
+      it 'calls to delete the income' do
+        expect { action }.to_not change { Income.count }
 
-      expect(income.discarded?).to be_truthy
+        action
+
+        expect(response).to have_http_status(:no_content)
+      end
+
+      it 'does mark the income as discarded' do
+        action
+
+        income.reload
+
+        expect(income.discarded?).to be_truthy
+      end
     end
 
     it 'handles not found' do
