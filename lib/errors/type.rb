@@ -1,6 +1,4 @@
 module Errors
-  extend ActiveSupport::Concern
-
   class Type
     class << self
       def capture_exception(exception)
