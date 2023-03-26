@@ -5,9 +5,9 @@ module Api
     before_action :authenticate_user!
 
     def index
-      incomes = Income.
-        with_balance_and_user.
-          from_user(current_user)
+      incomes = Income
+        .with_balance_and_user
+        .from_user(current_user)
 
       page = paginate(
         incomes,
