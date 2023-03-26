@@ -18,6 +18,7 @@ module BalanceCtrlEnhancedApi
     config.autoloader = :classic
     config.eager_load_paths << Rails.root.join('lib')
     config.generators do |g|
+      g.test_framework :rspec
       g.view_specs false
       g.helper_specs false
       g.routing_specs false
