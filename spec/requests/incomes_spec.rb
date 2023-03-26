@@ -115,8 +115,9 @@ RSpec.describe Api::IncomesController, type: :controller do
     end
 
     it 'handles not found' do
-      expect { delete :destroy, params: { id: 0 } }
-        .to raise_error(ActiveRecord::RecordNotFound)
+      delete :destroy, params: { id: 0 }
+
+      expect(response).to have_http_status(:not_found)
     end
   end
 end
