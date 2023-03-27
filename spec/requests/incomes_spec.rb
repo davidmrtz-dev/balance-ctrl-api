@@ -121,7 +121,7 @@ RSpec.describe Api::IncomesController, type: :controller do
       let!(:income) { IncomeFactory.create(balance: balance, transaction_type: :fixed, frequency: :monthly) }
 
       it 'does mark the income as discarded' do
-        expect { action }.not_to change(Income, :count)
+        expect { action }.not_to change(Income.unscoped, :count)
 
         action
 
