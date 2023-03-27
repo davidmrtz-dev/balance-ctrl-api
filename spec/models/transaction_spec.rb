@@ -118,7 +118,9 @@ RSpec.describe Transaction, type: :model do
         balance: balance,
         amount: 10_000,
         transaction_date: Time.zone.today,
-        type: type
+        type: 'Income',
+        transaction_type: :fixed,
+        frequency: :monthly
       )
     end
 
