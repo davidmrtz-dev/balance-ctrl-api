@@ -98,16 +98,16 @@ RSpec.describe Transaction, type: :model do
 
     describe '#check_same_month' do
       it 'should not allow destruction if created in a different month' do
-        travel_to Date.new(2023, 3, 1) do
-          transaction.update(created_at: 1.month_ago)
-        end
+        transaction.update(created_at: Time.zone.today.prev_month)
 
         expect { transaction.destroy }.not_to change(Transaction, :count)
         expect(transaction.errors[:base]).to include('Can only delete transactions created in the current month')
       end
 
       it 'should allow destruction if created in the same month' do
-         expect { transaction.destroy }.to change { Transaction.count }.by(-1)
+        transaction.update(created_at: Time.zone.today)
+
+        expect { transaction.destroy }.to change { Transaction.count }.by(-1)
       end
     end
   end
