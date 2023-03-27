@@ -137,13 +137,13 @@ RSpec.describe Api::OutcomesController, type: :controller do
   end
 
   describe 'DELETE /api/outcomes/:id' do
-    let!(:outcome) { OutcomeFactory.create(balance: balance) }
-
     subject(:action) { delete :destroy, params: { id: outcome.id } }
 
     login_user
 
     context 'when outcome is current' do
+      let!(:outcome) { OutcomeFactory.create(balance: balance) }
+
       it 'should allow the outcome deletion' do
         expect { action }.to change { Outcome.count }.by(-1)
         .and change { Payment.count }.by(-1)
@@ -155,6 +155,8 @@ RSpec.describe Api::OutcomesController, type: :controller do
     end
 
     context 'when outcome is fixed' do
+      let!(:outcome) { OutcomeFactory.create(balance: balance, transaction_type: :fixed, quotas: 6) }
+
       it 'shold not allow the outcome deletion' do
         expect { action }.not_to change(Outcome, :count)
 

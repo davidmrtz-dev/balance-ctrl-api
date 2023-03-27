@@ -95,9 +95,13 @@ module Api
     end
 
     def destroy
-      find_outcome.destroy!
+      outcome = find_outcome
 
-      head :no_content
+      if outcome.current? && outcome.destroy!
+        head :no_content
+      else
+        head :unprocessable_entity
+      end
     end
 
     private
