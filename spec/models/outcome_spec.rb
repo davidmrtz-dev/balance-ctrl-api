@@ -27,7 +27,7 @@ RSpec.describe Outcome, type: :model do
       it "should validate absence of 'quotas'" do
         outcome = Outcome.new(balance: balance, transaction_date: Time.zone.now, quotas: 12, amount: 1)
         expect(outcome.valid?).to be_falsey
-        expect(outcome.errors.full_messages.first).to eq('Quotas must be blank')
+        expect(outcome.errors.full_messages).to include('Quotas must be blank')
       end
     end
 
@@ -35,7 +35,7 @@ RSpec.describe Outcome, type: :model do
       it "should validate presence of 'quotas'" do
         outcome = Outcome.new(balance: balance, transaction_type: :fixed, transaction_date: Time.zone.now, amount: 1)
         expect(outcome.valid?).to be_falsey
-        expect(outcome.errors.full_messages.first).to eq("Quotas can't be blank")
+        expect(outcome.errors.full_messages).to include("Quotas can't be blank")
       end
     end
   end
