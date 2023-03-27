@@ -14,57 +14,125 @@ RSpec.describe Transaction, type: :model do
   end
 
   describe 'validations' do
-    it 'should not allow transaction_date of tomorrow' do
-      transaction = Transaction.new(
-        balance: balance,
-        transaction_date: 1.day.from_now,
-        amount: 10_000,
-        type: type
-      )
-
-      expect(transaction.valid?).to be_falsey
-      expect(transaction.errors.full_messages.first).to eq('Transaction date can not be after today')
-    end
-
-    context 'when transaction_date is not in current month' do
-      it 'should add a validation error' do
+    describe '#transaction_date_not_after_today' do
+      it 'should not allow transaction_date of tomorrow' do
         transaction = Transaction.new(
           balance: balance,
-          transaction_date: Time.zone.now.prev_month,
+          transaction_date: 1.day.from_now,
           amount: 10_000,
           type: type
         )
 
         expect(transaction.valid?).to be_falsey
-        expect(transaction.errors.full_messages.first).to eq('Transaction date should be in current month')
+        expect(transaction.errors.full_messages).to include('Transaction date can not be after today')
+      end
+
+      it 'should allow transaction_date of today' do
+        transaction = Transaction.new(
+          balance: balance,
+          transaction_date: Time.zone.today,
+          amount: 10_000,
+          type: type
+        )
+
+        expect(transaction.valid?).to be_truthy
+      end
+    end
+
+    describe '#transaction_date_current_month' do
+      it 'should not allow transaction_date if it is not in current month' do
+        transaction = Transaction.new(
+          balance: balance,
+          transaction_date: Time.zone.today.prev_month,
+          amount: 10_000,
+          type: type
+        )
+
+        expect(transaction.valid?).to be_falsey
+        expect(transaction.errors.full_messages).to include('Transaction date should be in current month')
+      end
+
+      it 'should allow transaction_date if it is in current month' do
+        transaction = Transaction.new(
+          balance: balance,
+          transaction_date: Time.zone.today,
+          amount: 10_000,
+          type: type
+        )
+
+        expect(transaction.valid?).to be_truthy
       end
     end
   end
 
   context '#after_create' do
-    let!(:transaction) do
+    subject(:transaction) do
       Transaction.create!(
         balance: balance,
         amount: 10_000,
-        transaction_date: Time.zone.now,
+        transaction_date: Time.zone.today,
         type: type
       )
     end
 
     describe '#generate_payment' do
       it 'should create one payment' do
-        expect do
-          Transaction.create(
-            balance: balance,
-            amount: 5_000,
-            transaction_date: Time.zone.now,
-            type: type
-          )
-        end.to change { Payment.count }.by 1
+        expect { transaction }.to change { Payment.count }.by 1
       end
 
       it 'should set payment status as :applied' do
         expect(transaction.payments.first.status).to eq 'applied'
+      end
+    end
+  end
+
+  context '#before_destroy' do
+    subject(:transaction) do
+      Transaction.create!(
+        balance: balance,
+        amount: 10_000,
+        transaction_date: Time.zone.today,
+        type: type
+      )
+    end
+
+    describe '#check_same_month' do
+      it 'should not allow destruction if created in a different month' do
+        transaction.update(created_at: Time.zone.today.prev_month)
+
+        expect { transaction.destroy }.not_to change(Transaction, :count)
+        expect(transaction.errors[:base]).to include('Can only delete transactions created in the current month')
+      end
+
+      it 'should allow destruction if created in the same month' do
+        transaction.update(created_at: Time.zone.today)
+
+        expect { transaction.destroy }.to change { Transaction.count }.by(-1)
+      end
+    end
+  end
+
+  context '#before_discard' do
+    subject(:transaction) do
+      Transaction.create!(
+        balance: balance,
+        amount: 10_000,
+        transaction_date: Time.zone.today,
+        type: type
+      )
+    end
+
+    describe '#check_same_month' do
+      it 'should not allow discarding if created in a different month' do
+        transaction.update(created_at: Time.zone.today.prev_month)
+
+        expect(transaction.discard).to be_falsey
+      end
+
+      it 'should allow discarding if created in the same month' do
+        transaction.update(created_at: Time.zone.today)
+
+        expect(transaction.discard).to be_truthy
       end
     end
   end
