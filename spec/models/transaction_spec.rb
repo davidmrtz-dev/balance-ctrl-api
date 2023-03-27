@@ -43,7 +43,7 @@ RSpec.describe Transaction, type: :model do
       it 'should not allow transaction_date if it is not in current month' do
         transaction = Transaction.new(
           balance: balance,
-          transaction_date: Time.zone.now.prev_month,
+          transaction_date: Time.zone.today.prev_month,
           amount: 10_000,
           type: type
         )
@@ -66,29 +66,48 @@ RSpec.describe Transaction, type: :model do
   end
 
   context '#after_create' do
-    let!(:transaction) do
+    subject(:transaction) do
       Transaction.create!(
         balance: balance,
         amount: 10_000,
-        transaction_date: Time.zone.now,
+        transaction_date: Time.zone.today,
         type: type
       )
     end
 
     describe '#generate_payment' do
       it 'should create one payment' do
-        expect do
-          Transaction.create(
-            balance: balance,
-            amount: 5_000,
-            transaction_date: Time.zone.now,
-            type: type
-          )
-        end.to change { Payment.count }.by 1
+        expect { transaction }.to change { Payment.count }.by 1
       end
 
       it 'should set payment status as :applied' do
         expect(transaction.payments.first.status).to eq 'applied'
+      end
+    end
+  end
+
+  context '#before_destroy' do
+    subject(:transaction) do
+      Transaction.create!(
+        balance: balance,
+        amount: 10_000,
+        transaction_date: Time.zone.today,
+        type: type
+      )
+    end
+
+    describe '#check_same_month' do
+      it 'should not allow destruction if created in a different month' do
+        travel_to Date.new(2023, 3, 1) do
+          transaction.update(created_at: 1.month_ago)
+        end
+
+        expect { transaction.destroy }.not_to change(Transaction, :count)
+        expect(transaction.errors[:base]).to include('Can only delete transactions created in the current month')
+      end
+
+      it 'should allow destruction if created in the same month' do
+         expect { transaction.destroy }.to change { Transaction.count }.by(-1)
       end
     end
   end
