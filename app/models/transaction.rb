@@ -8,6 +8,7 @@ class Transaction < ApplicationRecord
   enum frequency: { weekly: 0, biweekly: 1, monthly: 2 }
 
   before_destroy :check_same_month
+  before_discard :check_same_month
   after_create :generate_payment, if: -> { transaction_type.eql?('current') }
 
   validates :transaction_date, presence: true
