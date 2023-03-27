@@ -109,6 +109,7 @@ RSpec.describe Api::IncomesController, type: :controller do
 
       it 'calls to delete the income' do
         expect { action }.to change { Income.count }.by(-1)
+        .and change { Payment.count }.by(-1)
 
         action
 

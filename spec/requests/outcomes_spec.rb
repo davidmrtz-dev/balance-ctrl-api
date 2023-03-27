@@ -137,18 +137,33 @@ RSpec.describe Api::OutcomesController, type: :controller do
   end
 
   describe 'DELETE /api/outcomes/:id' do
-    let!(:outcome) { OutcomeFactory.create(balance: balance) }
-
     subject(:action) { delete :destroy, params: { id: outcome.id } }
 
     login_user
 
-    it 'calls to delete the outcome' do
-      expect { action }.to change { Outcome.count }.by(-1)
+    context 'when outcome is current' do
+      let!(:outcome) { OutcomeFactory.create(balance: balance) }
 
-      action
+      it 'should allow the outcome deletion' do
+        expect { action }.to change { Outcome.count }.by(-1)
+        .and change { Payment.count }.by(-1)
 
-      expect(response).to have_http_status(:no_content)
+        action
+
+        expect(response).to have_http_status(:no_content)
+      end
+    end
+
+    context 'when outcome is fixed' do
+      let!(:outcome) { OutcomeFactory.create(balance: balance, transaction_type: :fixed, quotas: 6) }
+
+      it 'shold not allow the outcome deletion' do
+        expect { action }.not_to change(Outcome, :count)
+
+        action
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
     end
 
     it 'handles not found' do
