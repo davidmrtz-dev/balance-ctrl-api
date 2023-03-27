@@ -16,6 +16,8 @@ class Transaction < ApplicationRecord
   scope :with_balance_and_user, -> { joins(balance: :user) }
   scope :from_user, ->(user) { where({ balance: { user: user } }) }
 
+  # default_scope -> { kept }
+
   private
 
   def transaction_date_not_after_today

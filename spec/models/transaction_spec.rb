@@ -111,4 +111,30 @@ RSpec.describe Transaction, type: :model do
       end
     end
   end
+
+  context '#before_discard' do
+    subject(:transaction) do
+      Transaction.create!(
+        balance: balance,
+        amount: 10_000,
+        transaction_date: Time.zone.today,
+        type: type
+      )
+    end
+
+    xdescribe '#check_same_month' do
+      it 'should not allow discarding if created in a different month' do
+        travel_to Date.new(2023, 3, 1) do
+          transaction.update(created_at: 1.month_ago)
+        end
+
+        expect { transaction.discard }.not_to change(Transaction, :count)
+        expect(transaction.errors[:base]).to include('Can only delete transactions created in the current month')
+      end
+
+      it 'should allow discarding if created in the same month' do
+         expect { transaction.discard }.to change { Transaction.count }.by(-1)
+      end
+    end
+  end
 end
