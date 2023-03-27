@@ -143,12 +143,25 @@ RSpec.describe Api::OutcomesController, type: :controller do
 
     login_user
 
-    it 'calls to delete the outcome' do
-      expect { action }.to change { Outcome.count }.by(-1)
+    context 'when outcome is current' do
+      it 'should allow the outcome deletion' do
+        expect { action }.to change { Outcome.count }.by(-1)
+        .and change { Payment.count }.by(-1)
 
-      action
+        action
 
-      expect(response).to have_http_status(:no_content)
+        expect(response).to have_http_status(:no_content)
+      end
+    end
+
+    context 'when outcome is fixed' do
+      it 'shold not allow the outcome deletion' do
+        expect { action }.not_to change(Outcome, :count)
+
+        action
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
     end
 
     it 'handles not found' do
