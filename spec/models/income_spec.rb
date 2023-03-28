@@ -10,16 +10,16 @@ RSpec.describe Income, type: :model do
   end
 
   describe 'validations' do
-    it { should_not allow_value(12).for(:quotas).on(:create) }
-    it { should allow_value(Time.zone.now).for(:transaction_date).on(:create) }
+    it { should validate_absence_of(:quotas) }
+    it { should validate_presence_of(:transaction_date) }
     it { is_expected.to validate_numericality_of(:amount) }
+    it { should_not allow_value(0).for(:amount) }
     [
       1,
       50,
       1000
     ].each do |value|
-      it { should allow_value(value).for(:amount).on(:create) }
-      it { should allow_value(value).for(:amount).on(:update) }
+      it { should allow_value(value).for(:amount) }
     end
 
     context 'when income is :current' do
