@@ -6,6 +6,7 @@ RSpec.describe Payment, type: :model do
 
   describe 'associations' do
     it { is_expected.to belong_to(:paymentable) }
+    it { should have_and_belong_to_many(:billing_informations) }
   end
 
   describe 'validations' do
