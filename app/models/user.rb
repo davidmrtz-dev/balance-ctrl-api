@@ -4,6 +4,7 @@ class User < ApplicationRecord
   include DeviseTokenAuth::Concerns::User
 
   has_one :balance, dependent: :destroy
+  has_many :billing_informations, dependent: :destroy
 
   delegate :id, to: :balance, prefix: true
 end
