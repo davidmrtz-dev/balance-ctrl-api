@@ -1,4 +1,4 @@
-class CreateBillingPayments < ActiveRecord::Migration[6.1]
+class CreateBillingInformationsPayments < ActiveRecord::Migration[6.1]
   def change
     create_table :billing_informations_payments do |t|
       t.references :billing_information, null: false, foreign_key: true
