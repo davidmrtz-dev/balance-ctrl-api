@@ -7,9 +7,9 @@ class Transaction < ApplicationRecord
   enum transaction_type: { current: 0, fixed: 1 }, _default: :current
   enum frequency: { weekly: 0, biweekly: 1, monthly: 2 }
 
+  after_create :generate_payment, if: -> { transaction_type.eql? 'current' }
   before_destroy :check_same_month, if: -> { transaction_type.eql? 'current' }
   before_discard :check_same_month, if: -> { transaction_type.eql? 'fixed' }
-  after_create :generate_payment, if: -> { transaction_type.eql? 'current' }
 
   validates :transaction_date, presence: true
   validates :amount, numericality: { greater_than: 0 }
@@ -23,10 +23,10 @@ class Transaction < ApplicationRecord
   private
 
   def check_same_month
-    if created_at.month != Time.zone.now.month
-      errors.add(:base, "Can only delete transactions created in the current month")
-      throw :abort
-    end
+    return unless created_at.month != Time.zone.now.month
+
+    errors.add(:base, 'Can only delete transactions created in the current month')
+    throw :abort
   end
 
   def transaction_date_not_after_today

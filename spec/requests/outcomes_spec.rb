@@ -146,7 +146,7 @@ RSpec.describe Api::OutcomesController, type: :controller do
 
       it 'should allow the outcome deletion' do
         expect { action }.to change { Outcome.count }.by(-1)
-        .and change { Payment.count }.by(-1)
+          .and change { Payment.count }.by(-1)
 
         action
 
