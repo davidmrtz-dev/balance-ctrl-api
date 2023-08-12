@@ -4,11 +4,14 @@ default: &default
   timeout: 5000
   reconnect: true
   encoding: unicode
+  port: 9993
 
 development:
   <<: *default
   database: balance-ctrl-enhanced-development
   host: localhost
+  username: postgres
+  password: postgres
 
 test:
   <<: *default
