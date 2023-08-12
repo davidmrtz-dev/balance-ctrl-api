@@ -100,7 +100,7 @@ module Api
       if outcome.current? && outcome.destroy!
         head :no_content
       else
-        head :unprocessable_entity
+        render json: { errors: 'Can not delete a fixed outcome '}, status: :unprocessable_entity
       end
     end
 

@@ -15,7 +15,7 @@ module BalanceCtrlEnhancedApi
   class Application < Rails::Application
     config.load_defaults 6.1
     config.api_only = true
-    config.autoloader = :classic
+    config.autoloader = :zeitwerk
     config.eager_load_paths << Rails.root.join('lib')
     config.generators do |g|
       g.test_framework :rspec
