@@ -12,7 +12,7 @@ class Transaction < ApplicationRecord
   before_discard :check_same_month, if: -> { transaction_type.eql? 'fixed' }
 
   validates :transaction_date, presence: true
-  validates :amount, numericality: { greater_than: 0 }
+  validates :amount, numericality: { greater_than: 0.0 }
   validate :transaction_date_not_after_today, :transaction_date_current_month
 
   scope :with_balance_and_user, -> { joins(balance: :user) }
