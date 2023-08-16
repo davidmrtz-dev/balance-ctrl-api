@@ -22,7 +22,7 @@ balance = Balance.create!(
   )
 end
 
-13.times do
+5.times do
   Outcome.create!(
     balance: balance,
     description: Faker::Commerce.department(max: 1, fixed_amount: true),
