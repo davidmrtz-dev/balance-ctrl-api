@@ -114,8 +114,8 @@ RSpec.describe Outcome, type: :model do
           end.to change { Payment.count }.by 12
         end
 
-        it "should create payments with state as 'pending'" do
-          expect(outcome.payments.pluck(:status).uniq.first).to eq 'pending'
+        it "should create payments with state as 'hold'" do
+          expect(outcome.payments.pluck(:status).uniq.first).to eq 'hold'
         end
 
         it 'should create payment with amount as outcome.amount / outcome.quotas' do
