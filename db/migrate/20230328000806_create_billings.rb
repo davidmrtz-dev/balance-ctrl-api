@@ -1,6 +1,6 @@
-class CreateBillingInformations < ActiveRecord::Migration[6.1]
+class CreateBillings < ActiveRecord::Migration[6.1]
   def change
-    create_table :billing_informations do |t|
+    create_table :billings do |t|
       t.references :user, null: false, foreign_key: true
       t.string :name, null: false
       t.date :state_date, null: false

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe BillingInformation, type: :model do
+RSpec.describe Billing, type: :model do
   describe 'associations' do
     it { is_expected.to belong_to(:user) }
     it { should define_enum_for(:card_type).with_values(%i[debit credit]) }
