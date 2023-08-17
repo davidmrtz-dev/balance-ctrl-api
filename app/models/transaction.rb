@@ -3,6 +3,7 @@ class Transaction < ApplicationRecord
 
   belongs_to :balance
   has_many :payments, as: :paymentable, dependent: :destroy
+  has_and_belongs_to_many :billings
 
   enum transaction_type: { current: 0, fixed: 1 }, _default: :current
   enum frequency: { weekly: 0, biweekly: 1, monthly: 2 }

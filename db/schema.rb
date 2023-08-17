@@ -35,13 +35,13 @@ ActiveRecord::Schema.define(version: 2023_03_28_003025) do
     t.index ["user_id"], name: "index_billings_on_user_id"
   end
 
-  create_table "billings_payments", force: :cascade do |t|
+  create_table "billings_transactions", force: :cascade do |t|
     t.bigint "billing_id", null: false
-    t.bigint "payment_id", null: false
+    t.bigint "transaction_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["billing_id"], name: "index_billings_payments_on_billing_id"
-    t.index ["payment_id"], name: "index_billings_payments_on_payment_id"
+    t.index ["billing_id"], name: "index_billings_transactions_on_billing_id"
+    t.index ["transaction_id"], name: "index_billings_transactions_on_transaction_id"
   end
 
   create_table "payments", force: :cascade do |t|
@@ -97,7 +97,7 @@ ActiveRecord::Schema.define(version: 2023_03_28_003025) do
   end
 
   add_foreign_key "billings", "users"
-  add_foreign_key "billings_payments", "billings"
-  add_foreign_key "billings_payments", "payments"
+  add_foreign_key "billings_transactions", "billings"
+  add_foreign_key "billings_transactions", "transactions"
   add_foreign_key "transactions", "balances"
 end
