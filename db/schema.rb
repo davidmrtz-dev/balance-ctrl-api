@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_03_28_003025) do
+ActiveRecord::Schema.define(version: 2023_08_18_030230) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,15 @@ ActiveRecord::Schema.define(version: 2023_03_28_003025) do
     t.index ["user_id"], name: "index_balances_on_user_id"
   end
 
+  create_table "billing_transactions", force: :cascade do |t|
+    t.bigint "billing_id", null: false
+    t.bigint "transaction_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["billing_id"], name: "index_billing_transactions_on_billing_id"
+    t.index ["transaction_id"], name: "index_billing_transactions_on_transaction_id"
+  end
+
   create_table "billings", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "name", null: false
@@ -33,15 +42,6 @@ ActiveRecord::Schema.define(version: 2023_03_28_003025) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_billings_on_user_id"
-  end
-
-  create_table "billings_transactions", force: :cascade do |t|
-    t.bigint "billing_id", null: false
-    t.bigint "transaction_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["billing_id"], name: "index_billings_transactions_on_billing_id"
-    t.index ["transaction_id"], name: "index_billings_transactions_on_transaction_id"
   end
 
   create_table "payments", force: :cascade do |t|
@@ -96,8 +96,8 @@ ActiveRecord::Schema.define(version: 2023_03_28_003025) do
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
+  add_foreign_key "billing_transactions", "billings"
+  add_foreign_key "billing_transactions", "transactions"
   add_foreign_key "billings", "users"
-  add_foreign_key "billings_transactions", "billings"
-  add_foreign_key "billings_transactions", "transactions"
   add_foreign_key "transactions", "balances"
 end
