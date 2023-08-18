@@ -33,24 +33,11 @@ end
   )
 end
 
-# 8.times do
-#   Outcome.create!(
-#     balance: balance,
-#     transaction_type: 'fixed',
-#     quotas: [6, 12, 24].sample,
-#     description: Faker::Commerce.department(max: 2, fixed_amount: true),
-#     transaction_date: [
-#       Time.zone.now - 2.days, Time.zone.now - 1.day, Time.zone.now
-#     ].sample,
-#     amount: Faker::Number.decimal(l_digits: 4, r_digits: 2)
-#   )
-# end
-
 Outcome.create!(
   balance: balance,
   transaction_type: 'fixed',
   quotas: 6,
   description: Faker::Commerce.department(max: 2, fixed_amount: true),
-  transaction_date: 2.days.ago,
+  transaction_date: 1.day.ago,
   amount: Faker::Number.decimal(l_digits: 4, r_digits: 2)
 )

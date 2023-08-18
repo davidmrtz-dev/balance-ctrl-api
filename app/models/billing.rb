@@ -1,6 +1,7 @@
-class BillingInformation < ApplicationRecord
+class Billing < ApplicationRecord
   belongs_to :user
-  has_and_belongs_to_many :payments
+  has_many :billing_transactions
+  has_many :related_transactions, through: :billing_transactions
 
   enum card_type: { debit: 0, credit: 1 }
 

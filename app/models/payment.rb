@@ -1,8 +1,7 @@
 class Payment < ApplicationRecord
   belongs_to :paymentable, polymorphic: true
-  has_and_belongs_to_many :billing_informations
 
-  enum status: { pending: 0, applied: 1 }, _default: :pending
+  enum status: { hold: 0, pending: 1, applied: 2, expired: 3 }, _default: :hold
 
   validate :one_payment_for_current_paymentable, on: :create
 
