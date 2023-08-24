@@ -13,6 +13,16 @@ balance = Balance.create!(
   description: 'My balance description'
 )
 
+5.times do
+  name = Faker::Commerce.department(max: 1, fixed_amount: true)
+
+  cat = Category.find_by(name: name)
+
+  unless cat
+    cat = Category.create!(name: name)
+  end
+end
+
 10.times do
   Income.create!(
     balance: balance,
@@ -41,3 +51,9 @@ Outcome.create!(
   transaction_date: 1.day.ago,
   amount: Faker::Number.decimal(l_digits: 4, r_digits: 2)
 )
+
+Outcome.all.each do |t|
+  cat = Category.all.sample
+
+  t.categories << cat
+end
