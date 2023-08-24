@@ -5,6 +5,8 @@ class Transaction < ApplicationRecord
   has_many :payments, as: :paymentable, dependent: :destroy
   has_many :billing_transactions
   has_many :billings, through: :billing_transactions
+  has_many :categorizations
+  has_many :categories, through: :categorizations
 
   enum transaction_type: { current: 0, fixed: 1 }, _default: :current
   enum frequency: { weekly: 0, biweekly: 1, monthly: 2 }
