@@ -11,6 +11,14 @@ module Api
     def json
       @outcomes.map do |outcome|
         outcome.serializable_hash(
+          include: {
+            payments: {
+              only: %i[
+                amount
+                status
+              ]
+            }
+          },
           except: %i[
             balance_id
             created_at
