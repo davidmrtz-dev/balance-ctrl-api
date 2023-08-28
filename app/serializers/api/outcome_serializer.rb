@@ -10,6 +10,14 @@ module Api
 
     def json
       @outcome.serializable_hash(
+        include: {
+          payments: {
+            only: %i[
+              amount
+              status
+            ]
+          }
+        },
         except: %i[
           balance_id
           created_at
