@@ -7,6 +7,13 @@ user = User.create!(
   name: 'David'
 )
 
+billing = Billing.create!(
+  user: user,
+  name: 'My Billing',
+  state_date: 2.days.ago,
+  card_type: :credit
+)
+
 balance = Balance.create!(
   user: user,
   title: 'My Balance',
@@ -56,4 +63,9 @@ Outcome.all.each do |t|
   cat = Category.all.sample
 
   t.categories << cat
+
+  BillingTransaction.create!(
+    billing: billing,
+    related_transaction: t
+  )
 end
