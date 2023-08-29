@@ -14,8 +14,16 @@ module Api
           include: {
             payments: {
               only: %i[
+                id
                 amount
                 status
+              ]
+            },
+            billings: {
+              except: %i[
+                user_id
+                created_at
+                updated_at
               ]
             }
           },
