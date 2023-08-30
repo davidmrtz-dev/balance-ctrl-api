@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 2023_08_24_023527) do
     t.bigint "transaction_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["billing_id", "transaction_id"], name: "unique_billing_transaction", unique: true
     t.index ["billing_id"], name: "index_billing_transactions_on_billing_id"
     t.index ["transaction_id"], name: "index_billing_transactions_on_transaction_id"
   end
