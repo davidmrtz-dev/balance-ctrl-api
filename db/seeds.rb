@@ -20,14 +20,12 @@ balance = Balance.create!(
   description: 'My balance description'
 )
 
-5.times do
+10.times do
   name = Faker::Commerce.department(max: 1, fixed_amount: true)
 
-  cat = Category.find_by(name: name)
+  next if Category.find_by(name: name)
 
-  unless cat
-    cat = Category.create!(name: name)
-  end
+  Category.create!(name: name)
 end
 
 10.times do
@@ -43,9 +41,7 @@ end
   Outcome.create!(
     balance: balance,
     description: Faker::Commerce.department(max: 1, fixed_amount: true),
-    transaction_date: [
-      Time.zone.now - 2.days, Time.zone.now - 1.day, Time.zone.now
-    ].sample,
+    transaction_date: Time.zone.now,
     amount: Faker::Number.decimal(l_digits: 3, r_digits: 2)
   )
 end
@@ -55,7 +51,7 @@ Outcome.create!(
   transaction_type: 'fixed',
   quotas: 6,
   description: Faker::Commerce.department(max: 2, fixed_amount: true),
-  transaction_date: 1.day.ago,
+  transaction_date: Time.zone.now,
   amount: Faker::Number.decimal(l_digits: 4, r_digits: 2)
 )
 
@@ -69,3 +65,5 @@ Outcome.all.each do |t|
     related_transaction: t
   )
 end
+
+Outcome.fixed_types.first.payments.first.update!(status: Payment.statuses.keys.second)
