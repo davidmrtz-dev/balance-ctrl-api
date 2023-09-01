@@ -16,6 +16,13 @@ module Api
               amount
               status
             ]
+          },
+          billings: {
+            except: %i[
+              user_id
+              created_at
+              updated_at
+            ]
           }
         },
         except: %i[
