@@ -23,6 +23,12 @@ module Api
               created_at
               updated_at
             ]
+          },
+          categories: {
+            only: %i[
+              id
+              name
+            ]
           }
         },
         except: %i[
