@@ -31,7 +31,7 @@ end
 10.times do
   Income.create!(
     balance: balance,
-    description: Faker::Commerce.department(max: 1, fixed_amount: true),
+    description: Faker::Commerce.product_name,
     amount: Faker::Number.decimal(l_digits: 4, r_digits: 2),
     transaction_date: Time.zone.now
   )
@@ -40,7 +40,7 @@ end
 5.times do
   Outcome.create!(
     balance: balance,
-    description: Faker::Commerce.department(max: 1, fixed_amount: true),
+    description: Faker::Commerce.product_name,
     transaction_date: Time.zone.now,
     amount: Faker::Number.decimal(l_digits: 3, r_digits: 2)
   )
@@ -50,7 +50,7 @@ Outcome.create!(
   balance: balance,
   transaction_type: 'fixed',
   quotas: 6,
-  description: Faker::Commerce.department(max: 2, fixed_amount: true),
+  description: Faker::Commerce.product_name,
   transaction_date: Time.zone.now,
   amount: Faker::Number.decimal(l_digits: 4, r_digits: 2)
 )
