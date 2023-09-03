@@ -3,6 +3,8 @@ require 'rails_helper'
 RSpec.describe Api::OutcomesController, type: :controller do
   let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
   let!(:balance) { BalanceFactory.create_with_attachments(user: user) }
+  let!(:category) { CategoryFactory.create(name: 'Grocery') }
+  let!(:other_category) { CategoryFactory.create(name: 'Clothes') }
 
   describe 'GET /api/outcomes' do
     login_user
@@ -92,7 +94,7 @@ RSpec.describe Api::OutcomesController, type: :controller do
     let!(:outcome) do
       OutcomeFactory.create(
         balance: balance,
-        description: 'Grocery',
+        description: 'Apple Watch',
         amount: 4000
       )
     end
@@ -100,8 +102,9 @@ RSpec.describe Api::OutcomesController, type: :controller do
     subject(:action) do
       put :update, params: {
         id: outcome.id,
+        category_id: other_category.id,
         outcome: {
-          description: 'Clothes',
+          description: 'Macbook Pro',
           amount: 6000
         }
       }
@@ -109,9 +112,12 @@ RSpec.describe Api::OutcomesController, type: :controller do
 
     login_user
 
+    before { outcome.categories << category }
+
     it 'calls to update the outcome' do
-      expect(outcome.description).to eq 'Grocery'
+      expect(outcome.description).to eq 'Apple Watch'
       expect(outcome.amount).to eq 4000
+      expect(outcome.categories).to match_array [category]
 
       action
 
@@ -119,8 +125,9 @@ RSpec.describe Api::OutcomesController, type: :controller do
 
       expect(response).to have_http_status(:ok)
       expect(parsed_response[:outcome][:id]).to eq outcome.id
-      expect(outcome.description).to eq 'Clothes'
+      expect(outcome.description).to eq 'Macbook Pro'
       expect(outcome.amount).to eq 6000
+      expect(outcome.categories).to match_array [other_category]
     end
 
     it 'handles validation error' do

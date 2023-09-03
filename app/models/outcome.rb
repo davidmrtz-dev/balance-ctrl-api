@@ -12,6 +12,16 @@ class Outcome < Transaction
   scope :fixed_types, -> { where(transaction_type: :fixed) }
   scope :by_transaction_date, -> { order(transaction_date: :desc, id: :desc) }
 
+  def update_category(category_id)
+    current_category = categories.first
+    new_category = Category.find(category_id)
+
+    return if current_category.eql?(new_category)
+
+    current_category.categorizations.find_by(transaction_id: id).destroy!
+    categorizations.create!(category: new_category)
+  end
+
   private
 
   def substract_balance_amount

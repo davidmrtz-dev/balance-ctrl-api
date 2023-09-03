@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Outcome, type: :model do
-  let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
-  let!(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
+  let(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
+  let(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
 
   describe 'associations' do
     it { is_expected.to belong_to(:balance) }
@@ -122,6 +122,26 @@ RSpec.describe Outcome, type: :model do
           expect(outcome.payments.last.amount).to eq outcome.amount / outcome.quotas
         end
       end
+    end
+  end
+
+  describe '#update_category' do
+    let(:outcome) { OutcomeFactory.create(balance: balance) }
+    let(:current_category) { CategoryFactory.create }
+    let(:new_category) { CategoryFactory.create }
+
+    before { outcome.categories << current_category }
+
+    it 'updates the category' do
+      outcome.update_category(new_category.id)
+
+      expect(outcome.categorizations.first.category).to eq(new_category)
+    end
+
+    it 'does not update the category if it is the same' do
+      outcome.update_category(current_category.id)
+
+      expect(outcome.categorizations.first.category).to eq(current_category)
     end
   end
 end
