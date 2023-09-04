@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Outcome, type: :model do
-  let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
-  let!(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
+  let(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
+  let(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
 
   describe 'associations' do
     it { is_expected.to belong_to(:balance) }

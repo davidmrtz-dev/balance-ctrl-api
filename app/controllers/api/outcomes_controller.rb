@@ -100,7 +100,7 @@ module Api
       if outcome.current? && outcome.destroy!
         head :no_content
       else
-        render json: { errors: 'Can not delete a fixed outcome '}, status: :unprocessable_entity
+        render json: { errors: 'Can not delete a fixed outcome ' }, status: :unprocessable_entity
       end
     end
 
@@ -116,7 +116,8 @@ module Api
         :amount,
         :description,
         :transaction_date,
-        :quotas
+        :quotas,
+        categorizations_attributes: %i[category_id]
       )
     end
 

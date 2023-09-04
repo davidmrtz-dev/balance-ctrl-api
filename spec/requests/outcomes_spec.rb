@@ -92,7 +92,7 @@ RSpec.describe Api::OutcomesController, type: :controller do
     let!(:outcome) do
       OutcomeFactory.create(
         balance: balance,
-        description: 'Grocery',
+        description: 'Apple Watch',
         amount: 4000
       )
     end
@@ -101,7 +101,7 @@ RSpec.describe Api::OutcomesController, type: :controller do
       put :update, params: {
         id: outcome.id,
         outcome: {
-          description: 'Clothes',
+          description: 'Macbook Pro',
           amount: 6000
         }
       }
@@ -110,7 +110,7 @@ RSpec.describe Api::OutcomesController, type: :controller do
     login_user
 
     it 'calls to update the outcome' do
-      expect(outcome.description).to eq 'Grocery'
+      expect(outcome.description).to eq 'Apple Watch'
       expect(outcome.amount).to eq 4000
 
       action
@@ -119,7 +119,7 @@ RSpec.describe Api::OutcomesController, type: :controller do
 
       expect(response).to have_http_status(:ok)
       expect(parsed_response[:outcome][:id]).to eq outcome.id
-      expect(outcome.description).to eq 'Clothes'
+      expect(outcome.description).to eq 'Macbook Pro'
       expect(outcome.amount).to eq 6000
     end
 

@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Payment, type: :model do
-  let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
-  let!(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
+  let(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
+  let(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
 
   describe 'associations' do
     it { is_expected.to belong_to(:paymentable) }
@@ -10,8 +10,8 @@ RSpec.describe Payment, type: :model do
   end
 
   describe 'validations' do
-    let!(:income) { IncomeFactory.create(balance: balance) }
-    let!(:outcome) { OutcomeFactory.create(balance: balance) }
+    let(:income) { IncomeFactory.create(balance: balance) }
+    let(:outcome) { OutcomeFactory.create(balance: balance) }
 
     describe 'one_payment_for_current_outcome' do
       describe "when paymentable is Income and is 'current'" do

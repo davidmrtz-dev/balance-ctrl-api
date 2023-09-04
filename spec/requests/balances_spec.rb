@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::BalancesController, type: :controller do
-  let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
+  let(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
   let!(:balance) { BalanceFactory.create_with_attachments(user: user) }
 
   describe 'GET /balances/balance' do
