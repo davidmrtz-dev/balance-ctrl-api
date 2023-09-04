@@ -124,24 +124,4 @@ RSpec.describe Outcome, type: :model do
       end
     end
   end
-
-  describe '#update_category' do
-    let(:outcome) { OutcomeFactory.create(balance: balance) }
-    let(:current_category) { CategoryFactory.create }
-    let(:new_category) { CategoryFactory.create }
-
-    before { outcome.categories << current_category }
-
-    it 'updates the category' do
-      outcome.update_category(new_category.id)
-
-      expect(outcome.categorizations.first.category).to eq(new_category)
-    end
-
-    it 'does not update the category if it is the same' do
-      outcome.update_category(current_category.id)
-
-      expect(outcome.categorizations.first.category).to eq(current_category)
-    end
-  end
 end

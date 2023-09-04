@@ -4,6 +4,8 @@ RSpec.describe Transaction, type: :model do
   let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
   let!(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
   let(:type) { %w[Outcome Income].sample }
+  let(:category) { CategoryFactory.create(name: 'Grocery') }
+  let(:other_category) { CategoryFactory.create(name: 'Clothes') }
 
   describe 'associations' do
     it { is_expected.to belong_to(:balance) }
@@ -137,6 +139,30 @@ RSpec.describe Transaction, type: :model do
         transaction.update(created_at: Time.zone.today)
 
         expect(transaction.discard).to be_truthy
+      end
+    end
+  end
+
+  context '#before_save' do
+    describe '#remove_previous_categorizations' do
+      subject(:transaction) do
+        Transaction.create!(
+          balance: balance,
+          amount: 10_000,
+          transaction_date: Time.zone.today,
+          type: type
+        )
+      end
+
+      before { transaction.categories << category }
+
+      context 'when there are persisted categorizations and new ones' do
+        it 'should remove persisted categorizations and keep new one' do
+          transaction.update!(categorizations_attributes: [{ category_id: other_category.id }])
+
+          expect(transaction.categorizations.count).to eq 1
+          expect(transaction.categories.first).to eq other_category
+        end
       end
     end
   end

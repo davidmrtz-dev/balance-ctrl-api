@@ -88,8 +88,6 @@ module Api
       outcome = find_outcome
 
       if outcome.update(outcome_params)
-        outcome.update_category(params[:category_id]) if params[:category_id].present?
-
         render json: { outcome: ::Api::OutcomeSerializer.json(outcome) }
       else
         render json: { errors: outcome.errors.full_messages }, status: :unprocessable_entity
@@ -102,7 +100,7 @@ module Api
       if outcome.current? && outcome.destroy!
         head :no_content
       else
-        render json: { errors: 'Can not delete a fixed outcome '}, status: :unprocessable_entity
+        render json: { errors: 'Can not delete a fixed outcome ' }, status: :unprocessable_entity
       end
     end
 
@@ -118,7 +116,8 @@ module Api
         :amount,
         :description,
         :transaction_date,
-        :quotas
+        :quotas,
+        categorizations_attributes: %i[category_id]
       )
     end
 

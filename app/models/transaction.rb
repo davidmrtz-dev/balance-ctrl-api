@@ -11,6 +11,7 @@ class Transaction < ApplicationRecord
   enum transaction_type: { current: 0, fixed: 1 }, _default: :current
   enum frequency: { weekly: 0, biweekly: 1, monthly: 2 }
 
+  before_save :remove_previous_categorizations, if: :should_remove_previous_categorizations?
   after_create :generate_payment, if: -> { transaction_type.eql? 'current' }
   before_destroy :check_same_month, if: -> { transaction_type.eql? 'current' }
   before_discard :check_same_month, if: -> { transaction_type.eql? 'fixed' }
@@ -24,7 +25,19 @@ class Transaction < ApplicationRecord
 
   default_scope -> { kept }
 
+  accepts_nested_attributes_for :categorizations, allow_destroy: true
+
   private
+
+  def remove_previous_categorizations
+    categorizations.each do |categorization|
+      categorization.destroy! if categorization.persisted?
+    end
+  end
+
+  def should_remove_previous_categorizations?
+    categorizations.any?(&:persisted?) && categorizations.any?(&:new_record?)
+  end
 
   def check_same_month
     return unless created_at.month != Time.zone.now.month
