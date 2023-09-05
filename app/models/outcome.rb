@@ -12,6 +12,16 @@ class Outcome < Transaction
   scope :fixed_types, -> { where(transaction_type: :fixed) }
   scope :by_transaction_date, -> { order(transaction_date: :desc, id: :desc) }
 
+  def status
+    return :expired if payments.any? { |payment| payment.status == 'expired' }
+    return :pending if payments.any? { |payment| payment.status == 'pending' }
+    return :hold if payments.all? { |payment| payment.status == 'hold' } && payments.present?
+    return :paid if payments.all? { |payment| payment.status == 'applied' } && payments.present?
+    return :ok if payments.all? { |payment| payment.status.in?(['ok', 'hold']) } && payments.present?
+
+    :unknown
+  end
+
   private
 
   def substract_balance_amount
