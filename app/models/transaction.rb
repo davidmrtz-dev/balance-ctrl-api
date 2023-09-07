@@ -5,13 +5,13 @@ class Transaction < ApplicationRecord
   has_many :payments, as: :paymentable, dependent: :destroy
   has_many :billing_transactions
   has_many :billings, through: :billing_transactions
-  has_many :categorizations
+  has_many :categorizations, dependent: :destroy
   has_many :categories, through: :categorizations
 
   enum transaction_type: { current: 0, fixed: 1 }, _default: :current
   enum frequency: { weekly: 0, biweekly: 1, monthly: 2 }
 
-  before_save :remove_previous_categorizations, if: :should_remove_previous_categorizations?
+  before_update :remove_previous_categorizations, if: :should_remove_previous_categorizations?
   after_create :generate_payment, if: -> { transaction_type.eql? 'current' }
   before_destroy :check_same_month, if: -> { transaction_type.eql? 'current' }
   before_discard :check_same_month, if: -> { transaction_type.eql? 'fixed' }
@@ -25,7 +25,7 @@ class Transaction < ApplicationRecord
 
   default_scope -> { kept }
 
-  accepts_nested_attributes_for :categorizations, allow_destroy: true
+  accepts_nested_attributes_for :categorizations
 
   private
 

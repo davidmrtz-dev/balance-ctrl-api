@@ -75,9 +75,13 @@ module Api
 
     def create
       outcome =
-        Outcome.new(outcome_params.merge(balance_id: current_user.balance_id))
+        Outcome.new(outcome_params.merge(balance_id: current_user.balance_id).except(:category_id))
 
       if outcome.save
+        if outcome_params[:category_id].present?
+          Categorization.create!(category_id: outcome_params[:category_id], transaction_id: outcome.id)
+        end
+
         render json: { outcome: ::Api::OutcomeSerializer.json(outcome) }, status: :created
       else
         render json: { errors: outcome.errors.full_messages }, status: :unprocessable_entity
@@ -117,6 +121,7 @@ module Api
         :description,
         :transaction_date,
         :quotas,
+        :category_id,
         categorizations_attributes: %i[category_id]
       )
     end

@@ -52,8 +52,8 @@ RSpec.describe Api::OutcomesController, type: :controller do
   end
 
   describe 'POST /api/outcomes' do
-    subject(:action) do
-      post :create, params: {
+    let(:valid_params) do
+      {
         outcome: {
           amount: 4500,
           description: 'Clothes',
@@ -62,12 +62,33 @@ RSpec.describe Api::OutcomesController, type: :controller do
       }
     end
 
+    subject(:create_outcome) { post :create, params: valid_params }
+
     login_user
 
-    it 'creates an outcome' do
-      expect { action }.to change { Outcome.count }.by 1
+    context 'when category is present' do
+      let!(:category) { CategoryFactory.create }
 
-      action
+      before { valid_params.merge!(outcome: valid_params[:outcome].merge(category_id: category.id)) }
+
+      it 'creates an outcome with a category and categorization' do
+        expect { create_outcome }
+        .to change { Outcome.count }.by(1)
+        .and change { Categorization.count }.by(1)
+
+
+        outcome = Outcome.last
+
+        expect(response).to have_http_status(:created)
+        expect(parsed_response[:outcome][:id]).to eq outcome.id
+        expect(outcome.description).to eq 'Clothes'
+        expect(outcome.amount).to eq 4500
+        expect(outcome.categories).to include(category)
+      end
+    end
+
+    it 'creates an outcome' do
+      expect { create_outcome }.to change { Outcome.count }.by(1)
 
       outcome = Outcome.last
 
