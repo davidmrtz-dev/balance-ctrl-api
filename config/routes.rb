@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
-  mount_devise_token_auth_for 'User', at: 'api/auth'
+  mount_devise_token_auth_for 'User', at: 'api/v1/auth'
 
-  namespace :api do
-    defaults(format: :json) do
+  namespace :api, defaults: { format: :json } do
+    namespace :v1 do
       get 'balance', to: 'balances#balance'
       get 'categories', to: 'categories#index'
       resources :outcomes, only: %i[index create update destroy] do
