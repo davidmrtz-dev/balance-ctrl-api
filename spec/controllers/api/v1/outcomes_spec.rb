@@ -83,7 +83,7 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
         expect(parsed_response[:outcome][:id]).to eq outcome.id
         expect(outcome.description).to eq 'Clothes'
         expect(outcome.amount).to eq 4500
-        expect(outcome.categories).to include(category)
+        expect(outcome.categories.first).to eq(category)
       end
     end
 
@@ -117,9 +117,10 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
         amount: 4000
       )
     end
+    let(:category) { CategoryFactory.create }
 
-    subject(:action) do
-      put :update, params: {
+    let(:valid_params) do
+      {
         id: outcome.id,
         outcome: {
           description: 'Macbook Pro',
@@ -128,13 +129,36 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
       }
     end
 
+    subject(:update_outcome) { put :update, params: valid_params }
+
     login_user
+
+    before { outcome.categories << category }
+
+    context 'when category is present' do
+      let(:other_category) { CategoryFactory.create(name: 'Other category') }
+
+      before { valid_params.merge!(outcome: valid_params[:outcome].merge(categorizations_attributes: [{ category_id: other_category.id }] )) }
+
+      it 'updates the outcome with the provided category' do
+        update_outcome
+
+
+        outcome = Outcome.last
+
+        expect(response).to have_http_status(:ok)
+        expect(parsed_response[:outcome][:id]).to eq outcome.id
+        expect(outcome.description).to eq 'Macbook Pro'
+        expect(outcome.amount).to eq 6000
+        expect(outcome.categories.first).to eq(other_category)
+      end
+    end
 
     it 'calls to update the outcome' do
       expect(outcome.description).to eq 'Apple Watch'
       expect(outcome.amount).to eq 4000
 
-      action
+      update_outcome
 
       outcome.reload
 
