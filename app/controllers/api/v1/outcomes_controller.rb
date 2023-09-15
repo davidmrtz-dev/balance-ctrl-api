@@ -128,7 +128,8 @@ module Api
           :quotas,
           :category_id,
           :billing_id,
-          categorizations_attributes: %i[category_id]
+          categorizations_attributes: %i[category_id],
+          billing_transactions_attributes: %i[billing_id]
         )
       end
 

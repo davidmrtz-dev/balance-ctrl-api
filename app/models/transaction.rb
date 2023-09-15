@@ -26,6 +26,7 @@ class Transaction < ApplicationRecord
   default_scope -> { kept }
 
   accepts_nested_attributes_for :categorizations
+  accepts_nested_attributes_for :billing_transactions
 
   private
 

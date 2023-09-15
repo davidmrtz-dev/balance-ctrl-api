@@ -138,6 +138,7 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
       )
     end
     let(:category) { CategoryFactory.create }
+    let(:billing) { BillingFactory.create(user: user) }
 
     let(:valid_params) do
       {
@@ -153,10 +154,13 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
 
     login_user
 
-    before { outcome.categories << category }
+    before do
+      outcome.categories << category
+      outcome.billings << billing
+    end
 
     context 'when category is present' do
-      let(:other_category) { CategoryFactory.create(name: 'Other category') }
+      let(:other_category) { CategoryFactory.create }
 
       before { valid_params.merge!(outcome: valid_params[:outcome].merge(categorizations_attributes: [{ category_id: other_category.id }] )) }
 
@@ -171,6 +175,25 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
         expect(outcome.description).to eq 'Macbook Pro'
         expect(outcome.amount).to eq 6000
         expect(outcome.categories.first).to eq(other_category)
+      end
+    end
+
+    context 'when billing is present' do
+      let(:other_billing) { BillingFactory.create(user: user) }
+
+      before { valid_params.merge!(outcome: valid_params[:outcome].merge(billing_transactions_attributes: [{ billing_id: other_billing.id }] )) }
+
+      it 'updates the outcome with the provided category' do
+        update_outcome
+
+
+        outcome = Outcome.last
+
+        expect(response).to have_http_status(:ok)
+        expect(parsed_response[:outcome][:id]).to eq outcome.id
+        expect(outcome.description).to eq 'Macbook Pro'
+        expect(outcome.amount).to eq 6000
+        expect(outcome.billings.first).to eq(other_billing)
       end
     end
 
