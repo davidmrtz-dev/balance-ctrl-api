@@ -4,7 +4,7 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
   let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
   let!(:balance) { BalanceFactory.create_with_attachments(user: user) }
 
-  describe 'GET /api/outcomes' do
+  describe 'GET /api/v1/outcomes' do
     login_user
 
     it 'return paginated outcomes' do
@@ -15,7 +15,7 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
     end
   end
 
-  describe 'GET /api/outcomes/current' do
+  describe 'GET /api/v1/outcomes/current' do
     login_user
 
     it 'returns paginated current outcomes' do
@@ -27,7 +27,7 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
     end
   end
 
-  describe 'GET /api/outcomes/fixed' do
+  describe 'GET /api/v1/outcomes/fixed' do
     login_user
 
     it 'returns paginated fixed outcomes' do
@@ -39,7 +39,7 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
     end
   end
 
-  describe 'GET /api/outcomes/search' do
+  describe 'GET /api/v1/outcomes/search' do
     login_user
 
     it 'return paginated outcomes based on keyword for description' do
@@ -51,7 +51,7 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
     end
   end
 
-  describe 'POST /api/outcomes' do
+  describe 'POST /api/v1/outcomes' do
     let(:valid_params) do
       {
         outcome: {
@@ -109,7 +109,7 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
     end
   end
 
-  describe 'PUT /api/outcomes/:id' do
+  describe 'PUT /api/v1/outcomes/:id' do
     let!(:outcome) do
       OutcomeFactory.create(
         balance: balance,
@@ -157,7 +157,7 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
     end
   end
 
-  describe 'DELETE /api/outcomes/:id' do
+  describe 'DELETE /api/v1/outcomes/:id' do
     subject(:action) { delete :destroy, params: { id: outcome.id } }
 
     login_user

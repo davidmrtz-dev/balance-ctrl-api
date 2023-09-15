@@ -4,7 +4,7 @@ RSpec.describe Api::V1::IncomesController, type: :controller do
   let(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
   let!(:balance) { BalanceFactory.create_with_attachments(user: user) }
 
-  describe 'GET /api/incomes' do
+  describe 'GET /api/v1/incomes' do
     login_user
 
     it 'returns paginated incomes' do
@@ -15,7 +15,7 @@ RSpec.describe Api::V1::IncomesController, type: :controller do
     end
   end
 
-  describe 'POST /api/incomes' do
+  describe 'POST /api/v1/incomes' do
     subject(:action) do
       post :create, params: {
         income: {
@@ -50,7 +50,7 @@ RSpec.describe Api::V1::IncomesController, type: :controller do
     end
   end
 
-  describe 'PUT /api/incomes/:id' do
+  describe 'PUT /api/v1/incomes/:id' do
     let!(:income) do
       IncomeFactory.create(
         balance: balance,
@@ -99,7 +99,7 @@ RSpec.describe Api::V1::IncomesController, type: :controller do
     end
   end
 
-  describe 'DELETE /api/incomes/:id' do
+  describe 'DELETE /api/v1/incomes/:id' do
     subject(:action) { delete :destroy, params: { id: income.id } }
 
     login_user
