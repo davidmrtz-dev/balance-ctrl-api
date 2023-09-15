@@ -67,7 +67,7 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
     login_user
 
     context 'when category is present' do
-      let!(:category) { CategoryFactory.create }
+      let(:category) { CategoryFactory.create }
 
       before { valid_params.merge!(outcome: valid_params[:outcome].merge(category_id: category.id)) }
 
@@ -84,6 +84,26 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
         expect(outcome.description).to eq 'Clothes'
         expect(outcome.amount).to eq 4500
         expect(outcome.categories.first).to eq(category)
+      end
+    end
+
+    context 'when billing is present' do
+      let(:billing) { BillingFactory.create(user: user) }
+
+      before { valid_params.merge!(outcome: valid_params[:outcome].merge(billing_id: billing.id)) }
+
+      it 'creates an outcome with a billing and billing transaction' do
+        expect { create_outcome }
+        .to change { Outcome.count }.by(1)
+        .and change { BillingTransaction.count }.by(1)
+
+        outcome = Outcome.last
+
+        expect(response).to have_http_status(:created)
+        expect(parsed_response[:outcome][:id]).to eq outcome.id
+        expect(outcome.description).to eq 'Clothes'
+        expect(outcome.amount).to eq 4500
+        expect(outcome.billings.first).to eq(billing)
       end
     end
 
@@ -110,7 +130,7 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
   end
 
   describe 'PUT /api/v1/outcomes/:id' do
-    let!(:outcome) do
+    let(:outcome) do
       OutcomeFactory.create(
         balance: balance,
         description: 'Apple Watch',
