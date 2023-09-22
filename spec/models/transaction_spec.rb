@@ -13,6 +13,8 @@ RSpec.describe Transaction, type: :model do
     it { should define_enum_for(:frequency).with_values(%i[weekly biweekly monthly]) }
     it { is_expected.to have_many(:billing_transactions) }
     it { is_expected.to have_many(:billings).through(:billing_transactions) }
+    it { should validate_presence_of(:transaction_date) }
+    it { should validate_numericality_of(:amount).is_greater_than(0.0) }
   end
 
   describe 'validations' do
@@ -63,6 +65,38 @@ RSpec.describe Transaction, type: :model do
         )
 
         expect(transaction.valid?).to be_truthy
+      end
+    end
+
+    describe '#only_one_billing' do
+      let(:billing) { BillingFactory.create(user: user) }
+      let(:other_billing) { BillingFactory.create(user: user) }
+
+      subject(:transaction) do
+        Transaction.create!(
+          balance: balance,
+          amount: 10_000,
+          transaction_date: Time.zone.today,
+          type: type
+        )
+      end
+
+      context 'when there is only one billing transaction' do
+        let!(:billing_transaction) { BillingTransaction.create!(billing: billing, related_transaction: transaction) }
+
+        it 'does not add error' do
+          expect(transaction).to be_valid
+        end
+      end
+
+      context 'when there are multiple billing transactions' do
+        let!(:billing_transaction_1) { BillingTransaction.create!(billing: billing, related_transaction: transaction) }
+        let!(:billing_transaction_2) { BillingTransaction.create!(billing: other_billing, related_transaction: transaction) }
+
+        it 'adds error' do
+          expect(transaction).not_to be_valid
+          expect(transaction.errors[:billing_transactions]).to include('Only one billing is allowed for transactions')
+        end
       end
     end
   end

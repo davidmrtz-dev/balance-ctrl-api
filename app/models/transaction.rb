@@ -20,6 +20,7 @@ class Transaction < ApplicationRecord
   validates :transaction_date, presence: true
   validates :amount, numericality: { greater_than: 0.0 }
   validate :transaction_date_not_after_today, :transaction_date_current_month
+  validate :only_one_billing, on: :update
 
   scope :with_balance_and_user, -> { joins(balance: :user) }
   scope :from_user, ->(user) { where({ balance: { user: user } }) }
@@ -30,6 +31,12 @@ class Transaction < ApplicationRecord
   accepts_nested_attributes_for :billing_transactions
 
   private
+
+  def only_one_billing
+    errors.add(
+      :billing_transactions, 'Only one billing is allowed for transactions'
+    ) if billing_transactions.count > 1
+  end
 
   def remove_previous_billing_transactions
     billing_transactions.each do |billing_transaction|
