@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       get 'balance', to: 'balances#balance'
       get 'categories', to: 'categories#index'
+      get 'billings', to: 'billings#index'
       resources :outcomes, only: %i[index create update destroy] do
         collection do
           get 'current', to: 'outcomes#current'

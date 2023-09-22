@@ -76,11 +76,15 @@ module Api
 
       def create
         outcome =
-          Outcome.new(outcome_params.merge(balance_id: current_user.balance_id).except(:category_id))
+          Outcome.new(outcome_params.merge(balance_id: current_user.balance_id).except(:category_id, :billing_id))
 
         if outcome.save
           if outcome_params[:category_id].present?
             Categorization.create!(category_id: outcome_params[:category_id], transaction_id: outcome.id)
+          end
+
+          if outcome_params[:billing_id].present?
+            BillingTransaction.create!(billing_id: outcome_params[:billing_id], transaction_id: outcome.id)
           end
 
           render json: { outcome: ::Api::OutcomeSerializer.json(outcome) }, status: :created
@@ -123,7 +127,9 @@ module Api
           :transaction_date,
           :quotas,
           :category_id,
-          categorizations_attributes: %i[category_id]
+          :billing_id,
+          categorizations_attributes: %i[category_id],
+          billing_transactions_attributes: %i[billing_id]
         )
       end
 

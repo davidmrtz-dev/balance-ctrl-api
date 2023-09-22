@@ -12,6 +12,7 @@ class Transaction < ApplicationRecord
   enum frequency: { weekly: 0, biweekly: 1, monthly: 2 }
 
   before_update :remove_previous_categorizations, if: :should_remove_previous_categorizations?
+  before_update :remove_previous_billing_transactions, if: :should_remove_previous_billing_transactions?
   after_create :generate_payment, if: -> { transaction_type.eql? 'current' }
   before_destroy :check_same_month, if: -> { transaction_type.eql? 'current' }
   before_discard :check_same_month, if: -> { transaction_type.eql? 'fixed' }
@@ -19,6 +20,7 @@ class Transaction < ApplicationRecord
   validates :transaction_date, presence: true
   validates :amount, numericality: { greater_than: 0.0 }
   validate :transaction_date_not_after_today, :transaction_date_current_month
+  validate :only_one_billing, on: :update
 
   scope :with_balance_and_user, -> { joins(balance: :user) }
   scope :from_user, ->(user) { where({ balance: { user: user } }) }
@@ -26,8 +28,27 @@ class Transaction < ApplicationRecord
   default_scope -> { kept }
 
   accepts_nested_attributes_for :categorizations
+  accepts_nested_attributes_for :billing_transactions
 
   private
+
+  def only_one_billing
+    errors.add(
+      :billing_transactions, 'Only one billing is allowed for transactions'
+    ) if billing_transactions.count > 1
+  end
+
+  def remove_previous_billing_transactions
+    billing_transactions.each do |billing_transaction|
+      billing_transaction.destroy! if billing_transaction.persisted?
+    end
+  end
+
+  def should_remove_previous_billing_transactions?
+    billing_transactions.any?(&:persisted?) &&
+      billing_transactions.any?(&:new_record?) &&
+      transaction_type.eql?('current')
+  end
 
   def remove_previous_categorizations
     categorizations.each do |categorization|

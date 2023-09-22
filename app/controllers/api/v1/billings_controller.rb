@@ -1,10 +1,10 @@
 module Api
   module V1
-    class CategoriesController < ApiController
+    class BillingsController < ApiController
       before_action :authenticate_user!
 
       def index
-        render json: { categories: Category.all }
+        render json: { billings: current_user.billings }
       end
     end
   end
