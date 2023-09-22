@@ -4,8 +4,6 @@ RSpec.describe Transaction, type: :model do
   let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
   let!(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
   let(:type) { %w[Outcome Income].sample }
-  let(:category) { CategoryFactory.create(name: 'Grocery') }
-  let(:other_category) { CategoryFactory.create(name: 'Clothes') }
 
   describe 'associations' do
     it { is_expected.to belong_to(:balance) }
@@ -145,6 +143,9 @@ RSpec.describe Transaction, type: :model do
 
   context '#before_save' do
     describe '#remove_previous_categorizations' do
+      let(:category) { CategoryFactory.create(name: 'Grocery') }
+      let(:other_category) { CategoryFactory.create(name: 'Clothes') }
+
       subject(:transaction) do
         Transaction.create!(
           balance: balance,
@@ -162,6 +163,31 @@ RSpec.describe Transaction, type: :model do
 
           expect(transaction.categorizations.count).to eq 1
           expect(transaction.categories.first).to eq other_category
+        end
+      end
+    end
+
+    describe '#remove_previouse_billing_transactions' do
+      let(:billing) { BillingFactory.create(user: user) }
+      let(:other_billing) { BillingFactory.create(user: user) }
+
+      subject(:transaction) do
+        Transaction.create!(
+          balance: balance,
+          amount: 10_000,
+          transaction_date: Time.zone.today,
+          type: type
+        )
+      end
+
+      before { transaction.billings << billing }
+
+      context 'when there are persisted billing_transactions and new ones' do
+        it 'should remove persisted billing_transactions and keep new one' do
+          transaction.update!(billing_transactions_attributes: [{ billing_id: other_billing.id }])
+
+          expect(transaction.billing_transactions.count).to eq 1
+          expect(transaction.billings.first).to eq other_billing
         end
       end
     end
