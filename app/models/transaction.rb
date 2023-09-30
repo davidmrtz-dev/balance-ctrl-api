@@ -3,7 +3,7 @@ class Transaction < ApplicationRecord
 
   belongs_to :balance
   has_many :payments, as: :paymentable, dependent: :destroy
-  has_many :billing_transactions
+  has_many :billing_transactions, dependent: :destroy
   has_many :billings, through: :billing_transactions
   has_many :categorizations, dependent: :destroy
   has_many :categories, through: :categorizations
