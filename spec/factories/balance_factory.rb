@@ -6,7 +6,7 @@ class BalanceFactory < BaseFactory
   def self.create_with_attachments(params)
     balance = create(params)
     create_actives(balance)
-    create_fixed_passives(balance)
+    create_passives(balance)
     balance
   end
 
@@ -23,12 +23,12 @@ class BalanceFactory < BaseFactory
     end
   end
 
-  def self.create_fixed_passives(balance)
+  def self.create_passives(balance)
     4.times do
       Outcome.create!(
         balance: balance,
         description: Faker::Lorem.sentence(word_count: 6),
-        transaction_date: [Time.zone.now - 2.days, Time.zone.now - 1.day, Time.zone.now].sample,
+        transaction_date: Time.zone.now,
         amount: 1
       )
     end
@@ -37,7 +37,7 @@ class BalanceFactory < BaseFactory
         balance: balance,
         transaction_type: :fixed,
         description: Faker::Lorem.sentence(word_count: 6),
-        transaction_date: [Time.zone.now - 2.days, Time.zone.now - 1.day, Time.zone.now].sample,
+        transaction_date: Time.zone.now,
         quotas: 12,
         amount: 1
       )

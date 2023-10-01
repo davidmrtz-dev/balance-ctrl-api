@@ -37,11 +37,38 @@ RSpec.describe Outcome, type: :model do
         expect(outcome.errors.full_messages).to include("Quotas can't be blank")
       end
     end
+
+    describe '#only_one_billing' do
+      let(:billing) { BillingFactory.create(user: user) }
+      let(:other_billing) { BillingFactory.create(user: user) }
+
+      subject(:outcome) { OutcomeFactory.create(balance: balance) }
+
+      context 'when there is only one billing transaction' do
+        let!(:billing_transaction) { BillingTransaction.create!(billing: billing, related_transaction: outcome) }
+
+        it 'does not add error' do
+          expect(outcome).to be_valid
+        end
+      end
+
+      context 'when there are multiple billing transactions' do
+        let!(:billing_transaction_1) { BillingTransaction.create!(billing: billing, related_transaction: outcome) }
+        let!(:billing_transaction_2) do
+          BillingTransaction.create!(billing: other_billing, related_transaction: outcome)
+        end
+
+        it 'adds error' do
+          expect(outcome).not_to be_valid
+          expect(outcome.errors[:billing_transactions]).to include('Only one billing is allowed per outcome')
+        end
+      end
+    end
   end
 
   context 'when outcome is :current' do
     let!(:outcome) do
-      Outcome.create!(balance: balance, amount: 5_000, transaction_date: Time.zone.now)
+      OutcomeFactory.create(balance: balance, amount: 5_000)
     end
 
     context '#after_create' do
@@ -54,24 +81,38 @@ RSpec.describe Outcome, type: :model do
           expect(outcome.payments.first.amount).to eq 5_000
         end
       end
+
+      describe '#generate_payment' do
+        subject(:transaction) { OutcomeFactory.create(balance: balance) }
+
+        it 'should create one payment' do
+          expect { transaction }.to change { Payment.count }.by 1
+        end
+
+        it 'should set payment status as :applied' do
+          expect(transaction.payments.first.status).to eq 'applied'
+        end
+      end
     end
 
     context '#before_save' do
-      it 'should add the diff from the amount when is positive' do
-        expect(balance.current_amount).to eq 5_000
-        outcome.update!(amount: 2_500)
-        expect(balance.current_amount).to eq 7_500
-      end
+      describe '#update_balance_amount' do
+        it 'should add the diff from the amount when is positive' do
+          expect(balance.current_amount).to eq 5_000
+          outcome.update!(amount: 2_500)
+          expect(balance.current_amount).to eq 7_500
+        end
 
-      it 'should substract the diff from the amount when is negative' do
-        expect(balance.current_amount).to eq 5_000
-        outcome.update!(amount: 7_500)
-        expect(balance.current_amount).to eq 2_500
-      end
+        it 'should substract the diff from the amount when is negative' do
+          expect(balance.current_amount).to eq 5_000
+          outcome.update!(amount: 7_500)
+          expect(balance.current_amount).to eq 2_500
+        end
 
-      it 'should update the corresponding payment amount' do
-        outcome.update!(amount: 2_500)
-        expect(outcome.payments.first.amount).to eq 2_500
+        it 'should update the corresponding payment amount' do
+          outcome.update!(amount: 2_500)
+          expect(outcome.payments.first.amount).to eq 2_500
+        end
       end
     end
 
@@ -87,24 +128,39 @@ RSpec.describe Outcome, type: :model do
           expect(outcome.payments.last.amount).to eq 5_000
         end
       end
+
+      describe '#check_same_month' do
+        it 'should not allow destruction if created in a different month' do
+          outcome.update(created_at: Time.zone.today.prev_month)
+
+          expect { outcome.destroy }.not_to change(Outcome, :count)
+          expect(outcome.errors[:base]).to include('Can only delete outcomes created in the current month')
+        end
+
+        it 'should allow destruction if created in the same month' do
+          outcome.update(created_at: Time.zone.today)
+
+          expect { outcome.destroy }.to change { Outcome.count }.by(-1)
+        end
+      end
     end
   end
 
   context 'when outcome is :fixed' do
+    let!(:outcome) do
+      OutcomeFactory.create(
+        balance: balance,
+        transaction_type: :fixed,
+        amount: 12_000,
+        quotas: 12
+      )
+    end
+
     context '#after_create' do
       describe '#generate_payments' do
-        let(:outcome) do
-          OutcomeFactory.create(
-            balance: balance,
-            transaction_type: :fixed,
-            amount: 12_000,
-            quotas: 12
-          )
-        end
-
         it "'should create n 'quotas' payments" do
           expect do
-            Outcome.create!(
+            OutcomeFactory.create(
               balance: balance,
               amount: 12_000,
               transaction_type: :fixed,
@@ -120,6 +176,60 @@ RSpec.describe Outcome, type: :model do
 
         it 'should create payment with amount as outcome.amount / outcome.quotas' do
           expect(outcome.payments.last.amount).to eq outcome.amount / outcome.quotas
+        end
+      end
+    end
+
+    context '#before_discard' do
+      describe '#check_same_month' do
+        it 'should not allow discarding if created in a different month' do
+          outcome.update(created_at: Time.zone.today.prev_month)
+
+          expect(outcome.discard).to be_falsey
+        end
+
+        it 'should allow discarding if created in the same month' do
+          outcome.update(created_at: Time.zone.today)
+
+          expect(outcome.discard).to be_truthy
+        end
+      end
+    end
+  end
+
+  context '#before_save' do
+    describe '#remove_previous_categorizations' do
+      let(:category) { CategoryFactory.create(name: 'Grocery') }
+      let(:other_category) { CategoryFactory.create(name: 'Clothes') }
+
+      subject(:outcome) { OutcomeFactory.create(balance: balance) }
+
+      before { outcome.categories << category }
+
+      context 'when there are persisted categorizations and new ones' do
+        it 'should remove persisted categorizations and keep new one' do
+          outcome.update!(categorizations_attributes: [{ category_id: other_category.id }])
+
+          expect(outcome.categorizations.count).to eq 1
+          expect(outcome.categories.first).to eq other_category
+        end
+      end
+    end
+
+    describe '#remove_previouse_billing_transactions' do
+      let(:billing) { BillingFactory.create(user: user) }
+      let(:other_billing) { BillingFactory.create(user: user) }
+
+      subject(:outcome) { OutcomeFactory.create(balance: balance) }
+
+      before { outcome.billings << billing }
+
+      context 'when there are persisted billing_transactions and new ones' do
+        it 'should remove persisted billing_transactions and keep new one' do
+          outcome.update!(billing_transactions_attributes: [{ billing_id: other_billing.id }])
+
+          expect(outcome.billing_transactions.count).to eq 1
+          expect(outcome.billings.first).to eq other_billing
         end
       end
     end

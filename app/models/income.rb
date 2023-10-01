@@ -19,7 +19,6 @@ class Income < Transaction
   def update_balance_amount
     balance.current_amount += (amount - amount_was)
     balance.save
-    payments.first.update!(amount: amount)
   end
 
   def add_balance_amount
