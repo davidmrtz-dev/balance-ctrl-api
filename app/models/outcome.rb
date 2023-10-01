@@ -1,12 +1,12 @@
 class Outcome < Transaction
   before_save :update_balance_amount, if: -> { transaction_type.eql?('current') && amount_was.positive? }
-  after_create :generate_payment, if: -> { transaction_type.eql? 'current' }
-  after_create :generate_payments, if: -> { transaction_type.eql?('fixed') }
+  after_create :generate_payments
+  after_discard :generate_refunds
   after_create :substract_balance_amount, if: -> { transaction_type.eql?('current') }
+  after_discard :add_balance_amount, if: -> { transaction_type.eql?('current') }
   before_update :remove_previous_categorizations, if: :should_remove_previous_categorizations?
   before_update :remove_previous_billing_transactions, if: :should_remove_previous_billing_transactions?
-  before_destroy :add_balance_amount, if: -> { transaction_type.eql?('current') }
-  before_discard :check_same_month
+  before_discard :validate_transaction_date_in_current_month
 
   validates :frequency, absence: true
   validates :quotas, absence: true, if: -> { transaction_type.eql?('current') }
@@ -30,12 +30,8 @@ class Outcome < Transaction
 
   private
 
-  def generate_payment
-    payments.create!(amount: amount, status: :applied)
-  end
-
-  def check_same_month
-    return unless created_at.month != Time.zone.now.month
+  def validate_transaction_date_in_current_month
+    return unless transaction_date.month != Time.zone.now.month
 
     errors.add(:base, 'Can only delete outcomes created in the current month')
     raise Errors::UnprocessableEntity, errors.full_messages.join(', ')
@@ -88,10 +84,24 @@ class Outcome < Transaction
   end
 
   def generate_payments
-    amount_for_quota = amount / quotas
+    if transaction_type.eql? 'current'
+      payments.create!(amount: amount, status: :applied)
+    else
+      amount_for_quota = amount / quotas
 
-    quotas.times do
-      payments.create!(amount: amount_for_quota)
+      quotas.times do
+        payments.create!(amount: amount_for_quota)
+      end
+    end
+  end
+
+  def generate_refunds
+    if transaction_type.eql? 'current'
+      payments.create!(amount: amount, status: :refund)
+    else
+      payments.applied.each do |applied|
+        payments.create!(amount: applied.amount, status: :refund)
+      end
     end
   end
 end

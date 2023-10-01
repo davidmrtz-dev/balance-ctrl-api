@@ -242,7 +242,6 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
 
     login_user
 
-
     it 'should allow the outcome deletion' do
       action
 

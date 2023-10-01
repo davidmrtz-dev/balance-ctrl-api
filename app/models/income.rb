@@ -7,8 +7,6 @@ class Income < Transaction
   validates :frequency, absence: true, if: -> { transaction_type.eql?('current') }
   validates :frequency, presence: true, if: -> { transaction_type.eql?('fixed') }
 
-  default_scope -> { order(created_at: :desc) }
-
   private
 
   def substract_balance_amount

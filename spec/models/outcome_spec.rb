@@ -76,22 +76,6 @@ RSpec.describe Outcome, type: :model do
         it 'should substract update balance current_amount' do
           expect(balance.current_amount).to eq 5_000
         end
-
-        it 'should match the payment amount' do
-          expect(outcome.payments.first.amount).to eq 5_000
-        end
-      end
-
-      describe '#generate_payment' do
-        subject(:transaction) { OutcomeFactory.create(balance: balance) }
-
-        it 'should create one payment' do
-          expect { transaction }.to change { Payment.count }.by 1
-        end
-
-        it 'should set payment status as :applied' do
-          expect(transaction.payments.first.status).to eq 'applied'
-        end
       end
     end
 
@@ -116,51 +100,12 @@ RSpec.describe Outcome, type: :model do
       end
     end
 
-    context '#before_destroy' do
+    context '#after_discard' do
       describe '#add_balance_amount' do
         it 'should return the amount to balance current_amount' do
-          outcome.destroy!
+          outcome.discard!
 
           expect(balance.current_amount).to eq 10_000
-        end
-
-        it 'should match the payment amount' do
-          expect(outcome.payments.last.amount).to eq 5_000
-        end
-      end
-    end
-  end
-
-  context 'when outcome is :fixed' do
-    let(:outcome) do
-      OutcomeFactory.create(
-        balance: balance,
-        transaction_type: :fixed,
-        amount: 12_000,
-        quotas: 12
-      )
-    end
-
-    context '#after_create' do
-      describe '#generate_payments' do
-        it "'should create n 'quotas' payments" do
-          expect do
-            OutcomeFactory.create(
-              balance: balance,
-              amount: 12_000,
-              transaction_type: :fixed,
-              transaction_date: Time.zone.now,
-              quotas: 12
-            )
-          end.to change { Payment.count }.by 12
-        end
-
-        it "should create payments with state as 'hold'" do
-          expect(outcome.payments.pluck(:status).uniq.first).to eq 'hold'
-        end
-
-        it 'should create payment with amount as outcome.amount / outcome.quotas' do
-          expect(outcome.payments.last.amount).to eq outcome.amount / outcome.quotas
         end
       end
     end
@@ -207,9 +152,9 @@ RSpec.describe Outcome, type: :model do
   context '#before_discard' do
     let(:outcome) { OutcomeFactory.create(balance: balance) }
 
-    describe '#check_same_month' do
+    describe '#validate_transaction_date_in_current_month' do
       it 'should not allow discarding if created in a different month' do
-        outcome.update(created_at: Time.zone.today.prev_month)
+        outcome.update(transaction_date: Time.zone.today.prev_month)
 
         expect { outcome.discard! }.to raise_error(
           Errors::UnprocessableEntity, /Can only delete outcomes created in the current month/
@@ -217,9 +162,93 @@ RSpec.describe Outcome, type: :model do
       end
 
       it 'should allow discarding if created in the same month' do
-        outcome.update(created_at: Time.zone.today)
+        outcome.update(transaction_date: Time.zone.today)
 
         expect(outcome.discard).to be_truthy
+      end
+    end
+
+    describe '#generate_payments' do
+      context 'when outcome is :current' do
+        subject(:outcome) { OutcomeFactory.create(balance: balance) }
+
+        before { subject.discard! }
+
+        it 'should create one payment with refund status' do
+          expect(subject.payments.refund.count).to eq 1
+        end
+
+        it 'should set payment amount as outcome.amount' do
+          expect(subject.payments.refund.first.amount).to eq subject.amount
+        end
+      end
+
+      context 'when outcome is :fixed' do
+        subject(:outcome) do
+          OutcomeFactory.create(
+            balance: balance,
+            transaction_type: :fixed,
+            amount: 12_000,
+            quotas: 12
+          )
+        end
+
+        before do
+          subject.payments.first(6).each(&:applied!)
+          subject.discard!
+        end
+
+        it 'should create refunds for applied payments' do
+          expect(subject.payments.refund.count).to eq 6
+        end
+
+        it 'should set refund amount equal to applied payment amount' do
+          refund_payments = subject.payments.refund
+          applied_payments = subject.payments.applied
+
+          refund_payments.each_with_index do |refund_payment, index|
+            expect(refund_payment.amount).to eq applied_payments[index].amount
+          end
+        end
+      end
+    end
+  end
+
+  context '#after_create' do
+    describe '#generate_payments' do
+      context 'when outcome is :current' do
+        subject(:outcome) { OutcomeFactory.create(balance: balance) }
+
+        it 'should create one payment with applied status' do
+          expect { subject }.to change { Payment.count }.by 1
+        end
+
+        it 'should set payment amount as outcome.amount' do
+          expect(subject.payments.applied.first.amount).to eq subject.amount
+        end
+      end
+
+      context 'when outcome is :fixed' do
+        subject(:outcome) do
+          OutcomeFactory.create(
+            balance: balance,
+            transaction_type: :fixed,
+            amount: 12_000,
+            quotas: 12
+          )
+        end
+
+        it "'should create n 'quotas' payments" do
+          expect { subject }.to change { Payment.count }.by 12
+        end
+
+        it "should create payments with state as 'hold'" do
+          expect(subject.payments.pluck(:status).uniq.first).to eq 'hold'
+        end
+
+        it 'should create payment with amount as outcome.amount / outcome.quotas' do
+          expect(subject.payments.last.amount).to eq outcome.amount / outcome.quotas
+        end
       end
     end
   end
