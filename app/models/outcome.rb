@@ -6,25 +6,23 @@ class Outcome < Transaction
   before_update :remove_previous_categorizations, if: :should_remove_previous_categorizations?
   before_update :remove_previous_billing_transactions, if: :should_remove_previous_billing_transactions?
   before_destroy :add_balance_amount, if: -> { transaction_type.eql?('current') }
-  before_destroy :check_same_month, if: -> { transaction_type.eql? 'current' }
-  before_discard :check_same_month, if: -> { transaction_type.eql? 'fixed' }
+  before_discard :check_same_month
 
   validates :frequency, absence: true
   validates :quotas, absence: true, if: -> { transaction_type.eql?('current') }
   validates :quotas, presence: true, if: -> { transaction_type.eql?('fixed') }
   validate :only_one_billing, on: :update
 
-  scope :current_types, -> { where(transaction_type: :current) }
-  scope :fixed_types, -> { where(transaction_type: :fixed) }
   scope :by_transaction_date, -> { order(transaction_date: :desc, id: :desc) }
 
   # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   def status
+    return :cancelled if payments.any? { |payment| payment.status == 'cancelled' }
     return :expired if payments.any? { |payment| payment.status == 'expired' }
     return :pending if payments.any? { |payment| payment.status == 'pending' }
-    return :hold if payments.all? { |payment| payment.status == 'hold' } && payments.present?
-    return :paid if payments.all? { |payment| payment.status == 'applied' } && payments.present?
-    return :ok if payments.all? { |payment| payment.status.in?(%w[ok hold]) } && payments.present?
+    return :hold if payments.all? { |payment| payment.status == 'hold' }
+    return :paid if payments.all? { |payment| payment.status == 'applied' }
+    return :ok if payments.all? { |payment| payment.status.in?(%w[applied hold]) }
 
     :unknown
   end
@@ -40,7 +38,7 @@ class Outcome < Transaction
     return unless created_at.month != Time.zone.now.month
 
     errors.add(:base, 'Can only delete outcomes created in the current month')
-    throw :abort
+    raise Errors::UnprocessableEntity, errors.full_messages.join(', ')
   end
 
   def only_one_billing

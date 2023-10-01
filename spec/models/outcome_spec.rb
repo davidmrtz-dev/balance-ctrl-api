@@ -128,26 +128,11 @@ RSpec.describe Outcome, type: :model do
           expect(outcome.payments.last.amount).to eq 5_000
         end
       end
-
-      describe '#check_same_month' do
-        it 'should not allow destruction if created in a different month' do
-          outcome.update(created_at: Time.zone.today.prev_month)
-
-          expect { outcome.destroy }.not_to change(Outcome, :count)
-          expect(outcome.errors[:base]).to include('Can only delete outcomes created in the current month')
-        end
-
-        it 'should allow destruction if created in the same month' do
-          outcome.update(created_at: Time.zone.today)
-
-          expect { outcome.destroy }.to change { Outcome.count }.by(-1)
-        end
-      end
     end
   end
 
   context 'when outcome is :fixed' do
-    let!(:outcome) do
+    let(:outcome) do
       OutcomeFactory.create(
         balance: balance,
         transaction_type: :fixed,
@@ -176,22 +161,6 @@ RSpec.describe Outcome, type: :model do
 
         it 'should create payment with amount as outcome.amount / outcome.quotas' do
           expect(outcome.payments.last.amount).to eq outcome.amount / outcome.quotas
-        end
-      end
-    end
-
-    context '#before_discard' do
-      describe '#check_same_month' do
-        it 'should not allow discarding if created in a different month' do
-          outcome.update(created_at: Time.zone.today.prev_month)
-
-          expect(outcome.discard).to be_falsey
-        end
-
-        it 'should allow discarding if created in the same month' do
-          outcome.update(created_at: Time.zone.today)
-
-          expect(outcome.discard).to be_truthy
         end
       end
     end
@@ -231,6 +200,26 @@ RSpec.describe Outcome, type: :model do
           expect(outcome.billing_transactions.count).to eq 1
           expect(outcome.billings.first).to eq other_billing
         end
+      end
+    end
+  end
+
+  context '#before_discard' do
+    let(:outcome) { OutcomeFactory.create(balance: balance) }
+
+    describe '#check_same_month' do
+      it 'should not allow discarding if created in a different month' do
+        outcome.update(created_at: Time.zone.today.prev_month)
+
+        expect { outcome.discard! }.to raise_error(
+          Errors::UnprocessableEntity, /Can only delete outcomes created in the current month/
+        )
+      end
+
+      it 'should allow discarding if created in the same month' do
+        outcome.update(created_at: Time.zone.today)
+
+        expect(outcome.discard).to be_truthy
       end
     end
   end

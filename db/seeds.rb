@@ -73,4 +73,4 @@ Outcome.all.each do |t|
   )
 end
 
-Outcome.fixed_types.first.payments.first.update!(status: Payment.statuses.keys.second)
+Outcome.fixed.first.payments.first.update!(status: Payment.statuses.keys.second)

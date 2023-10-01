@@ -13,6 +13,8 @@ module Errors
           yield I18n.t('errors.invalid_data'), :conflict
         when Errors::InvalidParameters
           yield exception.message, :unprocessable_entity
+        when Errors::UnprocessableEntity
+          yield exception.message, :unprocessable_entity
         else
           yield I18n.t('errors.internal_server_error'), :internal_server_error
         end

@@ -11,8 +11,6 @@ class Transaction < ApplicationRecord
   enum transaction_type: { current: 0, fixed: 1 }, _default: :current
   enum frequency: { weekly: 0, biweekly: 1, monthly: 2 }
 
-  # after_create :generate_payment, if: -> { transaction_type.eql? 'current' }
-
   validates :transaction_date, presence: true
   validates :amount, numericality: { greater_than: 0.0 }
   validate :transaction_date_not_after_today, :transaction_date_current_month
@@ -38,8 +36,4 @@ class Transaction < ApplicationRecord
 
     errors.add(:transaction_date, 'should be in current month')
   end
-
-  # def generate_payment
-  #   payments.create!(amount: amount, status: :applied)
-  # end
 end

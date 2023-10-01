@@ -26,7 +26,7 @@ module Api
         current_outcomes = Outcome
           .with_balance_and_user
           .from_user(current_user)
-          .current_types.by_transaction_date
+          .current.by_transaction_date
 
         current_page = paginate(
           current_outcomes,
@@ -60,7 +60,7 @@ module Api
         fixed_outcomes = Outcome
           .with_balance_and_user
           .from_user(current_user)
-          .fixed_types.by_transaction_date
+          .fixed.by_transaction_date
 
         fixed_page = paginate(
           fixed_outcomes,
@@ -102,7 +102,7 @@ module Api
       def destroy
         outcome = find_outcome
 
-        if outcome.current? && outcome.destroy!
+        if outcome.discard!
           head :no_content
         else
           render json: { errors: 'Can not delete a fixed outcome ' }, status: :unprocessable_entity
