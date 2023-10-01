@@ -37,11 +37,38 @@ RSpec.describe Outcome, type: :model do
         expect(outcome.errors.full_messages).to include("Quotas can't be blank")
       end
     end
+
+    describe '#only_one_billing' do
+      let(:billing) { BillingFactory.create(user: user) }
+      let(:other_billing) { BillingFactory.create(user: user) }
+
+      subject(:outcome) { OutcomeFactory.create(balance: balance) }
+
+      context 'when there is only one billing transaction' do
+        let!(:billing_transaction) { BillingTransaction.create!(billing: billing, related_transaction: outcome) }
+
+        it 'does not add error' do
+          expect(outcome).to be_valid
+        end
+      end
+
+      context 'when there are multiple billing transactions' do
+        let!(:billing_transaction_1) { BillingTransaction.create!(billing: billing, related_transaction: outcome) }
+        let!(:billing_transaction_2) do
+          BillingTransaction.create!(billing: other_billing, related_transaction: outcome)
+        end
+
+        it 'adds error' do
+          expect(outcome).not_to be_valid
+          expect(outcome.errors[:billing_transactions]).to include('Only one billing is allowed per outcome')
+        end
+      end
+    end
   end
 
   context 'when outcome is :current' do
     let!(:outcome) do
-      Outcome.create!(balance: balance, amount: 5_000, transaction_date: Time.zone.now)
+      OutcomeFactory.create(balance: balance, amount: 5_000)
     end
 
     context '#after_create' do
@@ -49,51 +76,160 @@ RSpec.describe Outcome, type: :model do
         it 'should substract update balance current_amount' do
           expect(balance.current_amount).to eq 5_000
         end
-
-        it 'should match the payment amount' do
-          expect(outcome.payments.first.amount).to eq 5_000
-        end
       end
     end
 
     context '#before_save' do
-      it 'should add the diff from the amount when is positive' do
-        expect(balance.current_amount).to eq 5_000
-        outcome.update!(amount: 2_500)
-        expect(balance.current_amount).to eq 7_500
-      end
+      describe '#update_balance_amount' do
+        it 'should add the diff from the amount when is positive' do
+          expect(balance.current_amount).to eq 5_000
+          outcome.update!(amount: 2_500)
+          expect(balance.current_amount).to eq 7_500
+        end
 
-      it 'should substract the diff from the amount when is negative' do
-        expect(balance.current_amount).to eq 5_000
-        outcome.update!(amount: 7_500)
-        expect(balance.current_amount).to eq 2_500
-      end
+        it 'should substract the diff from the amount when is negative' do
+          expect(balance.current_amount).to eq 5_000
+          outcome.update!(amount: 7_500)
+          expect(balance.current_amount).to eq 2_500
+        end
 
-      it 'should update the corresponding payment amount' do
-        outcome.update!(amount: 2_500)
-        expect(outcome.payments.first.amount).to eq 2_500
+        it 'should update the corresponding payment amount' do
+          outcome.update!(amount: 2_500)
+          expect(outcome.payments.first.amount).to eq 2_500
+        end
       end
     end
 
-    context '#before_destroy' do
+    context '#after_discard' do
       describe '#add_balance_amount' do
         it 'should return the amount to balance current_amount' do
-          outcome.destroy!
+          outcome.discard!
 
           expect(balance.current_amount).to eq 10_000
-        end
-
-        it 'should match the payment amount' do
-          expect(outcome.payments.last.amount).to eq 5_000
         end
       end
     end
   end
 
-  context 'when outcome is :fixed' do
-    context '#after_create' do
-      describe '#generate_payments' do
-        let(:outcome) do
+  context '#before_save' do
+    describe '#remove_previous_categorizations' do
+      let(:category) { CategoryFactory.create(name: 'Grocery') }
+      let(:other_category) { CategoryFactory.create(name: 'Clothes') }
+
+      subject(:outcome) { OutcomeFactory.create(balance: balance) }
+
+      before { outcome.categories << category }
+
+      context 'when there are persisted categorizations and new ones' do
+        it 'should remove persisted categorizations and keep new one' do
+          outcome.update!(categorizations_attributes: [{ category_id: other_category.id }])
+
+          expect(outcome.categorizations.count).to eq 1
+          expect(outcome.categories.first).to eq other_category
+        end
+      end
+    end
+
+    describe '#remove_previouse_billing_transactions' do
+      let(:billing) { BillingFactory.create(user: user) }
+      let(:other_billing) { BillingFactory.create(user: user) }
+
+      subject(:outcome) { OutcomeFactory.create(balance: balance) }
+
+      before { outcome.billings << billing }
+
+      context 'when there are persisted billing_transactions and new ones' do
+        it 'should remove persisted billing_transactions and keep new one' do
+          outcome.update!(billing_transactions_attributes: [{ billing_id: other_billing.id }])
+
+          expect(outcome.billing_transactions.count).to eq 1
+          expect(outcome.billings.first).to eq other_billing
+        end
+      end
+    end
+  end
+
+  context '#before_discard' do
+    let(:outcome) { OutcomeFactory.create(balance: balance) }
+
+    describe '#validate_transaction_date_in_current_month' do
+      it 'should not allow discarding if created in a different month' do
+        outcome.update(transaction_date: Time.zone.today.prev_month)
+
+        expect { outcome.discard! }.to raise_error(
+          Errors::UnprocessableEntity, /Can only delete outcomes created in the current month/
+        )
+      end
+
+      it 'should allow discarding if created in the same month' do
+        outcome.update(transaction_date: Time.zone.today)
+
+        expect(outcome.discard).to be_truthy
+      end
+    end
+
+    describe '#generate_payments' do
+      context 'when outcome is :current' do
+        subject(:outcome) { OutcomeFactory.create(balance: balance) }
+
+        before { subject.discard! }
+
+        it 'should create one payment with refund status' do
+          expect(subject.payments.refund.count).to eq 1
+        end
+
+        it 'should set payment amount as outcome.amount' do
+          expect(subject.payments.refund.first.amount).to eq subject.amount
+        end
+      end
+
+      context 'when outcome is :fixed' do
+        subject(:outcome) do
+          OutcomeFactory.create(
+            balance: balance,
+            transaction_type: :fixed,
+            amount: 12_000,
+            quotas: 12
+          )
+        end
+
+        before do
+          subject.payments.first(6).each(&:applied!)
+          subject.discard!
+        end
+
+        it 'should create refunds for applied payments' do
+          expect(subject.payments.refund.count).to eq 6
+        end
+
+        it 'should set refund amount equal to applied payment amount' do
+          refund_payments = subject.payments.refund
+          applied_payments = subject.payments.applied
+
+          refund_payments.each_with_index do |refund_payment, index|
+            expect(refund_payment.amount).to eq applied_payments[index].amount
+          end
+        end
+      end
+    end
+  end
+
+  context '#after_create' do
+    describe '#generate_payments' do
+      context 'when outcome is :current' do
+        subject(:outcome) { OutcomeFactory.create(balance: balance) }
+
+        it 'should create one payment with applied status' do
+          expect { subject }.to change { Payment.count }.by 1
+        end
+
+        it 'should set payment amount as outcome.amount' do
+          expect(subject.payments.applied.first.amount).to eq subject.amount
+        end
+      end
+
+      context 'when outcome is :fixed' do
+        subject(:outcome) do
           OutcomeFactory.create(
             balance: balance,
             transaction_type: :fixed,
@@ -103,23 +239,15 @@ RSpec.describe Outcome, type: :model do
         end
 
         it "'should create n 'quotas' payments" do
-          expect do
-            Outcome.create!(
-              balance: balance,
-              amount: 12_000,
-              transaction_type: :fixed,
-              transaction_date: Time.zone.now,
-              quotas: 12
-            )
-          end.to change { Payment.count }.by 12
+          expect { subject }.to change { Payment.count }.by 12
         end
 
         it "should create payments with state as 'hold'" do
-          expect(outcome.payments.pluck(:status).uniq.first).to eq 'hold'
+          expect(subject.payments.pluck(:status).uniq.first).to eq 'hold'
         end
 
         it 'should create payment with amount as outcome.amount / outcome.quotas' do
-          expect(outcome.payments.last.amount).to eq outcome.amount / outcome.quotas
+          expect(subject.payments.last.amount).to eq outcome.amount / outcome.quotas
         end
       end
     end

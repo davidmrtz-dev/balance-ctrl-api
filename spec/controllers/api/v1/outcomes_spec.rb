@@ -73,9 +73,8 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
 
       it 'creates an outcome with a category and categorization' do
         expect { create_outcome }
-        .to change { Outcome.count }.by(1)
-        .and change { Categorization.count }.by(1)
-
+          .to change { Outcome.count }.by(1)
+          .and change { Categorization.count }.by(1)
 
         outcome = Outcome.last
 
@@ -94,8 +93,8 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
 
       it 'creates an outcome with a billing and billing transaction' do
         expect { create_outcome }
-        .to change { Outcome.count }.by(1)
-        .and change { BillingTransaction.count }.by(1)
+          .to change { Outcome.count }.by(1)
+          .and change { BillingTransaction.count }.by(1)
 
         outcome = Outcome.last
 
@@ -162,11 +161,17 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
     context 'when category is present' do
       let(:other_category) { CategoryFactory.create }
 
-      before { valid_params.merge!(outcome: valid_params[:outcome].merge(categorizations_attributes: [{ category_id: other_category.id }] )) }
+      before do
+        valid_params.merge!(
+          outcome: valid_params[:outcome]
+            .merge(
+              categorizations_attributes: [{ category_id: other_category.id }]
+            )
+        )
+      end
 
       it 'updates the outcome with the provided category' do
         update_outcome
-
 
         outcome = Outcome.last
 
@@ -181,11 +186,17 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
     context 'when billing is present' do
       let(:other_billing) { BillingFactory.create(user: user) }
 
-      before { valid_params.merge!(outcome: valid_params[:outcome].merge(billing_transactions_attributes: [{ billing_id: other_billing.id }] )) }
+      before do
+        valid_params.merge!(
+          outcome: valid_params[:outcome]
+          .merge(
+            billing_transactions_attributes: [{ billing_id: other_billing.id }]
+          )
+        )
+      end
 
       it 'updates the outcome with the provided category' do
         update_outcome
-
 
         outcome = Outcome.last
 
@@ -225,33 +236,19 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
   end
 
   describe 'DELETE /api/v1/outcomes/:id' do
+    let!(:outcome) { OutcomeFactory.create(balance: balance) }
+
     subject(:action) { delete :destroy, params: { id: outcome.id } }
 
     login_user
 
-    context 'when outcome is current' do
-      let!(:outcome) { OutcomeFactory.create(balance: balance) }
+    it 'should allow the outcome deletion' do
+      action
 
-      it 'should allow the outcome deletion' do
-        expect { action }.to change { Outcome.count }.by(-1)
-          .and change { Payment.count }.by(-1)
+      outcome.reload
 
-        action
-
-        expect(response).to have_http_status(:no_content)
-      end
-    end
-
-    context 'when outcome is fixed' do
-      let!(:outcome) { OutcomeFactory.create(balance: balance, transaction_type: :fixed, quotas: 6) }
-
-      it 'shold not allow the outcome deletion' do
-        expect { action }.not_to change(Outcome, :count)
-
-        action
-
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
+      expect(response).to have_http_status(:no_content)
+      expect(outcome.discarded?).to be_truthy
     end
 
     it 'handles not found' do

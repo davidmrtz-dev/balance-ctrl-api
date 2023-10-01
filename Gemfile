@@ -23,6 +23,7 @@ group :development, :test do
   gem 'rubocop-rails'
   gem 'shoulda-matchers'
   gem 'solargraph'
+  gem 'timecop'
 end
 
 group :development do

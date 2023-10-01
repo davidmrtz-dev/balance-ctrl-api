@@ -11,7 +11,7 @@ module Errors
           yield I18n.t('errors.record_not_found'), :not_found
         when ActiveRecord::RecordNotUnique
           yield I18n.t('errors.invalid_data'), :conflict
-        when Errors::InvalidParameters
+        when Errors::InvalidParameters, Errors::UnprocessableEntity
           yield exception.message, :unprocessable_entity
         else
           yield I18n.t('errors.internal_server_error'), :internal_server_error

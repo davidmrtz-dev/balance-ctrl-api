@@ -33,7 +33,7 @@ RSpec.describe Api::V1::IncomesController, type: :controller do
 
       action
 
-      income = Income.first
+      income = Income.last
 
       expect(response).to have_http_status(:created)
       expect(parsed_response[:income][:id]).to eq income.id
@@ -109,7 +109,6 @@ RSpec.describe Api::V1::IncomesController, type: :controller do
 
       it 'calls to delete the income' do
         expect { action }.to change { Income.count }.by(-1)
-          .and change { Payment.count }.by(-1)
 
         action
 

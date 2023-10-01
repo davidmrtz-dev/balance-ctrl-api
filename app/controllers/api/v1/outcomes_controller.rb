@@ -26,7 +26,7 @@ module Api
         current_outcomes = Outcome
           .with_balance_and_user
           .from_user(current_user)
-          .current_types.by_transaction_date
+          .current.by_transaction_date
 
         current_page = paginate(
           current_outcomes,
@@ -60,7 +60,7 @@ module Api
         fixed_outcomes = Outcome
           .with_balance_and_user
           .from_user(current_user)
-          .fixed_types.by_transaction_date
+          .fixed.by_transaction_date
 
         fixed_page = paginate(
           fixed_outcomes,
@@ -79,13 +79,9 @@ module Api
           Outcome.new(outcome_params.merge(balance_id: current_user.balance_id).except(:category_id, :billing_id))
 
         if outcome.save
-          if outcome_params[:category_id].present?
-            Categorization.create!(category_id: outcome_params[:category_id], transaction_id: outcome.id)
-          end
+          assign_category(outcome)
 
-          if outcome_params[:billing_id].present?
-            BillingTransaction.create!(billing_id: outcome_params[:billing_id], transaction_id: outcome.id)
-          end
+          assign_billing(outcome)
 
           render json: { outcome: ::Api::OutcomeSerializer.json(outcome) }, status: :created
         else
@@ -106,7 +102,7 @@ module Api
       def destroy
         outcome = find_outcome
 
-        if outcome.current? && outcome.destroy!
+        if outcome.discard!
           head :no_content
         else
           render json: { errors: 'Can not delete a fixed outcome ' }, status: :unprocessable_entity
@@ -114,6 +110,18 @@ module Api
       end
 
       private
+
+      def assign_category(outcome)
+        return if outcome_params[:category_id].blank?
+
+        Categorization.create!(category_id: outcome_params[:category_id], transaction_id: outcome.id)
+      end
+
+      def assign_billing(outcome)
+        return if outcome_params[:billing_id].blank?
+
+        BillingTransaction.create!(billing_id: outcome_params[:billing_id], transaction_id: outcome.id)
+      end
 
       def find_outcome
         Outcome.find(params[:id])

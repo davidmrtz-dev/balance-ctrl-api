@@ -21,6 +21,6 @@ module ErrorHandler
   end
 
   def renderer(message, status)
-    render json: { message: message }, status: status
+    render json: { errors: message }, status: status
   end
 end

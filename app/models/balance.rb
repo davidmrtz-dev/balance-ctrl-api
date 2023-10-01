@@ -9,6 +9,6 @@ class Balance < ApplicationRecord
   end
 
   def total_outcomes
-    outcomes.current_types.sum(:amount)
+    outcomes.sum(:amount)
   end
 end
