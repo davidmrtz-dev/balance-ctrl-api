@@ -96,12 +96,8 @@ class Outcome < Transaction
   end
 
   def generate_refunds
-    if transaction_type.eql? 'current'
-      payments.create!(amount: amount, status: :refund)
-    else
-      payments.applied.each do |applied|
-        payments.create!(amount: applied.amount, status: :refund)
-      end
+    payments.applied.each do |applied|
+      payments.create!(amount: applied.amount, status: :refund)
     end
   end
 end

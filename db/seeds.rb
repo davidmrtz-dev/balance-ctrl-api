@@ -17,7 +17,7 @@ user = User.create!(
       4.days.from_now,
       5.days.ago
     ].sample,
-    card_type: :credit
+    billing_type: :credit
   )
 end
 

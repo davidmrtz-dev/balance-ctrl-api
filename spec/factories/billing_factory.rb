@@ -10,7 +10,7 @@ class BillingFactory < BaseFactory
       user: params.fetch(:user, nil),
       name: params.fetch(:name, 'Billing Name'),
       state_date: params.fetch(:state_date, Time.zone.now),
-      card_type: params.fetch(:card_type, :credit)
+      billing_type: params.fetch(:billing_type, :credit)
     }
   end
 end

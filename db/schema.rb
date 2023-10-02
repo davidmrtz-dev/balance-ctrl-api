@@ -38,8 +38,8 @@ ActiveRecord::Schema.define(version: 2023_08_24_023527) do
   create_table "billings", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "name", null: false
-    t.date "state_date", null: false
-    t.integer "card_type", null: false
+    t.date "state_date"
+    t.integer "billing_type", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_billings_on_user_id"
