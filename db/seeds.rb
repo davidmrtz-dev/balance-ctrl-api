@@ -7,19 +7,25 @@ user = User.create!(
   name: 'David'
 )
 
-5.times.each do |i|
-  Billing.create!(
-    user: user,
-    name: "Billing #{i + 1}",
-    state_date: [
-      Time.zone.now,
-      2.days.ago,
-      4.days.from_now,
-      5.days.ago
-    ].sample,
-    billing_type: :credit
-  )
-end
+Billing.create!(
+  user: user,
+  name: "Credit",
+  state_date: 2.days.ago,
+  billing_type: :credit
+)
+
+Billing.create!(
+  user: user,
+  name: "Debit",
+  state_date: 2.days.from_now,
+  billing_type: :debit
+)
+
+Billing.create!(
+  user: user,
+  name: "Cash",
+  billing_type: :cash
+)
 
 balance = Balance.create!(
   user: user,

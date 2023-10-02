@@ -28,6 +28,10 @@ class Outcome < Transaction
   end
   # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
+  def current_billing
+    billings.first
+  end
+
   private
 
   def validate_transaction_date_in_current_month
@@ -85,12 +89,12 @@ class Outcome < Transaction
 
   def generate_payments
     if transaction_type.eql? 'current'
-      payments.create!(amount: amount, status: :applied)
+      payments.create!(amount: amount, status: :hold)
     else
       amount_for_quota = amount / quotas
 
       quotas.times do
-        payments.create!(amount: amount_for_quota)
+        payments.create!(amount: amount_for_quota, status: :hold)
       end
     end
   end

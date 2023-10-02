@@ -168,11 +168,14 @@ RSpec.describe Outcome, type: :model do
       end
     end
 
-    describe '#generate_payments' do
+    describe '#generate_refunds' do
       context 'when outcome is :current' do
         subject(:outcome) { OutcomeFactory.create(balance: balance) }
 
-        before { subject.discard! }
+        before do
+          outcome.payments.first.applied!
+          subject.discard!
+        end
 
         it 'should create one payment with refund status' do
           expect(subject.payments.refund.count).to eq 1
@@ -219,12 +222,12 @@ RSpec.describe Outcome, type: :model do
       context 'when outcome is :current' do
         subject(:outcome) { OutcomeFactory.create(balance: balance) }
 
-        it 'should create one payment with applied status' do
-          expect { subject }.to change { Payment.count }.by 1
+        it 'should create one payment with hold status' do
+          expect(subject.payments.hold.count).to eq 1
         end
 
         it 'should set payment amount as outcome.amount' do
-          expect(subject.payments.applied.first.amount).to eq subject.amount
+          expect(subject.payments.hold.first.amount).to eq subject.amount
         end
       end
 
@@ -239,7 +242,7 @@ RSpec.describe Outcome, type: :model do
         end
 
         it "'should create n 'quotas' payments" do
-          expect { subject }.to change { Payment.count }.by 12
+          expect(subject.payments.hold.count).to eq subject.quotas
         end
 
         it "should create payments with state as 'hold'" do
