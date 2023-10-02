@@ -23,6 +23,12 @@ class Transaction < ApplicationRecord
   accepts_nested_attributes_for :categorizations
   accepts_nested_attributes_for :billing_transactions
 
+  def current_billing
+    return unless billings.any?
+
+    billings.first
+  end
+
   private
 
   def transaction_date_not_after_today

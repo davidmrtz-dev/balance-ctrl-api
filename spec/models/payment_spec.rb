@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe Payment, type: :model do
   let(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
   let(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
+  let(:outcome) { OutcomeFactory.create(balance: balance, amount: 100) }
 
   describe 'associations' do
     it { is_expected.to belong_to(:paymentable) }
@@ -47,6 +48,58 @@ RSpec.describe Payment, type: :model do
               .to include('Paymentable of type current can only have one refund payment')
           end
         end
+      end
+    end
+  end
+
+  describe '#before_update' do
+    describe '#substract_from_balance_amount' do
+      context 'when payment status is :applied' do
+        subject { outcome.payments.hold.first.applied! }
+
+        it 'substracts amount from balance current_amount' do
+          expect { subject }.to change { balance.current_amount }.by(-100)
+        end
+      end
+    end
+
+    describe '#update_balance_amount' do
+      context 'when payment status is :applied && status was :applied' do
+        subject { outcome.update!(amount: 300) }
+
+        before { outcome.payments.hold.first.applied! }
+
+        it 'updates balance current_amount' do
+          expect { subject }.to change { balance.current_amount }.by(-200)
+        end
+      end
+    end
+  end
+
+  describe '#after_create' do
+    describe '#add_to_balance_amount' do
+      context 'when payment status is :refund' do
+        subject { PaymentFactory.create(paymentable: outcome, status: :refund, amount: 200) }
+
+        it 'adds amount to balance current_amount' do
+          expect { subject }.to change { balance.current_amount }.by(200)
+        end
+      end
+    end
+  end
+
+  describe '.reset_to_hold' do
+    context 'when payment status is :applied' do
+      subject { outcome.payments.applied.first.reset_to_hold }
+
+      before { outcome.payments.hold.first.applied! }
+
+      it 'updates payment status to :hold' do
+        expect { subject }.to change { outcome.payments.hold.count }.by(1)
+      end
+
+      it 'adds amount to balance current_amount' do
+        expect { subject }.to change { balance.current_amount }.by(100)
       end
     end
   end
