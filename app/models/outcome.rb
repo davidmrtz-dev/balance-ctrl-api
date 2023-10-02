@@ -1,9 +1,6 @@
 class Outcome < Transaction
-  before_save :update_balance_amount, if: -> { transaction_type.eql?('current') && amount_was.positive? }
   after_create :generate_payments
   after_discard :generate_refunds
-  after_create :substract_balance_amount, if: -> { transaction_type.eql?('current') }
-  after_discard :add_balance_amount, if: -> { transaction_type.eql?('current') }
   before_update :remove_previous_categorizations, if: :should_remove_previous_categorizations?
   before_update :remove_previous_billing_transactions, if: :should_remove_previous_billing_transactions?
   before_discard :validate_transaction_date_in_current_month
@@ -69,22 +66,6 @@ class Outcome < Transaction
     billing_transactions.any?(&:persisted?) &&
       billing_transactions.any?(&:new_record?) &&
       transaction_type.eql?('current')
-  end
-
-  def substract_balance_amount
-    balance.current_amount -= amount
-    balance.save
-  end
-
-  def update_balance_amount
-    balance.current_amount += (amount_was - amount)
-    balance.save
-    payments.first.update!(amount: amount)
-  end
-
-  def add_balance_amount
-    balance.current_amount += amount
-    balance.save
   end
 
   def generate_payments

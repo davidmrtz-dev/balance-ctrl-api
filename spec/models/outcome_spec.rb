@@ -66,51 +66,6 @@ RSpec.describe Outcome, type: :model do
     end
   end
 
-  context 'when outcome is :current' do
-    let!(:outcome) do
-      OutcomeFactory.create(balance: balance, amount: 5_000)
-    end
-
-    context '#after_create' do
-      describe '#substract_balance_amount' do
-        it 'should substract update balance current_amount' do
-          expect(balance.current_amount).to eq 5_000
-        end
-      end
-    end
-
-    context '#before_save' do
-      describe '#update_balance_amount' do
-        it 'should add the diff from the amount when is positive' do
-          expect(balance.current_amount).to eq 5_000
-          outcome.update!(amount: 2_500)
-          expect(balance.current_amount).to eq 7_500
-        end
-
-        it 'should substract the diff from the amount when is negative' do
-          expect(balance.current_amount).to eq 5_000
-          outcome.update!(amount: 7_500)
-          expect(balance.current_amount).to eq 2_500
-        end
-
-        it 'should update the corresponding payment amount' do
-          outcome.update!(amount: 2_500)
-          expect(outcome.payments.first.amount).to eq 2_500
-        end
-      end
-    end
-
-    context '#after_discard' do
-      describe '#add_balance_amount' do
-        it 'should return the amount to balance current_amount' do
-          outcome.discard!
-
-          expect(balance.current_amount).to eq 10_000
-        end
-      end
-    end
-  end
-
   context '#before_save' do
     describe '#remove_previous_categorizations' do
       let(:category) { CategoryFactory.create(name: 'Grocery') }
