@@ -6,5 +6,7 @@ class CreateBillingTransactions < ActiveRecord::Migration[6.1]
 
       t.timestamps
     end
+
+    add_index :billing_transactions, [:billing_id, :transaction_id], unique: true, name: 'unique_billing_transaction'
   end
 end

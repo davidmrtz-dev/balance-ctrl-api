@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_08_18_030230) do
+ActiveRecord::Schema.define(version: 2023_08_24_023527) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 2023_08_18_030230) do
     t.bigint "transaction_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["billing_id", "transaction_id"], name: "unique_billing_transaction", unique: true
     t.index ["billing_id"], name: "index_billing_transactions_on_billing_id"
     t.index ["transaction_id"], name: "index_billing_transactions_on_transaction_id"
   end
@@ -37,11 +38,26 @@ ActiveRecord::Schema.define(version: 2023_08_18_030230) do
   create_table "billings", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "name", null: false
-    t.date "state_date", null: false
-    t.integer "card_type", null: false
+    t.date "state_date"
+    t.integer "billing_type", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_billings_on_user_id"
+  end
+
+  create_table "categories", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "categorizations", force: :cascade do |t|
+    t.bigint "transaction_id", null: false
+    t.bigint "category_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["category_id"], name: "index_categorizations_on_category_id"
+    t.index ["transaction_id"], name: "index_categorizations_on_transaction_id"
   end
 
   create_table "payments", force: :cascade do |t|
@@ -99,5 +115,7 @@ ActiveRecord::Schema.define(version: 2023_08_18_030230) do
   add_foreign_key "billing_transactions", "billings"
   add_foreign_key "billing_transactions", "transactions"
   add_foreign_key "billings", "users"
+  add_foreign_key "categorizations", "categories"
+  add_foreign_key "categorizations", "transactions"
   add_foreign_key "transactions", "balances"
 end

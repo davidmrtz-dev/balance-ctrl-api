@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Transaction, type: :model do
   let!(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
   let!(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
-  let!(:type) { %w[Outcome Income].sample }
+  let(:type) { %w[Outcome Income].sample }
 
   describe 'associations' do
     it { is_expected.to belong_to(:balance) }
@@ -13,6 +13,8 @@ RSpec.describe Transaction, type: :model do
     it { should define_enum_for(:frequency).with_values(%i[weekly biweekly monthly]) }
     it { is_expected.to have_many(:billing_transactions) }
     it { is_expected.to have_many(:billings).through(:billing_transactions) }
+    it { should validate_presence_of(:transaction_date) }
+    it { should validate_numericality_of(:amount).is_greater_than(0.0) }
   end
 
   describe 'validations' do
@@ -67,77 +69,24 @@ RSpec.describe Transaction, type: :model do
     end
   end
 
-  context '#after_create' do
-    subject(:transaction) do
-      Transaction.create!(
-        balance: balance,
-        amount: 10_000,
-        transaction_date: Time.zone.today,
-        type: type
-      )
-    end
+  # context '#after_create' do
+  #   subject(:transaction) do
+  #     Transaction.create!(
+  #       balance: balance,
+  #       amount: 10_000,
+  #       transaction_date: Time.zone.today,
+  #       type: type
+  #     )
+  #   end
 
-    describe '#generate_payment' do
-      it 'should create one payment' do
-        expect { transaction }.to change { Payment.count }.by 1
-      end
+  #   describe '#generate_payment' do
+  #     it 'should create one payment' do
+  #       expect { transaction }.to change { Payment.count }.by 1
+  #     end
 
-      it 'should set payment status as :applied' do
-        expect(transaction.payments.first.status).to eq 'applied'
-      end
-    end
-  end
-
-  context '#before_destroy' do
-    subject(:transaction) do
-      Transaction.create!(
-        balance: balance,
-        amount: 10_000,
-        transaction_date: Time.zone.today,
-        type: type
-      )
-    end
-
-    describe '#check_same_month' do
-      it 'should not allow destruction if created in a different month' do
-        transaction.update(created_at: Time.zone.today.prev_month)
-
-        expect { transaction.destroy }.not_to change(Transaction, :count)
-        expect(transaction.errors[:base]).to include('Can only delete transactions created in the current month')
-      end
-
-      it 'should allow destruction if created in the same month' do
-        transaction.update(created_at: Time.zone.today)
-
-        expect { transaction.destroy }.to change { Transaction.count }.by(-1)
-      end
-    end
-  end
-
-  context '#before_discard' do
-    subject(:transaction) do
-      Transaction.create!(
-        balance: balance,
-        amount: 10_000,
-        transaction_date: Time.zone.today,
-        type: 'Income',
-        transaction_type: :fixed,
-        frequency: :monthly
-      )
-    end
-
-    describe '#check_same_month' do
-      it 'should not allow discarding if created in a different month' do
-        transaction.update(created_at: Time.zone.today.prev_month)
-
-        expect(transaction.discard).to be_falsey
-      end
-
-      it 'should allow discarding if created in the same month' do
-        transaction.update(created_at: Time.zone.today)
-
-        expect(transaction.discard).to be_truthy
-      end
-    end
-  end
+  #     it 'should set payment status as :applied' do
+  #       expect(transaction.payments.first.status).to eq 'applied'
+  #     end
+  #   end
+  # end
 end

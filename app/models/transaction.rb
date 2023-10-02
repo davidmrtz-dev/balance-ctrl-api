@@ -3,15 +3,13 @@ class Transaction < ApplicationRecord
 
   belongs_to :balance
   has_many :payments, as: :paymentable, dependent: :destroy
-  has_many :billing_transactions
+  has_many :billing_transactions, dependent: :destroy
   has_many :billings, through: :billing_transactions
+  has_many :categorizations, dependent: :destroy
+  has_many :categories, through: :categorizations
 
   enum transaction_type: { current: 0, fixed: 1 }, _default: :current
   enum frequency: { weekly: 0, biweekly: 1, monthly: 2 }
-
-  after_create :generate_payment, if: -> { transaction_type.eql? 'current' }
-  before_destroy :check_same_month, if: -> { transaction_type.eql? 'current' }
-  before_discard :check_same_month, if: -> { transaction_type.eql? 'fixed' }
 
   validates :transaction_date, presence: true
   validates :amount, numericality: { greater_than: 0.0 }
@@ -22,14 +20,10 @@ class Transaction < ApplicationRecord
 
   default_scope -> { kept }
 
+  accepts_nested_attributes_for :categorizations
+  accepts_nested_attributes_for :billing_transactions
+
   private
-
-  def check_same_month
-    return unless created_at.month != Time.zone.now.month
-
-    errors.add(:base, 'Can only delete transactions created in the current month')
-    throw :abort
-  end
 
   def transaction_date_not_after_today
     return if transaction_date.nil? || transaction_date < Time.zone.now
@@ -41,9 +35,5 @@ class Transaction < ApplicationRecord
     return if transaction_date.nil? || transaction_date.month == Time.zone.now.month
 
     errors.add(:transaction_date, 'should be in current month')
-  end
-
-  def generate_payment
-    payments.create!(amount: amount, status: :applied)
   end
 end
