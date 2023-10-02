@@ -7,19 +7,25 @@ user = User.create!(
   name: 'David'
 )
 
-5.times.each do |i|
-  Billing.create!(
-    user: user,
-    name: "Billing #{i + 1}",
-    state_date: [
-      Time.zone.now,
-      2.days.ago,
-      4.days.from_now,
-      5.days.ago
-    ].sample,
-    card_type: :credit
-  )
-end
+Billing.create!(
+  user: user,
+  name: "Credit",
+  state_date: 2.days.ago,
+  billing_type: :credit
+)
+
+Billing.create!(
+  user: user,
+  name: "Debit",
+  state_date: 2.days.from_now,
+  billing_type: :debit
+)
+
+Billing.create!(
+  user: user,
+  name: "Cash",
+  billing_type: :cash
+)
 
 balance = Balance.create!(
   user: user,
@@ -44,33 +50,33 @@ end
   )
 end
 
-5.times do
-  Outcome.create!(
-    balance: balance,
-    description: Faker::Commerce.product_name,
-    transaction_date: Time.zone.now,
-    amount: Faker::Number.decimal(l_digits: 3, r_digits: 2)
-  )
-end
+# 5.times do
+#   Outcome.create!(
+#     balance: balance,
+#     description: Faker::Commerce.product_name,
+#     transaction_date: Time.zone.now,
+#     amount: Faker::Number.decimal(l_digits: 3, r_digits: 2)
+#   )
+# end
 
-Outcome.create!(
-  balance: balance,
-  transaction_type: 'fixed',
-  quotas: 6,
-  description: Faker::Commerce.product_name,
-  transaction_date: Time.zone.now,
-  amount: Faker::Number.decimal(l_digits: 4, r_digits: 2)
-)
+# Outcome.create!(
+#   balance: balance,
+#   transaction_type: 'fixed',
+#   quotas: 6,
+#   description: Faker::Commerce.product_name,
+#   transaction_date: Time.zone.now,
+#   amount: Faker::Number.decimal(l_digits: 4, r_digits: 2)
+# )
 
-Outcome.all.each do |t|
-  cat = Category.all.sample
+# Outcome.all.each do |t|
+#   cat = Category.all.sample
 
-  t.categories << cat
+#   t.categories << cat
 
-  BillingTransaction.create!(
-    billing: Billing.all.sample,
-    related_transaction: t
-  )
-end
+#   BillingTransaction.create!(
+#     billing: Billing.all.sample,
+#     related_transaction: t
+#   )
+# end
 
-Outcome.fixed.first.payments.first.update!(status: Payment.statuses.keys.second)
+# Outcome.fixed.first.payments.first.update!(status: Payment.statuses.keys.second)

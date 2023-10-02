@@ -1,9 +1,6 @@
 class Outcome < Transaction
-  before_save :update_balance_amount, if: -> { transaction_type.eql?('current') && amount_was.positive? }
   after_create :generate_payments
   after_discard :generate_refunds
-  after_create :substract_balance_amount, if: -> { transaction_type.eql?('current') }
-  after_discard :add_balance_amount, if: -> { transaction_type.eql?('current') }
   before_update :remove_previous_categorizations, if: :should_remove_previous_categorizations?
   before_update :remove_previous_billing_transactions, if: :should_remove_previous_billing_transactions?
   before_discard :validate_transaction_date_in_current_month
@@ -27,6 +24,10 @@ class Outcome < Transaction
     :unknown
   end
   # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+
+  def current_billing
+    billings.first
+  end
 
   private
 
@@ -67,41 +68,21 @@ class Outcome < Transaction
       transaction_type.eql?('current')
   end
 
-  def substract_balance_amount
-    balance.current_amount -= amount
-    balance.save
-  end
-
-  def update_balance_amount
-    balance.current_amount += (amount_was - amount)
-    balance.save
-    payments.first.update!(amount: amount)
-  end
-
-  def add_balance_amount
-    balance.current_amount += amount
-    balance.save
-  end
-
   def generate_payments
     if transaction_type.eql? 'current'
-      payments.create!(amount: amount, status: :applied)
+      payments.create!(amount: amount, status: :hold)
     else
       amount_for_quota = amount / quotas
 
       quotas.times do
-        payments.create!(amount: amount_for_quota)
+        payments.create!(amount: amount_for_quota, status: :hold)
       end
     end
   end
 
   def generate_refunds
-    if transaction_type.eql? 'current'
-      payments.create!(amount: amount, status: :refund)
-    else
-      payments.applied.each do |applied|
-        payments.create!(amount: applied.amount, status: :refund)
-      end
+    payments.applied.each do |applied|
+      payments.create!(amount: applied.amount, status: :refund)
     end
   end
 end
