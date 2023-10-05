@@ -11,12 +11,9 @@ jobs:
       - uses: actions/setup-ruby@v1
         with:
           ruby-version: ">=2.7.x"
-      - name: Install Dependencies
+      - name: Setup RSpec
         run: |
-          sudo apt install -yqq libpq-dev
-          gem install bundler
-      - name: Install Gems
-        run: |
-          bundle install
+          [ -f Gemfile ] && bundle _2.3.3_ update --bundler && bundle
+          gem install --no-document rspec -v '>=3.0, < 4.0'
       - name: RSpec Report
-        run: bundle exec rspec spec --force-color --format documentation
+        run: rspec --force-color --format documentation
