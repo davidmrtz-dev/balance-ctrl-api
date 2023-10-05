@@ -14,6 +14,7 @@ jobs:
       - name: Setup RSpec
         run: |
           [ -f Gemfile ] && bundle _2.1.4_ update --bundler && bundle
+          gem install --no-document rubocop-rails -v '>= 2.0, < 3.0'
           gem install --no-document rspec -v '>=3.0, < 4.0'
       - name: RSpec Report
         run: rspec --force-color --format documentation
