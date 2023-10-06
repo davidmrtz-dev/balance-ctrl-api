@@ -4,6 +4,7 @@ default: &default
   timeout: 5000
   reconnect: true
   encoding: unicode
+  port: 9993
 
 development:
   <<: *default
