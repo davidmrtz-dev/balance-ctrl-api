@@ -7,10 +7,18 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     services:
-      postgres:
-        image: postgres:11.5
-        ports: ["5432:5432"]
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      db:
+        image: postgres:11
+        ports: ['5432:5432']
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v1
 
@@ -30,21 +38,14 @@ jobs:
         run: |
           sudo apt-get -yqq install libpq-dev
 
-          - name: Build App
-          env:
-            PGHOST: localhost
-            PGUSER: postgres
-            RAILS_ENV: test
-          run: |
-            gem install bundler
-            bundle config path vendor/bundle
-            bundle install --jobs 4 --retry 3
-            bin/rails db:setup
-
-      - name: Run rails tests
-        run: |
-          bundle exec rspec
+      - name: Build and run tests
         env:
-          PGHOST: localhost
-          PGUSER: postgres
           RAILS_ENV: test
+          DB_HOST: localhost
+          DB_USER: postgres
+          DB_PASS: postgres
+        run: |
+          gem install bundler:1.17.2
+          bundle install --jobs 4 --retry 3
+          bundle exec rake db:drop db:create db:schema:load
+          bundle exec rspec
