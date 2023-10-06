@@ -3,16 +3,27 @@ name: Tests
 on: pull_request
 
 jobs:
-  rspec:
-    name: RSpec
-    runs-on: ubuntu-22.04
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        ports: ['5432:5432']
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-ruby@v1
+      - name: Setup environment
+        uses: ./.github/actions/setup
         with:
-          ruby-version: ">=2.7.4"
-      - name: Setup RSpec
+          ruby-version: ${{ env.RUBY }}
+      - name: Run tests
+        env:
+          DATABASE_URL: postgres://postgres:password@localhost:5432/test
+          RAILS_ENV: test
+          PG_USER: postgres
         run: |
-          [ -f Gemfile ] && bundle _2.1.4_ update --bundler && bundle
-      - name: RSpec Report
-        run: rspec --force-color --format documentation
+          bin/rails db:create db:migrate
+          bundle exec rspec
