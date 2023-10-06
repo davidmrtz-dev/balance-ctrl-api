@@ -30,15 +30,29 @@ RSpec.describe BillingTransaction, type: :model do
 
   describe '#after_create' do
     describe '#update_payments' do
-      context 'when transaction_type is :current && billing_type is :cash or :debit' do
-        let(:billing) { BillingFactory.create(user: user, billing_type: :cash) }
+      context 'when transaction_type is :current' do
+        context 'when billing_type is :cash or :debit' do
+          let(:billing) { BillingFactory.create(user: user, billing_type: :cash) }
 
-        subject(:outcome) { OutcomeFactory.create(balance: balance) }
+          subject(:outcome) { OutcomeFactory.create(balance: balance) }
 
-        before { BillingTransaction.create(billing: billing, related_transaction: subject) }
+          before { BillingTransaction.create(billing: billing, related_transaction: subject) }
 
-        it 'updates status of payment to :applied' do
-          expect(subject.payments.applied.count).to eq(1)
+          it 'updates status of payment to :applied' do
+            expect(subject.payments.applied.count).to eq(1)
+          end
+        end
+
+        context 'when billing_type is :credit' do
+          let(:billing) { BillingFactory.create(user: user, billing_type: :credit) }
+
+          subject(:outcome) { OutcomeFactory.create(balance: balance) }
+
+          before { BillingTransaction.create(billing: billing, related_transaction: subject) }
+
+          it 'updates status of payment to :hold' do
+            expect(subject.payments.hold.count).to eq(1)
+          end
         end
       end
     end

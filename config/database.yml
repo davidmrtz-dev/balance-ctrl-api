@@ -4,7 +4,6 @@ default: &default
   timeout: 5000
   reconnect: true
   encoding: unicode
-  port: 9993
 
 development:
   <<: *default
@@ -16,6 +15,10 @@ development:
 test:
   <<: *default
   database: balance-ctrl-enhanced-test
+  host:     <%= ENV.fetch('PG_HOST',  'localhost') %>
+  username: <%= ENV.fetch('PG_USER', 'postgres') %>
+  password: <%= ENV.fetch('PG_PASSWORD', 'postgres') %>
+  port:     <%= ENV.fetch('PG_PORT', 5432) %>
 
 production:
   <<: *default

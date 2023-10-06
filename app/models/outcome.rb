@@ -3,12 +3,14 @@ class Outcome < Transaction
   after_discard :generate_refunds
   before_update :remove_previous_categorizations, if: :should_remove_previous_categorizations?
   before_update :remove_previous_billing_transactions, if: :should_remove_previous_billing_transactions?
+  after_update :update_payment, if: -> { transaction_type.eql?('current') && payments.applied.any? }
   before_discard :validate_transaction_date_in_current_month
 
   validates :frequency, absence: true
   validates :quotas, absence: true, if: -> { transaction_type.eql?('current') }
   validates :quotas, presence: true, if: -> { transaction_type.eql?('fixed') }
   validate :only_one_billing, on: :update
+  validate :billing_transaction_changed, on: :update, if: -> { billings.any? && billing_transactions.last.new_record? }
 
   scope :by_transaction_date, -> { order(transaction_date: :desc, id: :desc) }
 
@@ -25,11 +27,13 @@ class Outcome < Transaction
   end
   # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
-  def current_billing
-    billings.first
-  end
-
   private
+
+  def billing_transaction_changed
+    return unless current_billing.eql?(billing_transactions.last.billing)
+
+    errors.add(:base, 'New billing should be different from previous')
+  end
 
   def validate_transaction_date_in_current_month
     return unless transaction_date.month != Time.zone.now.month
@@ -84,5 +88,9 @@ class Outcome < Transaction
     payments.applied.each do |applied|
       payments.create!(amount: applied.amount, status: :refund)
     end
+  end
+
+  def update_payment
+    payments.applied.first.update!(amount: amount)
   end
 end
