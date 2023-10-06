@@ -9,7 +9,7 @@ jobs:
     services:
       db:
         image: postgres:11
-        ports: ['9993:5432']
+        ports: ['9993:9993']
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
