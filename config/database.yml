@@ -7,19 +7,19 @@ default: &default
 
 development:
   <<: *default
-  database: balance-ctrl-enhanced-development
-  host: localhost
-  username: postgres
-  password: postgres
+  database: <%= ENV.fetch("DB_NAME") %>
+  host: <%= ENV.fetch("DB_HOSTNAME") %>
+  username: <%= ENV.fetch("DB_USERNAME") %>
+  password: <%= ENV.fetch("DB_PASSWORD") %>
+  port: <%= ENV.fetch("DB_PORT") %>
 
 test:
   <<: *default
-  database: balance-ctrl-enhanced-test
-  host:     <%= ENV.fetch('PG_HOST',  'localhost') %>
-  username: <%= ENV.fetch('PG_USER', 'postgres') %>
-  password: <%= ENV.fetch('PG_PASSWORD', 'postgres') %>
-  port:     <%= ENV.fetch('PG_PORT', 5432) %>
+  database: <%= ENV.fetch("DB_NAME") %>
+  host: <%= ENV.fetch("DB_HOSTNAME") %>
+  username: <%= ENV.fetch("DB_USERNAME") %>
+  password: <%= ENV.fetch("DB_PASSWORD") %>
+  port: <%= ENV.fetch("DB_PORT") %>
 
 production:
   <<: *default
-  database: balance-ctrl-enhanced-production

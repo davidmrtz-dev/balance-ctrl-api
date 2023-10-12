@@ -47,9 +47,11 @@ jobs:
       - name: Build and run tests
         env:
           RAILS_ENV: test
-          PG_HOST: localhost
-          PG_USER: postgres
-          PG_PASSWORD: postgres
+          DB_NAME: balance-ctrl-enhanced-test
+          DB_HOSTNAME: localhost
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+          DB_PORT: 5432
         run: |
           rails db:migrate
           bundle exec rspec
