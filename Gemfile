@@ -7,6 +7,7 @@ gem 'devise', '~> 4.7', '>= 4.7.3'
 gem 'devise_token_auth'
 gem 'discard', '~> 1.2'
 gem 'faker', '>= 2.13.0'
+gem 'figaro'
 gem 'net-http' # Temp warn fix
 gem 'pg', '>= 0.18', '< 2.0'
 gem 'rack-cors'
@@ -15,7 +16,6 @@ gem 'rails', '~> 6.1.1'
 group :development, :test do
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
   gem 'database_cleaner-active_record'
-  gem 'dotenv-rails'
   gem 'guard'
   gem 'guard-rspec', require: false
   gem 'rspec-rails'
