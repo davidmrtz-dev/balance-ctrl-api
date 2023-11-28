@@ -2,25 +2,37 @@ module Api
   module V1
     class OutcomesController < ApiController
       include Pagination
+      include PaginationV1
 
       before_action :authenticate_user!
 
+      # rubocop:disable Metrics/AbcSize
       def index
         outcomes = Outcome
           .with_balance_and_user
           .from_user(current_user)
           .by_transaction_date
 
-        page = paginate(
+        page = params[:page].nil? ? 1 : params[:page].to_i
+        page_size = params[:page_size].nil? ? 10 : params[:page_size].to_i
+
+        paginated = apply_pagination(
           outcomes,
-          limit: params[:limit],
-          offset: params[:offset]
+          page: page,
+          page_size: page_size
         )
 
         render json: {
-          outcomes: ::Api::OutcomesSerializer.json(page)
+          outcomes: ::Api::OutcomesSerializer.json(paginated),
+          meta: {
+            current_page: page,
+            per_page: page_size,
+            total_pages: (outcomes.count / page_size) + ((outcomes.count % page_size).positive? ? 1 : 0),
+            total_per_page: paginated.count
+          }
         }
       end
+      # rubocop:enable Metrics/AbcSize
 
       def current
         current_outcomes = Outcome
@@ -49,6 +61,8 @@ module Api
           limit: params[:limit],
           offset: params[:offset]
         )
+
+        sleep 10
 
         render json: {
           outcomes: ::Api::OutcomesSerializer.json(query_page),
