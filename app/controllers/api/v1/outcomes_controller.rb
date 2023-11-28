@@ -7,30 +7,10 @@ module Api
       before_action :authenticate_user!
 
       def index
-        outcomes = Outcome
-          .with_balance_and_user
-          .from_user(current_user)
-          .by_transaction_date
+        outcomes = build_outcomes
+        paginated = paginate_outcomes(outcomes)
 
-        page = params[:page].nil? ? 1 : params[:page].to_i
-        page_size = params[:page_size].nil? ? 10 : params[:page_size].to_i
-
-        paginated = apply_pagination(
-          outcomes,
-          page: page,
-          page_size: page_size
-        )
-
-
-        render json: {
-          outcomes: ::Api::OutcomesSerializer.json(paginated),
-          meta: {
-            current_page: page,
-            per_page: page_size,
-            total_pages: (outcomes.count / page_size) + ((outcomes.count % page_size).positive? ? 1 : 0),
-            total_per_page: paginated.count
-          }
-        }
+        render_json_response(paginated, outcomes)
       end
 
       def current
@@ -60,6 +40,8 @@ module Api
           limit: params[:limit],
           offset: params[:offset]
         )
+
+        sleep 10
 
         render json: {
           outcomes: ::Api::OutcomesSerializer.json(query_page),
@@ -121,6 +103,32 @@ module Api
       end
 
       private
+
+      def build_outcomes
+        Outcome
+          .with_balance_and_user
+          .from_user(current_user)
+          .by_transaction_date
+      end
+
+      def paginate_outcomes(outcomes)
+        page = params.fetch(:page, 1).to_i
+        page_size = params.fetch(:page_size, 10).to_i
+
+        apply_pagination(outcomes, page: page, page_size: page_size)
+      end
+
+      def render_json_response(paginated, outcomes)
+        render json: {
+          outcomes: ::Api::OutcomesSerializer.json(paginated),
+          meta: {
+            current_page: paginated.current_page,
+            per_page: paginated.limit_value,
+            total_pages: paginated.total_pages,
+            total_per_page: outcomes.count
+          }
+        }
+      end
 
       def assign_category(outcome)
         return if outcome_params[:category_id].blank?
