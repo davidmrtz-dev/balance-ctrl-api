@@ -68,25 +68,4 @@ RSpec.describe Transaction, type: :model do
       end
     end
   end
-
-  # context '#after_create' do
-  #   subject(:transaction) do
-  #     Transaction.create!(
-  #       balance: balance,
-  #       amount: 10_000,
-  #       transaction_date: Time.zone.today,
-  #       type: type
-  #     )
-  #   end
-
-  #   describe '#generate_payment' do
-  #     it 'should create one payment' do
-  #       expect { transaction }.to change { Payment.count }.by 1
-  #     end
-
-  #     it 'should set payment status as :applied' do
-  #       expect(transaction.payments.first.status).to eq 'applied'
-  #     end
-  #   end
-  # end
 end
