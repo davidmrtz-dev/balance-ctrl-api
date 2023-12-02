@@ -62,8 +62,6 @@ module Api
           offset: params[:offset]
         )
 
-        sleep 10
-
         render json: {
           outcomes: ::Api::OutcomesSerializer.json(query_page),
           total_pages: total_pages(query_result.count)
