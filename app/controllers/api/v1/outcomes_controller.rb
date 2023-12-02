@@ -2,6 +2,7 @@ module Api
   module V1
     class OutcomesController < ApiController
       include Pagination
+      include PaginationV1
 
       before_action :authenticate_user!
 
@@ -11,14 +12,23 @@ module Api
           .from_user(current_user)
           .by_transaction_date
 
-        page = paginate(
+        page = set_page
+        page_size = set_page_size
+
+        paginated = apply_pagination(
           outcomes,
-          limit: params[:limit],
-          offset: params[:offset]
+          page: page,
+          page_size: page_size
         )
 
         render json: {
-          outcomes: ::Api::OutcomesSerializer.json(page)
+          outcomes: ::Api::OutcomesSerializer.json(paginated),
+          meta: {
+            current_page: page,
+            per_page: page_size,
+            total_pages: set_total_pages(outcomes.count, page_size),
+            total_per_page: paginated.count
+          }
         }
       end
 
@@ -147,6 +157,18 @@ module Api
           :start_date,
           :end_date
         )
+      end
+
+      def set_page
+        params[:page].nil? ? 1 : params[:page].to_i
+      end
+
+      def set_page_size
+        params[:page_size].nil? ? 10 : params[:page_size].to_i
+      end
+
+      def set_total_pages(count, page_size)
+        (count / page_size) + ((count % page_size).positive? ? 1 : 0)
       end
 
       def total_pages(count)
