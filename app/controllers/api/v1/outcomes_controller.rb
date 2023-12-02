@@ -6,15 +6,14 @@ module Api
 
       before_action :authenticate_user!
 
-      # rubocop:disable Metrics/AbcSize
       def index
         outcomes = Outcome
           .with_balance_and_user
           .from_user(current_user)
           .by_transaction_date
 
-        page = params[:page].nil? ? 1 : params[:page].to_i
-        page_size = params[:page_size].nil? ? 10 : params[:page_size].to_i
+        page = set_page
+        page_size = set_page_size
 
         paginated = apply_pagination(
           outcomes,
@@ -27,12 +26,11 @@ module Api
           meta: {
             current_page: page,
             per_page: page_size,
-            total_pages: (outcomes.count / page_size) + ((outcomes.count % page_size).positive? ? 1 : 0),
+            total_pages: set_total_pages(outcomes.count, page_size),
             total_per_page: paginated.count
           }
         }
       end
-      # rubocop:enable Metrics/AbcSize
 
       def current
         current_outcomes = Outcome
@@ -159,6 +157,18 @@ module Api
           :start_date,
           :end_date
         )
+      end
+
+      def set_page
+        params[:page].nil? ? 1 : params[:page].to_i
+      end
+
+      def set_page_size
+        params[:page_size].nil? ? 10 : params[:page_size].to_i
+      end
+
+      def set_total_pages(count, page_size)
+        (count / page_size) + ((count % page_size).positive? ? 1 : 0)
       end
 
       def total_pages(count)
