@@ -70,4 +70,27 @@ RSpec.describe Api::V1::CategoriesController, type: :controller do
       expect(category.name).to eq 'Clothes'
     end
   end
+
+  describe 'DELETE /api/v1/categories/:id' do
+    let!(:category) { CategoryFactory.create }
+
+    subject(:action) { delete :destroy, params: { id: category.id } }
+
+    login_user
+
+    it 'discards a category' do
+      action
+
+      category.reload
+
+      expect(response).to have_http_status(:no_content)
+      expect(category.discarded?).to be_truthy
+    end
+
+    it 'handles not found' do
+      delete :destroy, params: { id: 0 }
+
+      expect(response).to have_http_status(:not_found)
+    end
+  end
 end

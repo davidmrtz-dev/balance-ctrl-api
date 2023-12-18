@@ -28,6 +28,14 @@ module Api
         end
       end
 
+      def destroy
+        category = find_category
+
+        category.discard!
+
+        head :no_content
+      end
+
       private
 
       def find_category
