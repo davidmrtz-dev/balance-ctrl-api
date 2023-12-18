@@ -30,7 +30,7 @@ RSpec.describe Api::V1::CategoriesController, type: :controller do
     it 'creates a category' do
       expect { create_category }.to change { Category.count }.by(1)
 
-      category = Category.last
+      category = Category.first
 
       expect(response).to have_http_status(:created)
       expect(parsed_response[:category][:id]).to eq category.id
