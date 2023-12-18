@@ -4,7 +4,7 @@ module Api
       before_action :authenticate_user!
 
       def index
-        render json: { categories: Category.all }
+        render json: { categories: ::Api::CategoriesSerializer.json(Category.all) }
       end
     end
   end
