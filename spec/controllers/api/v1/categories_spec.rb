@@ -37,4 +37,37 @@ RSpec.describe Api::V1::CategoriesController, type: :controller do
       expect(category.name).to eq 'Food'
     end
   end
+
+  describe 'PUT /api/v1/categories/:id' do
+    let(:category) do
+      CategoryFactory.create(
+        name: 'Food'
+      )
+    end
+
+    let(:valid_params) do
+      {
+        id: category.id,
+        category: {
+          name: 'Clothes'
+        }
+      }
+    end
+
+    subject(:update_category) { put :update, params: valid_params }
+
+    login_user
+
+    it 'updates a category' do
+      expect(category.name).to eq 'Food'
+
+      update_category
+
+      category.reload
+
+      expect(response).to have_http_status(:ok)
+      expect(parsed_response[:category][:id]).to eq category.id
+      expect(category.name).to eq 'Clothes'
+    end
+  end
 end
