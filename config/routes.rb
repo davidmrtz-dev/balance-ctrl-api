@@ -4,7 +4,6 @@ Rails.application.routes.draw do
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
       get 'balance', to: 'balances#balance'
-      get 'categories', to: 'categories#index'
       get 'billings', to: 'billings#index'
       resources :outcomes, only: %i[index create update destroy] do
         collection do
@@ -14,6 +13,7 @@ Rails.application.routes.draw do
         end
       end
       resources :incomes, only: %i[index create update destroy]
+      resources :categories, only: %i[index create update destroy]
     end
   end
 end
