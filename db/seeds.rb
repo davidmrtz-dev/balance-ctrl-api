@@ -41,53 +41,55 @@ balance = Balance.create!(
   Category.create!(name: name)
 end
 
-10.times do
-  Income.create!(
-    balance: balance,
-    description: Faker::Commerce.product_name,
-    amount: Faker::Number.decimal(l_digits: 4, r_digits: 2),
-    transaction_date: Time.zone.now
-  )
-end
+Income.create!(
+  balance: balance,
+  description: Faker::Commerce.product_name,
+  amount: 50_000.00,
+  transaction_date: Time.zone.now
+)
 
-25.times do
+5.times do
   Outcome.create!(
     balance: balance,
     description: Faker::Commerce.product_name,
     transaction_date: Time.zone.now,
-    amount: Faker::Number.decimal(l_digits: 3, r_digits: 2)
+    amount: 2_000.00
   )
 end
 
 Outcome.create!(
   balance: balance,
   transaction_type: 'fixed',
-  quotas: 6,
+  quotas: 2,
   description: Faker::Commerce.product_name,
   transaction_date: Time.zone.now,
   amount: Faker::Number.decimal(l_digits: 4, r_digits: 2)
 )
 
-Outcome.current.each do |t|
+cash = Billing.cash.first
+debit = Billing.debit.first
+credit = Billing.credit.first
+
+Outcome.all.each do |t|
   cat = Category.all.sample
 
   t.categories << cat
 
-  BillingTransaction.create!(
-    billing: Billing.all.sample,
-    related_transaction: t
-  )
-end
-
-Outcome.fixed.each do |t|
-  cat = Category.all.sample
-
-  t.categories << cat
+  billing = if t.transaction_type.eql?('current')
+    [cash, debit].sample
+  else
+    credit
+  end
 
   BillingTransaction.create!(
-    billing: Billing.credit.first,
+    billing: billing,
     related_transaction: t
   )
-end
 
-Outcome.fixed.first.payments.first.update!(status: Payment.statuses.keys.second)
+  t.payments.each do |p|
+    BalancePayment.create!(
+      balance: balance,
+      payment: p
+    )
+  end
+end

@@ -32,7 +32,7 @@ class Transaction < ApplicationRecord
   private
 
   def transaction_date_not_after_today
-    return if transaction_date.nil? || transaction_date < Time.zone.now
+    return if transaction_date.nil? || (transaction_date < Time.zone.now && transaction_date.year <= Time.zone.now.year)
 
     errors.add(:transaction_date, 'can not be after today')
   end
