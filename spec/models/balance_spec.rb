@@ -6,5 +6,7 @@ RSpec.describe Balance, type: :model do
     it { is_expected.to have_many(:transactions).dependent(:destroy) }
     it { is_expected.to have_many(:outcomes).dependent(:destroy) }
     it { is_expected.to have_many(:incomes).dependent(:destroy) }
+    it { is_expected.to have_many(:balance_payments).dependent(:destroy) }
+    it { is_expected.to have_many(:payments).through(:balance_payments) }
   end
 end
