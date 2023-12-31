@@ -51,7 +51,7 @@ module Api
       end
 
       def search
-        balance = current_user.balance
+        balance = current_user.current_balance
         query_result = Query::OutcomesSearchService.new(balance, search_params).call
 
         query_page = paginate(
@@ -86,7 +86,7 @@ module Api
 
       def create
         outcome =
-          Outcome.new(outcome_params.merge(balance_id: current_user.balance_id).except(:category_id, :billing_id))
+          Outcome.new(outcome_params.merge(balance_id: current_user.current_balance&.id).except(:category_id, :billing_id))
 
         if outcome.save
           assign_category(outcome)
