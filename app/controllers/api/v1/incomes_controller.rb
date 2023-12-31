@@ -23,7 +23,7 @@ module Api
 
       def create
         income =
-          Income.new(income_params.merge(balance_id: current_user.balance_id))
+          Income.new(income_params.merge(balance_id: current_user.current_balance&.id))
 
         if income.save
           render json: { income: ::Api::IncomeSerializer.json(income) }, status: :created

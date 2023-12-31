@@ -4,6 +4,8 @@ class Balance < ApplicationRecord
   has_many :incomes, dependent: :destroy
   has_many :outcomes, dependent: :destroy
 
+  default_scope -> { order(created_at: :desc) }
+
   def total_incomes
     incomes.sum(:amount)
   end
