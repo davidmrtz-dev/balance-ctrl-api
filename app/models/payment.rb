@@ -1,5 +1,7 @@
 class Payment < ApplicationRecord
   belongs_to :paymentable, polymorphic: true
+  has_many :balance_payments, dependent: :destroy
+  has_many :balances, through: :balance_payments
 
   enum status: { hold: 0, pending: 1, applied: 2, expired: 3, cancelled: 4, refund: 5 }, _default: :hold
 
