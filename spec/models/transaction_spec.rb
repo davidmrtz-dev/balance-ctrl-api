@@ -22,7 +22,7 @@ RSpec.describe Transaction, type: :model do
       it 'should not allow transaction_date of tomorrow' do
         transaction = Transaction.new(
           balance: balance,
-          transaction_date: 1.day.from_now,
+          transaction_date: Time.zone.tomorrow,
           amount: 10_000,
           type: type
         )
