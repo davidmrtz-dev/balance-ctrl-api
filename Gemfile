@@ -15,6 +15,7 @@ gem 'rails', '~> 6.1.1'
 
 group :development, :test do
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
+  gem 'colorize'
   gem 'database_cleaner-active_record'
   gem 'guard'
   gem 'guard-rspec', require: false

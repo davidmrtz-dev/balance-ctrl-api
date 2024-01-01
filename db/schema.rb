@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_12_31_025842) do
+ActiveRecord::Schema.define(version: 2024_01_01_045435) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -78,7 +78,9 @@ ActiveRecord::Schema.define(version: 2023_12_31_025842) do
     t.integer "status", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "refund_id"
     t.index ["paymentable_type", "paymentable_id"], name: "index_payments_on_paymentable"
+    t.index ["refund_id"], name: "index_payments_on_refund_id"
   end
 
   create_table "transactions", force: :cascade do |t|
@@ -130,5 +132,6 @@ ActiveRecord::Schema.define(version: 2023_12_31_025842) do
   add_foreign_key "billings", "users"
   add_foreign_key "categorizations", "categories"
   add_foreign_key "categorizations", "transactions"
+  add_foreign_key "payments", "payments", column: "refund_id"
   add_foreign_key "transactions", "balances"
 end
