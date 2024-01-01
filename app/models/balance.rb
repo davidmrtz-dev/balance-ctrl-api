@@ -8,11 +8,23 @@ class Balance < ApplicationRecord
 
   default_scope -> { order(created_at: :desc) }
 
-  def total_incomes
+  def amount_incomes
     incomes.sum(:amount)
   end
 
-  def total_outcomes
+  def amount_outcomes
     outcomes.sum(:amount)
+  end
+
+  def amount_paid
+    payments.applied.sum(:amount)
+  end
+
+  def amount_to_be_paid
+    payments.pending.sum(:amount)
+  end
+
+  def amount_for_payments
+    amount_paid + amount_to_be_paid
   end
 end
