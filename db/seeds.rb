@@ -10,8 +10,9 @@ user = User.create!(
 %i[debit credit cash].each do |type|
   Billing.create!(
     user: user,
-    name: type.to_s.titleize,
-    billing_type: type
+    name: Faker::Finance.stock_market,
+    billing_type: type,
+    state_date: Time.zone.now
   )
 end
 

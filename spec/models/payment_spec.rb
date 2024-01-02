@@ -90,4 +90,29 @@ RSpec.describe Payment, type: :model do
       end
     end
   end
+
+  describe '#payment_number' do
+    context 'when Outcome is current' do
+      before { outcome.payments.first.applied! }
+
+      it 'returns the payment number' do
+        expect(outcome.payments.first.payment_number).to eq '1/1'
+      end
+    end
+
+    context 'when Outcome is fixed' do
+      let(:outcome) { OutcomeFactory.create(balance: balance, transaction_type: :fixed, quotas: 3) }
+
+      before do
+        outcome.payments.first.applied!
+        outcome.payments.second.pending!
+      end
+
+      it 'returns the payment number' do
+        expect(outcome.payments.first.payment_number).to eq '1/3'
+        expect(outcome.payments.second.payment_number).to eq '2/3'
+        expect(outcome.payments.last.payment_number).to eq '3/3'
+      end
+    end
+  end
 end
