@@ -14,6 +14,12 @@ class Payment < ApplicationRecord
   validate :only_one_payment_for_current, on: :create, if: -> { paymentable&.transaction_type.eql?('current') }
   validate :only_one_refund_for_current, on: :create, if: -> { paymentable&.transaction_type.eql?('current') }
 
+  scope :applicable, -> { where.not(status: [:expired, :cancelled, :refund])}
+
+  def payment_number
+    "#{paymentable.payments.applicable.where('id <= ?', id).count}/#{paymentable.payments.applicable.count}"
+  end
+
   private
 
   def add_to_balance_amount
