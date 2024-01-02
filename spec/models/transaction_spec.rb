@@ -28,7 +28,7 @@ RSpec.describe Transaction, type: :model do
         )
 
         expect(transaction.valid?).to be_falsey
-        expect(transaction.errors.full_messages).to include('Transaction date can not be after today')
+        expect(transaction.errors.full_messages).to include('Transaction date cannot be after today')
       end
 
       it 'should allow transaction_date of today' do
