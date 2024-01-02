@@ -93,7 +93,6 @@ RSpec.describe Payment, type: :model do
 
   describe '#payment_number' do
     context 'when Outcome is current' do
-
       before { outcome.payments.first.applied! }
 
       it 'returns the payment number' do
