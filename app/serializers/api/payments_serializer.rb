@@ -24,7 +24,8 @@ module Api
           except: %i[
             created_at
             updated_at
-          ]
+          ],
+          methods: %i[payment_number]
         )
       end
     end
