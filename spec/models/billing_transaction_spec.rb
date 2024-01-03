@@ -41,17 +41,9 @@ RSpec.describe BillingTransaction, type: :model do
           it 'updates status of payment to :applied' do
             expect(subject.payments.applied.count).to eq(1)
           end
-        end
 
-        context 'when billing_type is :credit' do
-          let(:billing) { BillingFactory.create(user: user, billing_type: :credit) }
-
-          subject(:outcome) { OutcomeFactory.create(balance: balance) }
-
-          before { BillingTransaction.create(billing: billing, related_transaction: subject) }
-
-          it 'updates status of payment to :hold' do
-            expect(subject.payments.hold.count).to eq(1)
+          it 'relates the payment with the current Balance' do
+            expect(BalancePayment.count).to eq(1)
           end
         end
       end
