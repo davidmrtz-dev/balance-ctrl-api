@@ -12,7 +12,7 @@ Rails.application.routes.draw do
           get :search
         end
       end
-      resources :payments, only: [] do
+      resources :payments, only: %i[update] do
         collection do
           get 'applied', to: 'payments#applied'
           get 'pending', to: 'payments#pending'

@@ -51,7 +51,25 @@ module Api
         }
       end
 
+      def update
+        payment = find_payment
+
+        if payment.update(payment_params)
+          render json: { payment: ::Api::PaymentSerializer.json(payment) }
+        else
+          render json: { errors: payment.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+
       private
+
+      def find_payment
+        Payment.find(params[:id])
+      end
+
+      def payment_params
+        params.require(:payment).permit(:status)
+      end
 
       def set_page
         params[:page].nil? ? 1 : params[:page].to_i
