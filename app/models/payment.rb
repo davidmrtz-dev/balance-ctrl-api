@@ -5,7 +5,7 @@ class Payment < ApplicationRecord
 
   belongs_to :refund, class_name: 'Payment', optional: true
 
-  enum status: { hold: 0, pending: 1, applied: 2, expired: 3, cancelled: 4, refund: 5 }, _default: :hold
+  enum status: { hold: 0, pending: 1, applied: 2, expired: 3, refund: 4 }, _default: :hold
 
   after_create :add_to_balance_amount, if: -> { refund? }
   before_update :substract_from_balance_amount, if: -> { applied? && status_was != 'applied' }
@@ -14,7 +14,7 @@ class Payment < ApplicationRecord
   validate :only_one_payment_for_current, on: :create, if: -> { paymentable&.transaction_type.eql?('current') }
   validate :only_one_refund_for_current, on: :create, if: -> { paymentable&.transaction_type.eql?('current') }
 
-  scope :applicable, -> { where.not(status: %i[expired cancelled refund]) }
+  scope :applicable, -> { where.not(status: %i[expired refund]) }
 
   def payment_number
     "#{paymentable.payments.applicable.where('id <= ?', id).count}/#{paymentable.payments.applicable.count}"
