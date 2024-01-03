@@ -37,7 +37,7 @@ Income.create!(
   transaction_date: Time.zone.now
 )
 
-5.times do
+12.times do
   Outcome.create!(
     balance: balance,
     description: Faker::Commerce.product_name,
