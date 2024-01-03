@@ -16,7 +16,6 @@ class Outcome < Transaction
 
   # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   def status
-    return :cancelled if payments.any? { |payment| payment.status == 'cancelled' }
     return :expired if payments.any? { |payment| payment.status == 'expired' }
     return :pending if payments.any? { |payment| payment.status == 'pending' }
     return :hold if payments.all? { |payment| payment.status == 'hold' }

@@ -8,7 +8,7 @@ RSpec.describe Payment, type: :model do
   describe 'associations' do
     it { is_expected.to belong_to(:paymentable) }
     it { is_expected.to belong_to(:refund).optional }
-    it { should define_enum_for(:status).with_values(%i[hold pending applied expired cancelled refund]) }
+    it { should define_enum_for(:status).with_values(%i[hold pending applied expired refund]) }
     it { is_expected.to have_many(:balance_payments).dependent(:destroy) }
     it { is_expected.to have_many(:balances).through(:balance_payments) }
   end

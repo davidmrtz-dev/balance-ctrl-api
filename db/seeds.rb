@@ -82,3 +82,5 @@ Outcome.all.each do |t|
     )
   end
 end
+
+Outcome.fixed.first.payments.first.pending!
