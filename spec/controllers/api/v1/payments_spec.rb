@@ -36,4 +36,18 @@ RSpec.describe Api::V1::PaymentsController, type: :controller do
       expect(parsed_response[:payments].pluck(:id)).to match_array(Payment.pending.ids)
     end
   end
+
+  describe 'PUT /api/v1/payments/:id' do
+    login_user
+
+    it 'updates payment status' do
+      expect(outcome.payments.first.hold?).to be_truthy
+
+      put :update, params: { id: outcome.payments.first.id, payment: { status: 'applied' } }
+
+      expect(response).to have_http_status(:ok)
+      expect(parsed_response[:payment][:status]).to eq('applied')
+      expect(outcome.payments.first.reload.applied?).to be_truthy
+    end
+  end
 end
