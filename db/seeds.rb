@@ -100,12 +100,17 @@ def attach_relations_to_outcomes(balance)
   balance.outcomes.fixed.first.payments.last.pending!
 end
 
-past_balance = create_balance(user, 'Past Balance', 'Past Balance Description', Time.zone.now.month - 1, Time.zone.now.year - 1)
+past_past_balance = create_balance(user, 'Past Past Balance', 'Past Past Balance Description', 11, 2023)
+create_income(past_past_balance)
+create_outcomes(past_past_balance)
+attach_relations_to_outcomes(past_past_balance)
+
+past_balance = create_balance(user, 'Past Balance', 'Past Balance Description', 12, 2023)
 create_income(past_balance)
 create_outcomes(past_balance)
 attach_relations_to_outcomes(past_balance)
 
-current_balance = create_balance(user, 'Current Balance', 'Current Balance Description', Time.zone.now.month, Time.zone.now.year)
+current_balance = create_balance(user, 'Current Balance', 'Current Balance Description', 1, 2024)
 create_income(current_balance)
 create_outcomes(current_balance)
 attach_relations_to_outcomes(current_balance)
