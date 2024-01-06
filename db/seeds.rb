@@ -101,14 +101,18 @@ def attach_relations_to_outcomes(balance)
 end
 
 past_past_balance = create_balance(user, 'Past Past Balance', 'Past Past Balance Description', 11, 2023)
-create_income(past_past_balance)
-create_outcomes(past_past_balance)
-attach_relations_to_outcomes(past_past_balance)
+Timecop.freeze(Time.zone.now - 2.month) do
+  create_income(past_past_balance)
+  create_outcomes(past_past_balance)
+  attach_relations_to_outcomes(past_past_balance)
+end
 
 past_balance = create_balance(user, 'Past Balance', 'Past Balance Description', 12, 2023)
-create_income(past_balance)
-create_outcomes(past_balance)
-attach_relations_to_outcomes(past_balance)
+Timecop.freeze(Time.zone.now - 1.month) do
+  create_income(past_balance)
+  create_outcomes(past_balance)
+  attach_relations_to_outcomes(past_balance)
+end
 
 current_balance = create_balance(user, 'Current Balance', 'Current Balance Description', 1, 2024)
 create_income(current_balance)
