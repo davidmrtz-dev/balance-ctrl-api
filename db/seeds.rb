@@ -16,12 +16,6 @@ user = User.create!(
   )
 end
 
-balance = Balance.create!(
-  user: user,
-  title: 'My Balance',
-  description: 'My balance description'
-)
-
 10.times do
   name = Faker::Commerce.department(max: 1, fixed_amount: true)
 
@@ -30,6 +24,12 @@ balance = Balance.create!(
   Category.create!(name: name)
 end
 
+balance = Balance.create!(
+  user: user,
+  title: 'My Balance',
+  description: 'My balance description'
+)
+
 Income.create!(
   balance: balance,
   description: Faker::Commerce.product_name,
@@ -37,12 +37,12 @@ Income.create!(
   transaction_date: Time.zone.now
 )
 
-5.times do
+6.times do
   Outcome.create!(
     balance: balance,
     description: Faker::Commerce.product_name,
     transaction_date: Time.zone.now,
-    amount: 2_000.00
+    amount: 1_500.00
   )
 end
 
@@ -75,6 +75,8 @@ Outcome.all.each do |t|
     related_transaction: t
   )
 
+  next if t.transaction_type.eql?('current')
+  # Relate payments with balance for fixed outcomes
   t.payments.each do |p|
     BalancePayment.create!(
       balance: balance,
@@ -83,4 +85,4 @@ Outcome.all.each do |t|
   end
 end
 
-Outcome.fixed.first.payments.first.pending!
+Outcome.fixed.first.payments.last.pending!
