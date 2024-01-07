@@ -16,7 +16,9 @@ module Api
       end
 
       def balance
-        render json: { balance: ::Api::BalanceSerializer.json(current_user.current_balance) }
+        balance = current_user.current_balance
+
+        render json: { balance: ::Api::BalanceSerializer.json(balance) }
       end
     end
   end

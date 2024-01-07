@@ -14,7 +14,7 @@ RSpec.describe Api::V1::PaymentsController, type: :controller do
     end
 
     it 'return paginated outcomes' do
-      get :applied
+      get :applied, params: { balance_id: balance.id }
 
       expect(response).to have_http_status(:ok)
       expect(parsed_response[:payments].pluck(:id)).to match_array(Payment.applied.ids)
