@@ -20,6 +20,7 @@ Rails.application.routes.draw do
       end
       resources :incomes, only: %i[index create update destroy]
       resources :categories, only: %i[index create update destroy]
+      resources :balances, only: %i[index show]
     end
   end
 end
