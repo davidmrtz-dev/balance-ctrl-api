@@ -28,7 +28,7 @@ class Balance < ApplicationRecord
     amount_paid + amount_to_be_paid
   end
 
-  def is_current?
+  def current?
     Time.zone.now.month == month && Time.zone.now.year == year
   end
 end
