@@ -1,7 +1,6 @@
 module Api
   module V1
     class OutcomesController < ApiController
-      include Pagination
       include PaginationV1
 
       before_action :authenticate_user!
