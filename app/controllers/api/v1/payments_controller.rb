@@ -6,7 +6,7 @@ module Api
       before_action :authenticate_user!
 
       def applied
-        payments = current_user.current_balance.payments.applied
+        payments = current_user.balances.find(params[:balance_id]).payments.applied
 
         page = set_page
         page_size = set_page_size
