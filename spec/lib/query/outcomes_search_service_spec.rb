@@ -11,7 +11,7 @@ describe Query::OutcomesSearchService do
   describe 'when params are not valid' do
     it 'should raise an error' do
       expect do
-        described_class.new(balance, {
+        described_class.new(user, {
           keyword: 'Baby',
           start_date: 1.day.ago.to_s,
           end_date: ''
@@ -23,7 +23,7 @@ describe Query::OutcomesSearchService do
   describe 'when params are valid' do
     describe 'when dates params are not provided but keyword' do
       it 'should return matching outcomes based on description' do
-        result = described_class.new(balance, {
+        result = described_class.new(user, {
           keyword: 'Baby',
           start_date: '',
           end_date: ''
@@ -36,7 +36,7 @@ describe Query::OutcomesSearchService do
 
     describe 'when dates params are provided but not keyword' do
       it 'should return matching outcomes based on the dates range' do
-        result = described_class.new(balance, {
+        result = described_class.new(user, {
           keyword: '',
           start_date: 1.day.ago.to_s,
           end_date: Time.zone.today.to_s
@@ -49,7 +49,7 @@ describe Query::OutcomesSearchService do
 
     describe 'when dates and keyword params are provided' do
       it 'should return matching outcomes based on dates and keyword' do
-        result = described_class.new(balance, {
+        result = described_class.new(user, {
           keyword: 'Clothes',
           start_date: 1.day.ago.to_s,
           end_date: Time.zone.today.to_s

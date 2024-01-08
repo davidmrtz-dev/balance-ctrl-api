@@ -22,8 +22,8 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
       get :current
 
       expect(response).to have_http_status(:ok)
-      expect(parsed_response[:outcomes].pluck(:id)).to match_array(Outcome.current.ids)
-      expect(parsed_response[:meta][:total_per_page]).to eq(Outcome.current.count)
+      expect(parsed_response[:outcomes].pluck(:id)).to match_array(user.current_balance.outcomes.current.ids)
+      expect(parsed_response[:meta][:total_per_page]).to eq(user.current_balance.outcomes.current.count)
     end
   end
 
@@ -34,8 +34,8 @@ RSpec.describe Api::V1::OutcomesController, type: :controller do
       get :fixed
 
       expect(response).to have_http_status(:ok)
-      expect(parsed_response[:outcomes].pluck(:id)).to match_array(Outcome.fixed.ids)
-      expect(parsed_response[:meta][:total_per_page]).to eq(Outcome.fixed.count)
+      expect(parsed_response[:outcomes].pluck(:id)).to match_array(user.current_balance.outcomes.fixed.ids)
+      expect(parsed_response[:meta][:total_per_page]).to eq(user.current_balance.outcomes.fixed.count)
     end
   end
 

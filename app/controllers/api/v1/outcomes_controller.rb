@@ -7,9 +7,9 @@ module Api
 
       def index
         outcomes = Outcome
-          .with_balance_and_user
-          .from_user(current_user)
-          .by_transaction_date
+        .with_balance_and_user
+        .from_user(current_user)
+        .by_transaction_date
 
         page = set_page
         page_size = set_page_size
@@ -27,11 +27,7 @@ module Api
       end
 
       def current
-        current_outcomes = Outcome
-          .with_balance_and_user
-          .from_user(current_user)
-          .current.by_transaction_date
-
+        current_outcomes = current_user.current_balance.outcomes.current.by_transaction_date
         page = set_page
         page_size = set_page_size
 
@@ -48,8 +44,7 @@ module Api
       end
 
       def search
-        balance = current_user.current_balance
-        query_result = Query::OutcomesSearchService.new(balance, search_params).call
+        query_result = Query::OutcomesSearchService.new(current_user, search_params).call
 
         page = set_page
         page_size = set_page_size
@@ -67,10 +62,7 @@ module Api
       end
 
       def fixed
-        fixed_outcomes = Outcome
-          .with_balance_and_user
-          .from_user(current_user)
-          .fixed.by_transaction_date
+        fixed_outcomes = current_user.current_balance.outcomes.fixed.by_transaction_date
 
         page = set_page
         page_size = set_page_size
