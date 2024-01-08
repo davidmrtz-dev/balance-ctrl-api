@@ -7,9 +7,9 @@ module Api
 
       def index
         outcomes = Outcome
-        .with_balance_and_user
-        .from_user(current_user)
-        .by_transaction_date
+          .with_balance_and_user
+          .from_user(current_user)
+          .by_transaction_date
 
         page = set_page
         page_size = set_page_size
