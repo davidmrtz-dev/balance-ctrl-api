@@ -1,4 +1,6 @@
 class Billing < ApplicationRecord
+  include Discard::Model
+
   belongs_to :user
   has_many :billing_transactions
   has_many :related_transactions, through: :billing_transactions
