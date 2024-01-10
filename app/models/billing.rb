@@ -1,6 +1,8 @@
 class Billing < ApplicationRecord
   include Discard::Model
 
+  attr_encrypted :credit_card_number, key: ENV['ENCRYPTION_KEY']
+
   belongs_to :user
   has_many :billing_transactions
   has_many :related_transactions, through: :billing_transactions

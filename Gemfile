@@ -8,10 +8,11 @@ gem 'devise_token_auth'
 gem 'discard', '~> 1.2'
 gem 'faker', '>= 2.13.0'
 gem 'figaro'
-gem 'net-http' # Temp warn fix
+gem 'net-http'
 gem 'pg', '>= 0.18', '< 2.0'
 gem 'rack-cors'
 gem 'rails', '~> 6.1.1'
+gem 'attr_encrypted'
 
 group :development, :test do
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
