@@ -12,8 +12,15 @@ Rails.application.routes.draw do
           get :search
         end
       end
+      resources :payments, only: %i[update] do
+        collection do
+          get 'applied', to: 'payments#applied'
+          get 'pending', to: 'payments#pending'
+        end
+      end
       resources :incomes, only: %i[index create update destroy]
       resources :categories, only: %i[index create update destroy]
+      resources :balances, only: %i[index show]
     end
   end
 end

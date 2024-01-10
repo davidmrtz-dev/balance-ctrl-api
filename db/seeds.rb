@@ -1,5 +1,6 @@
 return unless Rails.env.development? || Rails.env.staging?
 
+# Create current user
 user = User.create!(
   email: 'user@example.com',
   password: 'password',
@@ -7,32 +8,17 @@ user = User.create!(
   name: 'David'
 )
 
-Billing.create!(
-  user: user,
-  name: "Credit",
-  state_date: 2.days.ago,
-  billing_type: :credit
-)
+# Create payment methods
+%i[debit credit cash].each do |type|
+  Billing.create!(
+    user: user,
+    name: Faker::Finance.stock_market,
+    billing_type: type,
+    state_date: Time.zone.now
+  )
+end
 
-Billing.create!(
-  user: user,
-  name: "Debit",
-  state_date: 2.days.from_now,
-  billing_type: :debit
-)
-
-Billing.create!(
-  user: user,
-  name: "Cash",
-  billing_type: :cash
-)
-
-balance = Balance.create!(
-  user: user,
-  title: 'My Balance',
-  description: 'My balance description'
-)
-
+# Create categories
 10.times do
   name = Faker::Commerce.department(max: 1, fixed_amount: true)
 
@@ -41,53 +27,94 @@ balance = Balance.create!(
   Category.create!(name: name)
 end
 
-10.times do
+def create_balance(user, title, description, month, year)
+  Balance.create!(
+    user: user,
+    title: title,
+    description: description,
+    month: month,
+    year: year
+  )
+end
+
+def create_income(balance)
   Income.create!(
     balance: balance,
     description: Faker::Commerce.product_name,
-    amount: Faker::Number.decimal(l_digits: 4, r_digits: 2),
-    transaction_date: Time.zone.now
+    amount: 65_000,
+    transaction_date: Time.zone.now # Check when revisit incomes.
   )
 end
 
-25.times do
+def create_outcomes(balance)
+  6.times do
+    Outcome.create!(
+      balance: balance,
+      description: Faker::Commerce.product_name,
+      transaction_date: Time.zone.now,
+      amount: 1_500.00
+    )
+  end
+
   Outcome.create!(
     balance: balance,
+    transaction_type: 'fixed',
+    quotas: 2,
     description: Faker::Commerce.product_name,
     transaction_date: Time.zone.now,
-    amount: Faker::Number.decimal(l_digits: 3, r_digits: 2)
+    amount: Faker::Number.decimal(l_digits: 4, r_digits: 2)
   )
 end
 
-Outcome.create!(
-  balance: balance,
-  transaction_type: 'fixed',
-  quotas: 6,
-  description: Faker::Commerce.product_name,
-  transaction_date: Time.zone.now,
-  amount: Faker::Number.decimal(l_digits: 4, r_digits: 2)
-)
+def attach_relations_to_outcomes(balance)
+  cash = Billing.cash.first
+  debit = Billing.debit.first
+  credit = Billing.credit.first
 
-Outcome.current.each do |t|
-  cat = Category.all.sample
+  balance.outcomes.each do |outcome|
+    # Attach category to transaction
+    cat = Category.all.sample
+    outcome.categories << cat
 
-  t.categories << cat
+    # Attach billing to transaction
+    billing = if outcome.transaction_type.eql?('current')
+      [cash, debit].sample
+    else
+      credit
+    end
+    BillingTransaction.create!(
+      billing: billing,
+      related_transaction: outcome
+    )
 
-  BillingTransaction.create!(
-    billing: Billing.all.sample,
-    related_transaction: t
-  )
+    next if outcome.transaction_type.eql?('current')
+    # Relate payments with balance for fixed outcomes
+    outcome.payments.each do |p|
+      BalancePayment.create!(
+        balance: balance,
+        payment: p
+      )
+    end
+  end
+
+  balance.outcomes.fixed.first.payments.last.pending!
 end
 
-Outcome.fixed.each do |t|
-  cat = Category.all.sample
-
-  t.categories << cat
-
-  BillingTransaction.create!(
-    billing: Billing.credit.first,
-    related_transaction: t
-  )
+past_past_balance = create_balance(user, 'Past Past Balance', 'Past Past Balance Description', 11, 2023)
+Timecop.freeze(Time.zone.now - 2.month) do
+  create_income(past_past_balance)
+  create_outcomes(past_past_balance)
+  attach_relations_to_outcomes(past_past_balance)
 end
 
-Outcome.fixed.first.payments.first.update!(status: Payment.statuses.keys.second)
+past_balance = create_balance(user, 'Past Balance', 'Past Balance Description', 12, 2023)
+Timecop.freeze(Time.zone.now - 1.month) do
+  create_income(past_balance)
+  create_outcomes(past_balance)
+  attach_relations_to_outcomes(past_balance)
+end
+
+current_balance = create_balance(user, 'Current Balance', 'Current Balance Description', 1, 2024)
+create_income(current_balance)
+create_outcomes(current_balance)
+attach_relations_to_outcomes(current_balance)

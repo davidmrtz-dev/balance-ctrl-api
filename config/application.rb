@@ -17,6 +17,7 @@ module BalanceCtrlEnhancedApi
     config.api_only = true
     config.autoloader = :zeitwerk
     config.eager_load_paths << Rails.root.join('lib')
+    config.time_zone = 'Mexico/General'
     config.generators do |g|
       g.test_framework :rspec
       g.view_specs false

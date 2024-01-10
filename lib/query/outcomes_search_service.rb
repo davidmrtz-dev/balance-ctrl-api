@@ -1,31 +1,39 @@
 module Query
   class OutcomesSearchService
-    attr_reader :balance, :params
+    attr_reader :user, :params
 
-    def initialize(balance, params)
-      @balance = balance
+    def initialize(user, params)
+      @user = user
       @params = params
     end
 
     def call
       raise_invalid_params unless valid_params
 
-      if query_by_keyword?
-        Outcome.where(balance: balance)
-          .where('LOWER(description) LIKE :word', word: "%#{params[:keyword].downcase}%")
-      elsif query_by_dates?
-        start_date = Date.parse(params[:start_date])
-        end_date = Date.parse(params[:end_date])
+      ActiveRecord::Base.transaction do
+        if query_by_keyword?
+          Outcome
+            .with_balance_and_user
+            .from_user(user)
+            .where('LOWER(transactions.description) LIKE :word', word: "%#{params[:keyword].downcase}%")
+        elsif query_by_dates?
+          start_date = Date.parse(params[:start_date])
+          end_date = Date.parse(params[:end_date])
 
-        Outcome.where(balance: balance)
-          .where(transaction_date: start_date..end_date)
-      else
-        start_date = Date.parse(params[:start_date])
-        end_date = Date.parse(params[:end_date])
+          Outcome
+            .with_balance_and_user
+            .from_user(user)
+            .where(transaction_date: start_date..end_date)
+        else
+          start_date = Date.parse(params[:start_date])
+          end_date = Date.parse(params[:end_date])
 
-        Outcome.where(balance: balance)
-          .where('LOWER(description) LIKE :word', word: "%#{params[:keyword].downcase}%")
-          .where(transaction_date: start_date..end_date)
+          Outcome
+            .with_balance_and_user
+            .from_user(user)
+            .where('LOWER(transactions.description) LIKE :word', word: "%#{params[:keyword].downcase}%")
+            .where(transaction_date: start_date..end_date)
+        end
       end
     end
 

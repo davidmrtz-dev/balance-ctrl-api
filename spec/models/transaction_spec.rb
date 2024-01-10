@@ -22,13 +22,13 @@ RSpec.describe Transaction, type: :model do
       it 'should not allow transaction_date of tomorrow' do
         transaction = Transaction.new(
           balance: balance,
-          transaction_date: 1.day.from_now,
+          transaction_date: Time.zone.tomorrow,
           amount: 10_000,
           type: type
         )
 
         expect(transaction.valid?).to be_falsey
-        expect(transaction.errors.full_messages).to include('Transaction date can not be after today')
+        expect(transaction.errors.full_messages).to include('Transaction date cannot be after today')
       end
 
       it 'should allow transaction_date of today' do

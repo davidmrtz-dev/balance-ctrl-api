@@ -7,10 +7,14 @@ class BillingTransaction < ApplicationRecord
   private
 
   def update_payments
-    if %w[cash debit].include?(billing.billing_type)
-      related_transaction.payments.each(&:applied!)
-    else
-      related_transaction.payments.each(&:reset_to_hold)
+    return unless %w[cash debit].include?(billing.billing_type)
+
+    related_transaction.payments.each do |p|
+      BalancePayment.create!(
+        balance: related_transaction.balance,
+        payment: p
+      )
+      p.applied!
     end
   end
 end

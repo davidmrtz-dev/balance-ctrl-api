@@ -1,7 +1,6 @@
 module Api
   module V1
     class OutcomesController < ApiController
-      include Pagination
       include PaginationV1
 
       before_action :authenticate_user!
@@ -23,70 +22,67 @@ module Api
 
         render json: {
           outcomes: ::Api::OutcomesSerializer.json(paginated),
-          meta: {
-            current_page: page,
-            per_page: page_size,
-            total_pages: set_total_pages(outcomes.count, page_size),
-            total_per_page: paginated.count
-          }
+          meta: meta(page, page_size, set_total_pages(outcomes.count, page_size), paginated.count)
         }
       end
 
       def current
-        current_outcomes = Outcome
-          .with_balance_and_user
-          .from_user(current_user)
-          .current.by_transaction_date
+        current_outcomes = current_user.current_balance.outcomes.current.by_transaction_date
+        page = set_page
+        page_size = set_page_size
 
-        current_page = paginate(
+        paginated = apply_pagination(
           current_outcomes,
-          limit: params[:limit],
-          offset: params[:offset]
+          page: page,
+          page_size: page_size
         )
 
         render json: {
-          outcomes: ::Api::OutcomesSerializer.json(current_page),
-          total_pages: total_pages(current_outcomes.count)
+          outcomes: ::Api::OutcomesSerializer.json(paginated),
+          meta: meta(page, page_size, set_total_pages(current_outcomes.count, page_size), paginated.count)
         }
       end
 
       def search
-        balance = current_user.balance
-        query_result = Query::OutcomesSearchService.new(balance, search_params).call
+        query_result = Query::OutcomesSearchService.new(current_user, search_params).call
 
-        query_page = paginate(
+        page = set_page
+        page_size = set_page_size
+
+        paginated = apply_pagination(
           query_result,
-          limit: params[:limit],
-          offset: params[:offset]
+          page: page,
+          page_size: page_size
         )
 
         render json: {
-          outcomes: ::Api::OutcomesSerializer.json(query_page),
-          total_pages: total_pages(query_result.count)
+          outcomes: ::Api::OutcomesSerializer.json(paginated),
+          meta: meta(page, page_size, set_total_pages(query_result.count, page_size), paginated.count)
         }
       end
 
       def fixed
-        fixed_outcomes = Outcome
-          .with_balance_and_user
-          .from_user(current_user)
-          .fixed.by_transaction_date
+        fixed_outcomes = current_user.current_balance.outcomes.fixed.by_transaction_date
 
-        fixed_page = paginate(
+        page = set_page
+        page_size = set_page_size
+
+        paginated = apply_pagination(
           fixed_outcomes,
-          limit: params[:limit],
-          offset: params[:offset]
+          page: page,
+          page_size: page_size
         )
 
         render json: {
-          outcomes: ::Api::OutcomesSerializer.json(fixed_page),
-          total_pages: total_pages(fixed_outcomes.count)
+          outcomes: ::Api::OutcomesSerializer.json(paginated),
+          meta: meta(page, page_size, set_total_pages(fixed_outcomes.count, page_size), paginated.count)
         }
       end
 
       def create
         outcome =
-          Outcome.new(outcome_params.merge(balance_id: current_user.balance_id).except(:category_id, :billing_id))
+          Outcome.new(outcome_params.merge(balance_id: current_user.current_balance&.id).except(:category_id,
+                                                                                                :billing_id))
 
         if outcome.save
           assign_category(outcome)
@@ -171,9 +167,13 @@ module Api
         (count / page_size) + ((count % page_size).positive? ? 1 : 0)
       end
 
-      def total_pages(count)
-        total_pages = count / 5
-        (count % 5).positive? ? total_pages + 1 : total_pages
+      def meta(page, page_size, total_pages, total_per_page)
+        {
+          current_page: page,
+          per_page: page_size,
+          total_pages: total_pages,
+          total_per_page: total_per_page
+        }
       end
     end
   end

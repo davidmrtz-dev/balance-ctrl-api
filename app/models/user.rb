@@ -3,8 +3,10 @@ class User < ApplicationRecord
 
   include DeviseTokenAuth::Concerns::User
 
-  has_one :balance, dependent: :destroy
+  has_many :balances, dependent: :destroy
   has_many :billings, dependent: :destroy
 
-  delegate :id, to: :balance, prefix: true
+  def current_balance
+    balances.first
+  end
 end

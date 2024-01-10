@@ -16,7 +16,6 @@ class Outcome < Transaction
 
   # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   def status
-    return :cancelled if payments.any? { |payment| payment.status == 'cancelled' }
     return :expired if payments.any? { |payment| payment.status == 'expired' }
     return :pending if payments.any? { |payment| payment.status == 'pending' }
     return :hold if payments.all? { |payment| payment.status == 'hold' }
@@ -56,6 +55,7 @@ class Outcome < Transaction
     end
   end
 
+  # If new category is set and there are previous categories return true
   def should_remove_previous_categorizations?
     categorizations.any?(&:persisted?) && categorizations.any?(&:new_record?)
   end
@@ -66,6 +66,7 @@ class Outcome < Transaction
     end
   end
 
+  # If new billing is set and there are previous billings return true
   def should_remove_previous_billing_transactions?
     billing_transactions.any?(&:persisted?) &&
       billing_transactions.any?(&:new_record?) &&
@@ -85,8 +86,9 @@ class Outcome < Transaction
   end
 
   def generate_refunds
-    payments.applied.each do |applied|
-      payments.create!(amount: applied.amount, status: :refund)
+    payments.applied.each do |p|
+      p.create_refund!(paymentable: self, amount: p.amount, status: :refund)
+      p.save!
     end
   end
 
