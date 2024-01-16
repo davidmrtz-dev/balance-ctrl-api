@@ -48,7 +48,8 @@ module Api
           :name,
           :cycle_end_date,
           :payment_due_date,
-          :billing_type
+          :billing_type,
+          :credit_card_number
         )
       end
     end
