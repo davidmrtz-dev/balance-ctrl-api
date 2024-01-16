@@ -15,6 +15,9 @@ module Api
             user_id
             created_at
             updated_at
+            discarded_at
+            encrypted_credit_card_number
+            encrypted_credit_card_number_iv
           ]
         )
       end
