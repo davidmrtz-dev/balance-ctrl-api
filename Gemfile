@@ -3,6 +3,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.7.4'
 
+gem 'attr_encrypted'
 gem 'devise', '~> 4.7', '>= 4.7.3'
 gem 'devise_token_auth'
 gem 'discard', '~> 1.2'
@@ -12,7 +13,6 @@ gem 'net-http'
 gem 'pg', '>= 0.18', '< 2.0'
 gem 'rack-cors'
 gem 'rails', '~> 6.1.1'
-gem 'attr_encrypted'
 
 group :development, :test do
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
