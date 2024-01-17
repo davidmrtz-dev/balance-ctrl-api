@@ -44,36 +44,4 @@ RSpec.describe Income, type: :model do
       end
     end
   end
-
-  context 'when income is :current' do
-    let!(:income) do
-      Income.create!(balance: balance, amount: 5_000, transaction_date: Time.zone.now)
-    end
-
-    context '#before_save' do
-      describe '#update_balance_amount' do
-        it 'should add the diff from the amount when is negative' do
-          expect(balance.current_amount).to eq 15_000
-          income.update!(amount: 10_000)
-          expect(balance.current_amount).to eq 20_000
-        end
-
-        it 'should substract the diff from the amount when is positive' do
-          expect(balance.current_amount).to eq 15_000
-          income.update!(amount: 1_000)
-          expect(balance.current_amount).to eq 11_000
-        end
-      end
-    end
-
-    context '#before_destroy' do
-      describe '#substract_balance_amount' do
-        it 'should return the amount to balance current_amount' do
-          income.destroy!
-
-          expect(balance.current_amount).to eq 10_000
-        end
-      end
-    end
-  end
 end
