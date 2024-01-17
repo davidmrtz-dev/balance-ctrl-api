@@ -49,10 +49,16 @@ ActiveRecord::Schema.define(version: 2024_01_01_045435) do
   create_table "billings", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "name", null: false
-    t.date "state_date"
+    t.date "cycle_end_date"
+    t.date "payment_due_date"
     t.integer "billing_type", null: false
+    t.datetime "discarded_at"
+    t.string "encrypted_credit_card_number"
+    t.string "encrypted_credit_card_number_iv"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["discarded_at"], name: "index_billings_on_discarded_at"
+    t.index ["encrypted_credit_card_number_iv"], name: "index_billings_on_encrypted_credit_card_number_iv"
     t.index ["user_id"], name: "index_billings_on_user_id"
   end
 

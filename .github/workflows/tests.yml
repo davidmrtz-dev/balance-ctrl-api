@@ -43,6 +43,7 @@ jobs:
           DB_USERNAME: postgres
           DB_PASSWORD: postgres
           DB_PORT: 5432
+          ENCRYPTION_KEY: 1e41a9ca2744baecaa49b5b374a276fc
         run: |
           gem install bundler:1.17.2
           bundle install --jobs 4 --retry 3
@@ -55,6 +56,7 @@ jobs:
           DB_USERNAME: postgres
           DB_PASSWORD: postgres
           DB_PORT: 5432
+          ENCRYPTION_KEY: 1e41a9ca2744baecaa49b5b374a276fc
         run: |
           rails db:migrate
           bundle exec rspec

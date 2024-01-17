@@ -108,10 +108,10 @@ module Api
       def destroy
         outcome = find_outcome
 
-        if outcome.discard!
+        if outcome.discard
           head :no_content
         else
-          render json: { errors: 'Can not delete a fixed outcome ' }, status: :unprocessable_entity
+          render json: { errors: outcome.errors.full_messages }, status: :unprocessable_entity
         end
       end
 

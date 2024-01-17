@@ -14,7 +14,9 @@ user = User.create!(
     user: user,
     name: Faker::Finance.stock_market,
     billing_type: type,
-    state_date: Time.zone.now
+    cycle_end_date: Time.zone.now,
+    payment_due_date: Time.zone.now,
+    credit_card_number: Faker::Finance.credit_card
   )
 end
 

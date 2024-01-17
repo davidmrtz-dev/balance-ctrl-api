@@ -42,7 +42,6 @@ dump.rdb
 
 # Ignore application configuration
 /config/application.yml
-shoryuken.pid
 
 /vendor/*
 .rbenv-gemsets
