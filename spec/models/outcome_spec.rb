@@ -40,14 +40,12 @@ RSpec.describe Outcome, type: :model do
   end
 
   context '#before_discard' do
-    let(:outcome) { OutcomeFactory.create(balance: balance) }
-
     describe '#generate_refunds' do
       context 'when outcome is :current' do
         subject(:outcome) { OutcomeFactory.create(balance: balance) }
 
         before do
-          outcome.payments.first.applied!
+          subject.payments.first.applied!
           subject.discard!
         end
 

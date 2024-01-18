@@ -44,4 +44,41 @@ RSpec.describe Income, type: :model do
       end
     end
   end
+
+  context '#after_create' do
+    describe '#generate_payment' do
+      context 'when income is :current' do
+        subject(:income) { IncomeFactory.create(balance: balance) }
+
+        it 'should create one payment with hold status' do
+          expect(subject.payments.hold.count).to eq 1
+        end
+
+        it 'should set payment amount as outcome.amount' do
+          expect(subject.payments.hold.first.amount).to eq subject.amount
+        end
+      end
+    end
+  end
+
+  context '#before_discard' do
+    describe '#generate_refund' do
+      context 'when income is :current' do
+        subject(:income) { IncomeFactory.create(balance: balance) }
+
+        before do
+          subject.payments.first.applied!
+          subject.discard!
+        end
+
+        it 'should create one payment with refund status' do
+          expect(subject.payments.refund.count).to eq 1
+        end
+
+        it 'should set payment amount as outcome.amount' do
+          expect(subject.payments.refund.first.amount).to eq subject.amount
+        end
+      end
+    end
+  end
 end
