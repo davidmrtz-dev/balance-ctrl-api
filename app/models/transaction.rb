@@ -1,6 +1,11 @@
 class Transaction < ApplicationRecord
   include Discard::Model
 
+  before_update :remove_previous_categorizations, if: :should_remove_previous_categorizations?
+  before_update :remove_previous_billing_transactions, if: :should_remove_previous_billing_transactions?
+  before_discard :validate_transaction_date_in_current_month
+  after_update :update_payment, if: -> { transaction_type.eql?('current') && payments.applied.any? }
+
   belongs_to :balance
   has_many :payments, as: :paymentable, dependent: :destroy
   has_many :billing_transactions, dependent: :destroy
@@ -14,6 +19,8 @@ class Transaction < ApplicationRecord
   validates :transaction_date, presence: true
   validates :amount, numericality: { greater_than: 0.0 }
   validate :transaction_date_not_after_today, :transaction_date_current_month
+  validate :only_one_billing, on: :update
+  validate :billing_transaction_changed, on: :update, if: -> { billings.any? && billing_transactions.last.new_record? }
 
   scope :with_balance_and_user, -> { joins(balance: :user) }
   scope :from_user, ->(user) { where({ balance: { user: user } }) }
@@ -41,5 +48,54 @@ class Transaction < ApplicationRecord
     return if transaction_date.nil? || transaction_date.month == Time.zone.now.month
 
     errors.add(:transaction_date, 'should be in current month')
+  end
+
+  def remove_previous_categorizations
+    categorizations.each do |categorization|
+      categorization.destroy! if categorization.persisted?
+    end
+  end
+
+  # If new category is set and there are previous categories return true
+  def should_remove_previous_categorizations?
+    categorizations.any?(&:persisted?) && categorizations.any?(&:new_record?)
+  end
+
+  def remove_previous_billing_transactions
+    billing_transactions.each do |billing_transaction|
+      billing_transaction.destroy! if billing_transaction.persisted?
+    end
+  end
+
+  # If new billing is set and there are previous billings return true
+  def should_remove_previous_billing_transactions?
+    billing_transactions.any?(&:persisted?) &&
+      billing_transactions.any?(&:new_record?) &&
+      transaction_type.eql?('current')
+  end
+
+  def only_one_billing
+    return unless billing_transactions.count > 1
+
+    errors.add(
+      :billing_transactions, 'Only one billing is allowed per transaction'
+    )
+  end
+
+  def billing_transaction_changed
+    return unless current_billing.eql?(billing_transactions.last.billing)
+
+    errors.add(:base, 'New billing should be different from previous')
+  end
+
+  def validate_transaction_date_in_current_month
+    return unless transaction_date.month != Time.zone.now.month
+
+    errors.add(:base, 'Can only delete outcomes created in the current month')
+    raise Errors::UnprocessableEntity, errors.full_messages.join(', ')
+  end
+
+  def update_payment
+    payments.applied.first.update!(amount: amount)
   end
 end
