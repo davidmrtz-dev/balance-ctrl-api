@@ -7,9 +7,9 @@ class Payment < ApplicationRecord
 
   enum status: { hold: 0, pending: 1, applied: 2, expired: 3, refund: 4 }, _default: :hold
 
-  after_create :add_to_balance_amount, if: -> { refund? }
-  before_update :substract_from_balance_amount, if: -> { applied? && status_was != 'applied' }
-  before_update :update_balance_amount, if: -> { applied? && status_was.eql?('applied') }
+  after_create :add_to_balance_amount, if: -> { refund? && outcome? }
+  before_update :substract_from_balance_amount, if: -> { applied? && status_was != 'applied' && outcome? }
+  before_update :update_balance_amount, if: -> { applied? && status_was.eql?('applied') && outcome? }
 
   validate :only_one_payment_for_current, on: :create, if: -> { paymentable&.transaction_type.eql?('current') }
   validate :only_one_refund_for_current, on: :create, if: -> { paymentable&.transaction_type.eql?('current') }
@@ -23,6 +23,10 @@ class Payment < ApplicationRecord
   end
 
   private
+
+  def outcome?
+    paymentable.type.eql?('Outcome')
+  end
 
   def add_to_balance_amount
     paymentable.balance.current_amount += amount
