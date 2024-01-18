@@ -39,10 +39,10 @@ def create_balance(user, title, description, month, year)
   )
 end
 
-def create_income(balance)
+def create_income(balance, description)
   Income.create!(
     balance: balance,
-    description: Faker::Commerce.product_name,
+    description: description,
     amount: 65_000,
     transaction_date: Time.zone.now # Check when revisit incomes.
   )
@@ -102,21 +102,25 @@ def attach_relations_to_outcomes(balance)
   balance.outcomes.fixed.first.payments.last.pending!
 end
 
+months = %w[January February March April May June July August September October November December]
+
 past_past_balance = create_balance(user, 'Past Past Balance', 'Past Past Balance Description', 11, 2023)
-Timecop.freeze(Time.zone.now - 2.month) do
-  create_income(past_past_balance)
+two_months_ago = Time.zone.now - 2.month
+Timecop.freeze(two_months_ago) do
+  create_income(past_past_balance, months[two_months_ago.month - 1])
   create_outcomes(past_past_balance)
   attach_relations_to_outcomes(past_past_balance)
 end
 
 past_balance = create_balance(user, 'Past Balance', 'Past Balance Description', 12, 2023)
-Timecop.freeze(Time.zone.now - 1.month) do
-  create_income(past_balance)
+one_month_ago = Time.zone.now - 1.month
+Timecop.freeze(one_month_ago) do
+  create_income(past_balance, months[one_month_ago.month - 1])
   create_outcomes(past_balance)
   attach_relations_to_outcomes(past_balance)
 end
 
 current_balance = create_balance(user, 'Current Balance', 'Current Balance Description', 1, 2024)
-create_income(current_balance)
+create_income(current_balance, months[Time.zone.now.month - 1])
 create_outcomes(current_balance)
 attach_relations_to_outcomes(current_balance)

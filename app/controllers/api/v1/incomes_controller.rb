@@ -9,6 +9,7 @@ module Api
         incomes = Income
           .with_balance_and_user
           .from_user(current_user)
+          .by_transaction_date
 
         page = paginate(
           incomes,

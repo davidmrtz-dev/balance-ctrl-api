@@ -6,8 +6,6 @@ class Outcome < Transaction
   validates :quotas, absence: true, if: -> { transaction_type.eql?('current') }
   validates :quotas, presence: true, if: -> { transaction_type.eql?('fixed') }
 
-  scope :by_transaction_date, -> { order(transaction_date: :desc, id: :desc) }
-
   # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   def status
     return :expired if payments.any? { |payment| payment.status == 'expired' }

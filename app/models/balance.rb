@@ -8,6 +8,7 @@ class Balance < ApplicationRecord
 
   default_scope -> { order(created_at: :desc) }
 
+  # TODO: From where the amount_incomes and amount_outcomes will come?
   def amount_incomes
     incomes.sum(:amount)
   end
