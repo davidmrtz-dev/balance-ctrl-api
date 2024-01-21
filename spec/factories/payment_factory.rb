@@ -9,7 +9,7 @@ class PaymentFactory < BaseFactory
     {
       paymentable: params.fetch(:paymentable, nil),
       amount: params.fetch(:amount, 5_000),
-      status: params.fetch(:status, :pending)
+      status: params.fetch(:status, :hold)
     }
   end
 end

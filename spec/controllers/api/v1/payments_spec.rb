@@ -9,8 +9,8 @@ RSpec.describe Api::V1::PaymentsController, type: :controller do
     login_user
 
     before do
-      outcome.payments.first.applied!
       BalancePayment.create!(balance: balance, payment: outcome.payments.first)
+      outcome.payments.first.applied!
     end
 
     it 'return paginated outcomes' do
@@ -25,8 +25,8 @@ RSpec.describe Api::V1::PaymentsController, type: :controller do
     login_user
 
     before do
-      outcome.payments.first.pending!
       BalancePayment.create!(balance: balance, payment: outcome.payments.first)
+      outcome.payments.first.pending!
     end
 
     it 'return paginated outcomes' do
@@ -39,6 +39,10 @@ RSpec.describe Api::V1::PaymentsController, type: :controller do
 
   describe 'PUT /api/v1/payments/:id' do
     login_user
+
+    before do
+      BalancePayment.create!(balance: balance, payment: outcome.payments.first)
+    end
 
     it 'updates payment status' do
       expect(outcome.payments.first.hold?).to be_truthy

@@ -49,7 +49,7 @@ class BalanceFactory < BaseFactory
       user: params.fetch(:user, nil),
       title: params.fetch(:title, 'Balance Title'),
       description: params.fetch(:description, 'Balance Description'),
-      current_amount: params.fetch(:current_amount, 100_000),
+      current_amount: params.fetch(:current_amount, 0),
       month: params.fetch(:month, Time.zone.now.month),
       year: params.fetch(:year, Time.zone.now.year)
     }

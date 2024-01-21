@@ -24,6 +24,10 @@ class Payment < ApplicationRecord
 
   private
 
+  def balance
+    balances.first
+  end
+
   def outcome?
     paymentable.type.eql?('Outcome')
   end
@@ -32,38 +36,39 @@ class Payment < ApplicationRecord
     paymentable.type.eql?('Income')
   end
 
-  def save_balance
-    paymentable.balance.save
+  def save_balance(quantity = nil)
+    balance.update!(current_amount: quantity || balance.current_amount)
   end
 
   def attach_to_balance_amount
     if outcome?
-      paymentable.balance.current_amount += amount
+      quantity = balance.current_amount += amount
     elsif income?
-      paymentable.balance.current_amount -= amount
+      quantity = balance.current_amount -= amount
     end
 
-    save_balance
+    save_balance(quantity)
   end
 
   def detach_from_balance_amount
+    # byebug
     if outcome?
-      paymentable.balance.current_amount -= amount
+      quantity = balance.current_amount -= amount
     elsif income?
-      paymentable.balance.current_amount += amount
+      quantity = balance.current_amount += amount
     end
 
-    save_balance
+    save_balance(quantity)
   end
 
   def update_balance_amount
     if outcome?
-      paymentable.balance.current_amount += (amount_was - amount)
+      quantity = paymentable.balance.current_amount += (amount_was - amount)
     elsif income?
-      paymentable.balance.current_amount -= (amount_was - amount)
+      quantity = paymentable.balance.current_amount -= (amount_was - amount)
     end
 
-    save_balance
+    save_balance(quantity)
   end
 
   def only_one_payment_for_current
