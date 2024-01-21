@@ -13,6 +13,7 @@ class Income < Transaction
 
     payment = payments.create!(amount: amount, status: :hold)
     BalancePayment.create!(balance: balance, payment: payment)
+    payment.applied!
   end
 
   def generate_refund

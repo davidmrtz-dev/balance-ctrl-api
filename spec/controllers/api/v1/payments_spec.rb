@@ -8,10 +8,6 @@ RSpec.describe Api::V1::PaymentsController, type: :controller do
   describe 'GET /api/v1/payments/applied' do
     login_user
 
-    before do
-      outcome.payments.first.applied!
-    end
-
     it 'return paginated outcomes' do
       get :applied, params: { balance_id: balance.id }
 
@@ -43,8 +39,6 @@ RSpec.describe Api::V1::PaymentsController, type: :controller do
     end
 
     it 'updates payment status' do
-      expect(outcome.payments.first.hold?).to be_truthy
-
       put :update, params: { id: outcome.payments.first.id, payment: { status: 'applied' } }
 
       expect(response).to have_http_status(:ok)

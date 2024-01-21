@@ -6,24 +6,13 @@ class Outcome < Transaction
   validates :quotas, absence: true, if: -> { transaction_type.eql?('current') }
   validates :quotas, presence: true, if: -> { transaction_type.eql?('fixed') }
 
-  # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-  def status
-    return :expired if payments.any? { |payment| payment.status == 'expired' }
-    return :pending if payments.any? { |payment| payment.status == 'pending' }
-    return :hold if payments.all? { |payment| payment.status == 'hold' }
-    return :paid if payments.all? { |payment| payment.status == 'applied' }
-    return :ok if payments.all? { |payment| payment.status.in?(%w[applied hold]) }
-
-    :unknown
-  end
-  # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-
   private
 
   def generate_payments
     if transaction_type.eql? 'current'
       payment = payments.create!(amount: amount, status: :hold)
       BalancePayment.create!(balance: balance, payment: payment)
+      payment.applied!
     else
       amount_for_quota = amount / quotas
 

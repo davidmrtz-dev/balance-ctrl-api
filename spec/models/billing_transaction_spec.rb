@@ -27,26 +27,4 @@ RSpec.describe BillingTransaction, type: :model do
       expect { duplicate_billing_transaction.save }.to raise_error(ActiveRecord::RecordNotUnique)
     end
   end
-
-  describe '#after_create' do
-    describe '#update_payments' do
-      context 'when transaction_type is :current' do
-        context 'when billing_type is :cash or :debit' do
-          let(:billing) { BillingFactory.create(user: user, billing_type: :cash) }
-
-          subject(:outcome) { OutcomeFactory.create(balance: balance) }
-
-          before { BillingTransaction.create(billing: billing, related_transaction: subject) }
-
-          it 'updates status of payment to :applied' do
-            expect(subject.payments.applied.count).to eq(1)
-          end
-
-          it 'relates the payment with the current Balance' do
-            expect(BalancePayment.count).to eq(1)
-          end
-        end
-      end
-    end
-  end
 end

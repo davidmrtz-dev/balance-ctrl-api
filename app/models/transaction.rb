@@ -37,6 +37,18 @@ class Transaction < ApplicationRecord
     billings.first
   end
 
+  # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+  def status
+    return :expired if payments.any? { |payment| payment.status == 'expired' }
+    return :pending if payments.any? { |payment| payment.status == 'pending' }
+    return :hold if payments.all? { |payment| payment.status == 'hold' }
+    return :paid if payments.all? { |payment| payment.status == 'applied' }
+    return :ok if payments.all? { |payment| payment.status.in?(%w[applied hold]) }
+
+    :unknown
+  end
+  # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+
   private
 
   def transaction_date_not_after_today
