@@ -48,7 +48,7 @@ RSpec.describe Balance, type: :model do
   describe '#amount_to_be_paid' do
     let(:outcome) { OutcomeFactory.create(balance: balance, amount: 5_000) }
 
-    before { outcome.payments.first.pending!}
+    before { outcome.payments.first.pending! }
 
     it 'should return the sum of pending payments' do
       expect(balance.amount_to_be_paid).to eq(5_000)
@@ -59,7 +59,7 @@ RSpec.describe Balance, type: :model do
     let(:outcome) { OutcomeFactory.create(balance: balance, amount: 5_000) }
     let!(:other_outcome) { OutcomeFactory.create(balance: balance, amount: 5_000) }
 
-    before { outcome.payments.first.pending!}
+    before { outcome.payments.first.pending! }
 
     it 'should return the sum of pending payments' do
       expect(balance.amount_for_payments).to eq(10_000)
