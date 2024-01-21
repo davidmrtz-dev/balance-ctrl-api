@@ -8,6 +8,7 @@ class Outcome < Transaction
 
   private
 
+  # rubocop:disable Metrics/AbcSize
   def generate_payments
     if transaction_type.eql? 'current'
       payment = payments.create!(amount: amount, status: :hold)
@@ -22,6 +23,7 @@ class Outcome < Transaction
       end
     end
   end
+  # rubocop:enable Metrics/AbcSize
 
   def generate_refunds
     payments.applied.each do |p|
