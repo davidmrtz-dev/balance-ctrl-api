@@ -45,33 +45,38 @@ RSpec.describe Income, type: :model do
     end
   end
 
-  context 'when income is :current' do
-    let!(:income) do
-      Income.create!(balance: balance, amount: 5_000, transaction_date: Time.zone.now)
-    end
+  context '#after_create' do
+    describe '#generate_payment' do
+      context 'when income is :current' do
+        subject(:income) { IncomeFactory.create(balance: balance) }
 
-    context '#before_save' do
-      describe '#update_balance_amount' do
-        it 'should add the diff from the amount when is negative' do
-          expect(balance.current_amount).to eq 15_000
-          income.update!(amount: 10_000)
-          expect(balance.current_amount).to eq 20_000
+        it 'should create one payment with hold status' do
+          expect(subject.payments.hold.count).to eq 1
         end
 
-        it 'should substract the diff from the amount when is positive' do
-          expect(balance.current_amount).to eq 15_000
-          income.update!(amount: 1_000)
-          expect(balance.current_amount).to eq 11_000
+        it 'should set payment amount as outcome.amount' do
+          expect(subject.payments.hold.first.amount).to eq subject.amount
         end
       end
     end
+  end
 
-    context '#before_destroy' do
-      describe '#substract_balance_amount' do
-        it 'should return the amount to balance current_amount' do
-          income.destroy!
+  context '#before_discard' do
+    describe '#generate_refund' do
+      context 'when income is :current' do
+        subject(:income) { IncomeFactory.create(balance: balance) }
 
-          expect(balance.current_amount).to eq 10_000
+        before do
+          subject.payments.first.applied!
+          subject.discard!
+        end
+
+        it 'should create one payment with refund status' do
+          expect(subject.payments.refund.count).to eq 1
+        end
+
+        it 'should set payment amount as outcome.amount' do
+          expect(subject.payments.refund.first.amount).to eq subject.amount
         end
       end
     end

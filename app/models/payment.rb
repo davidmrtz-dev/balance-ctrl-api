@@ -7,8 +7,8 @@ class Payment < ApplicationRecord
 
   enum status: { hold: 0, pending: 1, applied: 2, expired: 3, refund: 4 }, _default: :hold
 
-  after_create :add_to_balance_amount, if: -> { refund? }
-  before_update :substract_from_balance_amount, if: -> { applied? && status_was != 'applied' }
+  after_create :attach_to_balance_amount, if: -> { refund? }
+  before_update :detach_from_balance_amount, if: -> { applied? && status_was != 'applied' }
   before_update :update_balance_amount, if: -> { applied? && status_was.eql?('applied') }
 
   validate :only_one_payment_for_current, on: :create, if: -> { paymentable&.transaction_type.eql?('current') }
@@ -24,19 +24,46 @@ class Payment < ApplicationRecord
 
   private
 
-  def add_to_balance_amount
-    paymentable.balance.current_amount += amount
+  def outcome?
+    paymentable.type.eql?('Outcome')
+  end
+
+  def income?
+    paymentable.type.eql?('Income')
+  end
+
+  def save_balance
     paymentable.balance.save
   end
 
-  def substract_from_balance_amount
-    paymentable.balance.current_amount -= amount
-    paymentable.balance.save
+  def attach_to_balance_amount
+    if outcome?
+      paymentable.balance.current_amount += amount
+    elsif income?
+      paymentable.balance.current_amount -= amount
+    end
+
+    save_balance
+  end
+
+  def detach_from_balance_amount
+    if outcome?
+      paymentable.balance.current_amount -= amount
+    elsif income?
+      paymentable.balance.current_amount += amount
+    end
+
+    save_balance
   end
 
   def update_balance_amount
-    paymentable.balance.current_amount += (amount_was - amount)
-    paymentable.balance.save
+    if outcome?
+      paymentable.balance.current_amount += (amount_was - amount)
+    elsif income?
+      paymentable.balance.current_amount -= (amount_was - amount)
+    end
+
+    save_balance
   end
 
   def only_one_payment_for_current
