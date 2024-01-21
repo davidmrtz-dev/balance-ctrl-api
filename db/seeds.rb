@@ -68,7 +68,7 @@ def create_outcomes(balance)
   )
 end
 
-def attach_relations_to_outcomes(balance)
+def attach_relations_to_transactions(balance)
   cash = Billing.cash.first
   debit = Billing.debit.first
   credit = Billing.credit.first
@@ -78,7 +78,7 @@ def attach_relations_to_outcomes(balance)
     cat = Category.all.sample
     outcome.categories << cat
 
-    # Attach billing to transaction
+    # Relates billing with transaction
     billing = if outcome.transaction_type.eql?('current')
       [cash, debit].sample
     else
@@ -90,7 +90,8 @@ def attach_relations_to_outcomes(balance)
     )
 
     next if outcome.transaction_type.eql?('current')
-    # Relate payments with balance for fixed outcomes
+    # Relates payments with balance for fixed outcomes
+    # Payment will be related with balance when it is applied
     outcome.payments.each do |p|
       BalancePayment.create!(
         balance: balance,
@@ -100,27 +101,34 @@ def attach_relations_to_outcomes(balance)
   end
 
   balance.outcomes.fixed.first.payments.last.pending!
+
+  balance.incomes.each do |income|
+    BillingTransaction.create!(
+      billing: debit,
+      related_transaction: income
+    )
+  end
 end
 
 months = %w[January February March April May June July August September October November December]
 
 past_past_balance = create_balance(user, 'Past Past Balance', 'Past Past Balance Description', 11, 2023)
-two_months_ago = Time.zone.now - 2.month
+two_months_ago = 2.months.ago
 Timecop.freeze(two_months_ago) do
   create_income(past_past_balance, months[two_months_ago.month - 1])
   create_outcomes(past_past_balance)
-  attach_relations_to_outcomes(past_past_balance)
+  attach_relations_to_transactions(past_past_balance)
 end
 
 past_balance = create_balance(user, 'Past Balance', 'Past Balance Description', 12, 2023)
-one_month_ago = Time.zone.now - 1.month
+one_month_ago = 1.month.ago
 Timecop.freeze(one_month_ago) do
   create_income(past_balance, months[one_month_ago.month - 1])
   create_outcomes(past_balance)
-  attach_relations_to_outcomes(past_balance)
+  attach_relations_to_transactions(past_balance)
 end
 
 current_balance = create_balance(user, 'Current Balance', 'Current Balance Description', 1, 2024)
 create_income(current_balance, months[Time.zone.now.month - 1])
 create_outcomes(current_balance)
-attach_relations_to_outcomes(current_balance)
+attach_relations_to_transactions(current_balance)

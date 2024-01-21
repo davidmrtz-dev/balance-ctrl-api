@@ -6,35 +6,30 @@ class Outcome < Transaction
   validates :quotas, absence: true, if: -> { transaction_type.eql?('current') }
   validates :quotas, presence: true, if: -> { transaction_type.eql?('fixed') }
 
-  # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-  def status
-    return :expired if payments.any? { |payment| payment.status == 'expired' }
-    return :pending if payments.any? { |payment| payment.status == 'pending' }
-    return :hold if payments.all? { |payment| payment.status == 'hold' }
-    return :paid if payments.all? { |payment| payment.status == 'applied' }
-    return :ok if payments.all? { |payment| payment.status.in?(%w[applied hold]) }
-
-    :unknown
-  end
-  # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-
   private
 
+  # rubocop:disable Metrics/AbcSize
   def generate_payments
     if transaction_type.eql? 'current'
-      payments.create!(amount: amount, status: :hold)
+      payment = payments.create!(amount: amount, status: :hold)
+      BalancePayment.create!(balance: balance, payment: payment)
+      payment.applied!
     else
       amount_for_quota = amount / quotas
 
       quotas.times do
-        payments.create!(amount: amount_for_quota, status: :hold)
+        payment = payments.create!(amount: amount_for_quota, status: :hold)
+        BalancePayment.create!(balance: balance, payment: payment)
       end
     end
   end
+  # rubocop:enable Metrics/AbcSize
 
   def generate_refunds
     payments.applied.each do |p|
-      p.create_refund!(paymentable: self, amount: p.amount, status: :refund)
+      p.create_refund!(paymentable: self, amount: p.amount)
+      BalancePayment.create!(balance: balance, payment: p.refund)
+      p.refund.update!(status: :refund)
       p.save!
     end
   end

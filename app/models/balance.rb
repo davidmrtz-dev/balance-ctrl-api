@@ -8,21 +8,18 @@ class Balance < ApplicationRecord
 
   default_scope -> { order(created_at: :desc) }
 
-  # TODO: From where the amount_incomes and amount_outcomes will come?
   def amount_incomes
-    incomes.sum(:amount)
-  end
-
-  def amount_outcomes
-    outcomes.sum(:amount)
+    t_ids = payments.applied.pluck(:paymentable_id)
+    i_ids = Transaction.where(id: t_ids, type: 'Income').ids
+    payments.applied.where(paymentable_id: i_ids).sum(&:amount)
   end
 
   def amount_paid
-    payments.applied.sum(:amount)
+    payments.applied.where(paymentable: outcomes).sum(&:amount)
   end
 
   def amount_to_be_paid
-    payments.pending.sum(:amount)
+    payments.pending.where(paymentable: outcomes).sum(&:amount)
   end
 
   def amount_for_payments
