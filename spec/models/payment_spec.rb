@@ -17,7 +17,7 @@ RSpec.describe Payment, type: :model do
   describe 'validations' do
     let(:outcome) { OutcomeFactory.create(balance: balance) }
 
-    describe '#only_one_payment_for_current' do
+    describe '#only_one_applied_for_current' do
       context "when paymentable is Outcome and is 'current'" do
         context 'when there is no refund' do
           it 'should allow only one payment' do
@@ -57,13 +57,33 @@ RSpec.describe Payment, type: :model do
   end
 
   describe '#before_update' do
+    describe '#attach_to_balance_amount' do
+      context 'when payment status is :refund' do
+        context 'when paymentable is Outcome' do
+          subject { outcome.payments.hold.first.refund! }
+
+          it 'adds amount to balance current_amount' do
+            expect { subject }.to change { balance.reload.current_amount }.by(100)
+          end
+        end
+
+        context 'when paymentable is Income' do
+          subject { income.payments.hold.first.refund! }
+
+          it 'substracts amount from balance current_amount' do
+            expect { subject }.to change { balance.reload.current_amount }.by(-100)
+          end
+        end
+      end
+    end
+
     describe '#detach_from_balance_amount' do
       context 'when payment status is :applied' do
         context 'when paymentable is Outcome' do
           subject { outcome.payments.hold.first.applied! }
 
           it 'substracts amount from balance current_amount' do
-            expect { subject }.to change { balance.current_amount }.by(-100)
+            expect { subject }.to change { balance.reload.current_amount }.by(-100)
           end
         end
 
@@ -71,7 +91,7 @@ RSpec.describe Payment, type: :model do
           subject { income.payments.hold.first.applied! }
 
           it 'adds amount to balance current_amount' do
-            expect { subject }.to change { balance.current_amount }.by(100)
+            expect { subject }.to change { balance.reload.current_amount }.by(100)
           end
         end
       end
@@ -96,28 +116,6 @@ RSpec.describe Payment, type: :model do
 
           it 'updates balance current_amount' do
             expect { subject }.to change { balance.current_amount }.by(200)
-          end
-        end
-      end
-    end
-  end
-
-  describe '#after_create' do
-    describe '#attach_to_balance_amount' do
-      context 'when payment status is :refund' do
-        context 'when paymentable is Outcome' do
-          subject { PaymentFactory.create(paymentable: outcome, status: :refund, amount: 200) }
-
-          it 'adds amount to balance current_amount' do
-            expect { subject }.to change { balance.current_amount }.by(200)
-          end
-        end
-
-        context 'when paymentable is Income' do
-          subject { PaymentFactory.create(paymentable: income, status: :refund, amount: 200) }
-
-          it 'substracts amount from balance current_amount' do
-            expect { subject }.to change { balance.current_amount }.by(-200)
           end
         end
       end

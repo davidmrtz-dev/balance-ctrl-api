@@ -113,7 +113,7 @@ end
 months = %w[January February March April May June July August September October November December]
 
 past_past_balance = create_balance(user, 'Past Past Balance', 'Past Past Balance Description', 11, 2023)
-two_months_ago = Time.zone.now - 2.month
+two_months_ago = 2.months.ago
 Timecop.freeze(two_months_ago) do
   create_income(past_past_balance, months[two_months_ago.month - 1])
   create_outcomes(past_past_balance)
@@ -121,7 +121,7 @@ Timecop.freeze(two_months_ago) do
 end
 
 past_balance = create_balance(user, 'Past Balance', 'Past Balance Description', 12, 2023)
-one_month_ago = Time.zone.now - 1.month
+one_month_ago = 1.month.ago
 Timecop.freeze(one_month_ago) do
   create_income(past_balance, months[one_month_ago.month - 1])
   create_outcomes(past_balance)

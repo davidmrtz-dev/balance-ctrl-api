@@ -22,19 +22,23 @@ class Outcome < Transaction
 
   def generate_payments
     if transaction_type.eql? 'current'
-      payments.create!(amount: amount, status: :hold)
+      payment = payments.create!(amount: amount, status: :hold)
+      BalancePayment.create!(balance: balance, payment: payment)
     else
       amount_for_quota = amount / quotas
 
       quotas.times do
-        payments.create!(amount: amount_for_quota, status: :hold)
+        payment = payments.create!(amount: amount_for_quota, status: :hold)
+        BalancePayment.create!(balance: balance, payment: payment)
       end
     end
   end
 
   def generate_refunds
     payments.applied.each do |p|
-      p.create_refund!(paymentable: self, amount: p.amount, status: :refund)
+      p.create_refund!(paymentable: self, amount: p.amount)
+      BalancePayment.create!(balance: balance, payment: p.refund)
+      p.refund.update!(status: :refund)
       p.save!
     end
   end

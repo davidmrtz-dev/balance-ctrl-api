@@ -9,7 +9,6 @@ RSpec.describe Api::V1::PaymentsController, type: :controller do
     login_user
 
     before do
-      BalancePayment.create!(balance: balance, payment: outcome.payments.first)
       outcome.payments.first.applied!
     end
 
@@ -25,7 +24,6 @@ RSpec.describe Api::V1::PaymentsController, type: :controller do
     login_user
 
     before do
-      BalancePayment.create!(balance: balance, payment: outcome.payments.first)
       outcome.payments.first.pending!
     end
 

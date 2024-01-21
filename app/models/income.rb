@@ -11,14 +11,17 @@ class Income < Transaction
   def generate_payment
     return unless transaction_type.eql? 'current'
 
-    payments.create!(amount: amount, status: :hold)
+    payment = payments.create!(amount: amount, status: :hold)
+    BalancePayment.create!(balance: balance, payment: payment)
   end
 
   def generate_refund
     return unless transaction_type.eql? 'current'
 
     payments.applied.each do |p|
-      p.create_refund!(paymentable: self, amount: p.amount, status: :refund)
+      p.create_refund!(paymentable: self, amount: p.amount)
+      BalancePayment.create!(balance: balance, payment: p.refund)
+      p.refund.update!(status: :refund)
       p.save!
     end
   end

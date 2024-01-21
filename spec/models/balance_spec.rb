@@ -20,7 +20,7 @@ RSpec.describe Balance, type: :model do
     let(:billing) { BillingFactory.create(user: user, billing_type: :debit) }
 
     before do
-      Timecop.freeze(Time.zone.now - 1.month) do
+      Timecop.freeze(1.month.ago) do
         BillingTransaction.create!(billing: billing, related_transaction: income)
         payment = PaymentFactory.create(paymentable: income, amount: 10_000)
         BalancePayment.create!(balance: balance, payment: payment)
