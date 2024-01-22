@@ -131,6 +131,9 @@ RSpec.describe Payment, type: :model do
       let(:outcome) { OutcomeFactory.create(balance: balance, transaction_type: :fixed, quotas: 3) }
 
       before do
+        outcome.payments.each do |payment|
+          BalancePayment.create!(balance: balance, payment: payment)
+        end
         outcome.payments.first.applied!
         outcome.payments.second.pending!
       end
