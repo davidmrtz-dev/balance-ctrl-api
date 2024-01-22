@@ -131,14 +131,17 @@ RSpec.describe Payment, type: :model do
       let(:outcome) { OutcomeFactory.create(balance: balance, transaction_type: :fixed, quotas: 3) }
 
       before do
+        outcome.payments.each do |payment|
+          BalancePayment.create!(balance: balance, payment: payment)
+        end
         outcome.payments.first.applied!
         outcome.payments.second.pending!
       end
 
       it 'returns the payment number' do
-        expect(outcome.payments.last.payment_number).to eq '1/3'
+        expect(outcome.payments.last.payment_number).to eq '3/3'
         expect(outcome.payments.second.payment_number).to eq '2/3'
-        expect(outcome.payments.first.payment_number).to eq '3/3'
+        expect(outcome.payments.first.payment_number).to eq '1/3'
       end
     end
   end

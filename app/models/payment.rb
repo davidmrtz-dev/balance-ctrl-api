@@ -19,7 +19,7 @@ class Payment < ApplicationRecord
   default_scope { order(created_at: :desc) }
 
   def payment_number
-    "#{paymentable.payments.applicable.where('id <= ?', id).count}/#{paymentable.payments.applicable.count}"
+    "#{paymentable.payments.applicable.where('id >= ?', id).count}/#{paymentable.payments.applicable.count}"
   end
 
   private

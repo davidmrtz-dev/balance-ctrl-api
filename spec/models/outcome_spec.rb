@@ -57,35 +57,6 @@ RSpec.describe Outcome, type: :model do
           expect(subject.payments.refund.first.amount).to eq subject.amount
         end
       end
-
-      context 'when outcome is :fixed' do
-        subject(:outcome) do
-          OutcomeFactory.create(
-            balance: balance,
-            transaction_type: :fixed,
-            amount: 12_000,
-            quotas: 12
-          )
-        end
-
-        before do
-          subject.payments.first(6).each(&:applied!)
-          subject.discard!
-        end
-
-        it 'should create refunds for applied payments' do
-          expect(subject.payments.refund.count).to eq 6
-        end
-
-        it 'should set refund amount equal to applied payment amount' do
-          refund_payments = subject.payments.refund
-          applied_payments = subject.payments.applied
-
-          refund_payments.each_with_index do |refund_payment, index|
-            expect(refund_payment.amount).to eq applied_payments[index].amount
-          end
-        end
-      end
     end
   end
 
