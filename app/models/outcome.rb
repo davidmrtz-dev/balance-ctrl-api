@@ -8,19 +8,21 @@ class Outcome < Transaction
 
   private
 
+  # rubocop:disable Metrics/AbcSize
   def generate_payments
     if transaction_type.eql? 'current'
-      payment = payments.create!(amount: amount, status: :hold)
+      payment = payments.create!(amount: amount, status: :hold, paid_at: transaction_date)
       BalancePayment.create!(balance: balance, payment: payment)
       payment.applied!
     else
       amount_for_quota = amount / quotas
 
       quotas.times do
-        payment = payments.create!(amount: amount_for_quota, status: :hold)
+        payment = payments.create!(amount: amount_for_quota, status: :hold, paid_at: transaction_date)
       end
     end
   end
+  # rubocop:enable Metrics/AbcSize
 
   def generate_refunds
     # TODO: refactor when work @refunds
