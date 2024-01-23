@@ -11,7 +11,7 @@ class Income < Transaction
   def generate_payment
     return unless transaction_type.eql? 'current'
 
-    payment = payments.create!(amount: amount, status: :hold)
+    payment = payments.create!(amount: amount, status: :hold, paid_at: transaction_date)
     BalancePayment.create!(balance: balance, payment: payment)
     payment.applied!
   end

@@ -16,7 +16,7 @@ class Payment < ApplicationRecord
 
   scope :applicable, -> { where.not(status: %i[expired refund]) }
 
-  default_scope { order(created_at: :desc) }
+  default_scope { order(paid_at: :asc) }
 
   def payment_number
     "#{paymentable.payments.applicable.where('id >= ?', id).count}/#{paymentable.payments.applicable.count}"

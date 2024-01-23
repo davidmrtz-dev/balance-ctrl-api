@@ -87,6 +87,7 @@ ActiveRecord::Schema.define(version: 2024_01_01_045435) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "refund_id"
+    t.datetime "paid_at"
     t.index ["paymentable_type", "paymentable_id"], name: "index_payments_on_paymentable"
     t.index ["refund_id"], name: "index_payments_on_refund_id"
   end

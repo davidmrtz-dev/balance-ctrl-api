@@ -10,7 +10,7 @@ class Outcome < Transaction
 
   def generate_payments
     if transaction_type.eql? 'current'
-      payment = payments.create!(amount: amount, status: :hold)
+      payment = payments.create!(amount: amount, status: :hold, paid_at: transaction_date)
       BalancePayment.create!(balance: balance, payment: payment)
       payment.applied!
     else

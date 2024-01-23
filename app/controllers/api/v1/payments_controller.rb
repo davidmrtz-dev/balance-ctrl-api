@@ -68,7 +68,7 @@ module Api
       end
 
       def payment_params
-        params.require(:payment).permit(:status)
+        params.require(:payment).permit(:status, :paid_at)
       end
 
       def set_page
