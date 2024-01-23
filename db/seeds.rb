@@ -49,11 +49,11 @@ def create_income(balance, description)
 end
 
 def create_outcomes(balance)
-  7.times do
+  7.times.each do |i|
     Outcome.create!(
       balance: balance,
       description: Faker::Commerce.product_name,
-      transaction_date: Time.zone.now,
+      transaction_date: Time.zone.now + (i + 1).second,
       amount: 1_000.00
     )
   end
@@ -105,7 +105,7 @@ def create_fixed_outcome(balance)
     amount: Faker::Number.decimal(l_digits: 4, r_digits: 2)
   )
 
-  fixed_outcome.payments
+  fixed_outcome.payments.ids
 end
 
 two_months_ago = 2.months.ago
@@ -115,8 +115,10 @@ Timecop.freeze(two_months_ago) do
   create_income(past_past_balance, generate_title(two_months_ago))
   create_outcomes(past_past_balance)
   attach_relations_to_transactions(past_past_balance)
-  BalancePayment.create!(balance: past_past_balance, payment: f_p.first)
-  f_p.first.applied!
+  payment = Payment.find(f_p.first)
+  payment.update!(paid_at: Time.zone.now + 10.seconds)
+  BalancePayment.create!(balance: past_past_balance, payment: payment)
+  payment.applied!
 end
 
 one_month_ago = 1.month.ago
@@ -125,13 +127,16 @@ Timecop.freeze(one_month_ago) do
   create_income(past_balance, generate_title(one_month_ago))
   create_outcomes(past_balance)
   attach_relations_to_transactions(past_balance)
-  BalancePayment.create!(balance: past_balance, payment: f_p.second)
-  f_p.second.applied!
+  payment = Payment.find(f_p.second)
+  payment.update!(paid_at: Time.zone.now + 10.seconds)
+  BalancePayment.create!(balance: past_balance, payment: payment)
+  payment.applied!
 end
 
 current_balance = create_balance(user, generate_title(Time.zone.now), 'Description', 1, 2024)
 create_income(current_balance, generate_title(Time.zone.now))
 create_outcomes(current_balance)
 attach_relations_to_transactions(current_balance)
-BalancePayment.create!(balance: current_balance, payment: f_p.third)
-f_p.third.pending!
+payment = Payment.find(f_p.third)
+BalancePayment.create!(balance: current_balance, payment: payment)
+payment.pending!

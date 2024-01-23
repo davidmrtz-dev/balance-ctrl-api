@@ -139,9 +139,9 @@ RSpec.describe Payment, type: :model do
       end
 
       it 'returns the payment number' do
-        expect(outcome.payments.last.payment_number).to eq '1/3'
+        expect(outcome.payments.last.payment_number).to eq '3/3'
         expect(outcome.payments.second.payment_number).to eq '2/3'
-        expect(outcome.payments.first.payment_number).to eq '3/3'
+        expect(outcome.payments.first.payment_number).to eq '1/3'
       end
     end
   end
