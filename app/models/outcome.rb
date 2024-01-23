@@ -17,7 +17,7 @@ class Outcome < Transaction
       amount_for_quota = amount / quotas
 
       quotas.times do
-        payment = payments.create!(amount: amount_for_quota, status: :hold)
+        payment = payments.create!(amount: amount_for_quota, status: :hold, paid_at: transaction_date)
       end
     end
   end
