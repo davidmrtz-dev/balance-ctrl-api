@@ -13,6 +13,7 @@
 ActiveRecord::Schema.define(version: 2024_01_01_045435) do
 
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
   create_table "balance_payments", force: :cascade do |t|
