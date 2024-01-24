@@ -15,6 +15,8 @@ module Api
             only: %i[
               amount
               status
+              folio
+              paid_at
             ]
           },
           billings: {
