@@ -65,4 +65,27 @@ RSpec.describe Balance, type: :model do
       expect(balance.amount_for_payments).to eq(10_000)
     end
   end
+
+  describe '#outcomes_applied_payments' do
+    let!(:income) { IncomeFactory.create(balance: balance, amount: 10_000) }
+    let!(:outcome) { OutcomeFactory.create(balance: balance, amount: 5_000) }
+    let!(:other_outcome) { OutcomeFactory.create(balance: balance, amount: 5_000) }
+    let(:fixed_outcome) { OutcomeFactory.create(balance: balance, amount: 5_000, transaction_type: :fixed, quotas: 5) }
+
+    before do
+      payment = fixed_outcome.payments.last
+      payment.update!(paid_at: Time.zone.now)
+      BalancePayment.create!(balance: balance, payment: payment)
+      payment.applied!
+    end
+
+    it 'should return the applied payments that are outcomes' do
+      expect(balance.outcomes_applied_payments.sum(&:amount)).to eq(11_000)
+    end
+
+    it 'should return the applied payments that are outcomes' do
+      expected_ids = [outcome.payments.last.id, other_outcome.payments.last.id, fixed_outcome.payments.applied.first.id]
+      expect(balance.outcomes_applied_payments.ids).to contain_exactly(*expected_ids)
+    end
+  end
 end

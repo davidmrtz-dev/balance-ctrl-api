@@ -8,10 +8,6 @@ class Balance < ApplicationRecord
 
   default_scope -> { order(created_at: :desc) }
 
-  def outcomes_applied_payments
-    payments.applied.where.not(paymentable_type: 'Income')
-  end
-
   def amount_incomes
     t_ids = payments.applied.pluck(:paymentable_id)
     i_ids = Transaction.where(id: t_ids, type: 'Income').ids
@@ -28,6 +24,12 @@ class Balance < ApplicationRecord
 
   def amount_for_payments
     amount_paid + amount_to_be_paid
+  end
+
+  def outcomes_applied_payments
+    t_ids = payments.applied.pluck(:paymentable_id)
+    o_ids = Transaction.where(id: t_ids, type: 'Outcome').ids
+    payments.applied.where(paymentable_id: o_ids)
   end
 
   def current?
