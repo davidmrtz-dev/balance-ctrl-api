@@ -9,17 +9,15 @@ class Balance < ApplicationRecord
   default_scope -> { order(created_at: :desc) }
 
   def amount_incomes
-    t_ids = payments.applied.pluck(:paymentable_id)
-    i_ids = Transaction.where(id: t_ids, type: 'Income').ids
-    payments.applied.where(paymentable_id: i_ids).sum(&:amount)
+    applied_incomes.sum(&:amount)
   end
 
   def amount_paid
-    payments.applied.where(paymentable: outcomes).sum(&:amount)
+    applied_outcomes.sum(&:amount)
   end
 
   def amount_to_be_paid
-    payments.pending.where(paymentable: outcomes).sum(&:amount)
+    pending_outcomes.sum(&:amount)
   end
 
   def amount_for_payments
@@ -27,12 +25,39 @@ class Balance < ApplicationRecord
   end
 
   def outcomes_applied_payments
-    t_ids = payments.applied.pluck(:paymentable_id)
-    o_ids = Transaction.where(id: t_ids, type: 'Outcome').ids
-    payments.applied.where(paymentable_id: o_ids)
+    applied_outcomes
   end
 
   def current?
     Time.zone.now.month == month && Time.zone.now.year == year
+  end
+
+  private
+
+  def applied_incomes
+    income_ids = applied_incomes_ids
+    payments.applied.where(paymentable_id: income_ids)
+  end
+
+  def applied_incomes_ids
+    transaction_ids(type: 'Income')
+  end
+
+  def applied_outcomes
+    outcome_ids = applied_outcomes_ids
+    payments.applied.where(paymentable_id: outcome_ids)
+  end
+
+  def applied_outcomes_ids
+    transaction_ids(type: 'Outcome')
+  end
+
+  def pending_outcomes
+    payments.pending.where(paymentable: outcomes)
+  end
+
+  def transaction_ids(type:)
+    transaction_ids = payments.applied.pluck(:paymentable_id)
+    Transaction.where(id: transaction_ids, type: type).ids
   end
 end
