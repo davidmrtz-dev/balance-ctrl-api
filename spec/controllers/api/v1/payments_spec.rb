@@ -12,7 +12,7 @@ RSpec.describe Api::V1::PaymentsController, type: :controller do
       get :applied, params: { balance_id: balance.id }
 
       expect(response).to have_http_status(:ok)
-      expect(parsed_response[:payments].pluck(:id)).to match_array(Payment.applied.ids)
+      expect(parsed_response[:payments].pluck(:id)).to match_array(balance.outcomes_applied_payments.ids)
     end
   end
 
