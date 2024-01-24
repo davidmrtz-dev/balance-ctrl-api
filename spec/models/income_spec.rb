@@ -50,12 +50,12 @@ RSpec.describe Income, type: :model do
       context 'when income is :current' do
         subject(:income) { IncomeFactory.create(balance: balance) }
 
-        it 'should create one payment with hold status' do
-          expect(subject.payments.hold.count).to eq 1
+        it 'should create one payment with applied status' do
+          expect(subject.payments.applied.count).to eq 1
         end
 
         it 'should set payment amount as outcome.amount' do
-          expect(subject.payments.hold.first.amount).to eq subject.amount
+          expect(subject.payments.applied.first.amount).to eq subject.amount
         end
       end
     end

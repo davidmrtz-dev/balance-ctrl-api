@@ -43,32 +43,23 @@ def create_income(balance, description)
   Income.create!(
     balance: balance,
     description: description,
-    amount: 65_000,
+    amount: 50_000,
     transaction_date: Time.zone.now # Check when revisit incomes.
   )
 end
 
 def create_outcomes(balance)
-  6.times do
+  7.times.each do |i|
     Outcome.create!(
       balance: balance,
       description: Faker::Commerce.product_name,
-      transaction_date: Time.zone.now,
-      amount: 1_500.00
+      transaction_date: Time.zone.now + (i + 1).second,
+      amount: 1_000.00
     )
   end
-
-  Outcome.create!(
-    balance: balance,
-    transaction_type: 'fixed',
-    quotas: 2,
-    description: Faker::Commerce.product_name,
-    transaction_date: Time.zone.now,
-    amount: Faker::Number.decimal(l_digits: 4, r_digits: 2)
-  )
 end
 
-def attach_relations_to_outcomes(balance)
+def attach_relations_to_transactions(balance)
   cash = Billing.cash.first
   debit = Billing.debit.first
   credit = Billing.credit.first
@@ -78,7 +69,7 @@ def attach_relations_to_outcomes(balance)
     cat = Category.all.sample
     outcome.categories << cat
 
-    # Attach billing to transaction
+    # Relates billing with transaction
     billing = if outcome.transaction_type.eql?('current')
       [cash, debit].sample
     else
@@ -88,39 +79,64 @@ def attach_relations_to_outcomes(balance)
       billing: billing,
       related_transaction: outcome
     )
-
-    next if outcome.transaction_type.eql?('current')
-    # Relate payments with balance for fixed outcomes
-    outcome.payments.each do |p|
-      BalancePayment.create!(
-        balance: balance,
-        payment: p
-      )
-    end
   end
 
-  balance.outcomes.fixed.first.payments.last.pending!
+  balance.incomes.each do |income|
+    BillingTransaction.create!(
+      billing: debit,
+      related_transaction: income
+    )
+  end
 end
 
-months = %w[January February March April May June July August September October November December]
+def generate_title(date)
+  months = %w[January February March April May June July August September October November December]
 
-past_past_balance = create_balance(user, 'Past Past Balance', 'Past Past Balance Description', 11, 2023)
-two_months_ago = Time.zone.now - 2.month
+  "#{months[date.month - 1]} #{date.year}"
+end
+
+def create_fixed_outcome(balance)
+  fixed_outcome = Outcome.create!(
+    balance: balance,
+    transaction_type: 'fixed',
+    quotas: 3,
+    description: Faker::Commerce.product_name,
+    transaction_date: Time.zone.now,
+    amount: Faker::Number.decimal(l_digits: 4, r_digits: 2)
+  )
+
+  fixed_outcome.payments.ids
+end
+
+two_months_ago = 2.months.ago
+past_past_balance = create_balance(user,  generate_title(two_months_ago), 'Description', 11, 2023)
+f_p = create_fixed_outcome(past_past_balance)
 Timecop.freeze(two_months_ago) do
-  create_income(past_past_balance, months[two_months_ago.month - 1])
+  create_income(past_past_balance, generate_title(two_months_ago))
   create_outcomes(past_past_balance)
-  attach_relations_to_outcomes(past_past_balance)
+  attach_relations_to_transactions(past_past_balance)
+  payment = Payment.find(f_p.first)
+  payment.update!(paid_at: Time.zone.now + 10.seconds)
+  BalancePayment.create!(balance: past_past_balance, payment: payment)
+  payment.applied!
 end
 
-past_balance = create_balance(user, 'Past Balance', 'Past Balance Description', 12, 2023)
-one_month_ago = Time.zone.now - 1.month
+one_month_ago = 1.month.ago
+past_balance = create_balance(user, generate_title(one_month_ago), 'Description', 12, 2023)
 Timecop.freeze(one_month_ago) do
-  create_income(past_balance, months[one_month_ago.month - 1])
+  create_income(past_balance, generate_title(one_month_ago))
   create_outcomes(past_balance)
-  attach_relations_to_outcomes(past_balance)
+  attach_relations_to_transactions(past_balance)
+  payment = Payment.find(f_p.second)
+  payment.update!(paid_at: Time.zone.now + 10.seconds)
+  BalancePayment.create!(balance: past_balance, payment: payment)
+  payment.applied!
 end
 
-current_balance = create_balance(user, 'Current Balance', 'Current Balance Description', 1, 2024)
-create_income(current_balance, months[Time.zone.now.month - 1])
+current_balance = create_balance(user, generate_title(Time.zone.now), 'Description', 1, 2024)
+create_income(current_balance, generate_title(Time.zone.now))
 create_outcomes(current_balance)
-attach_relations_to_outcomes(current_balance)
+attach_relations_to_transactions(current_balance)
+payment = Payment.find(f_p.third)
+BalancePayment.create!(balance: current_balance, payment: payment)
+payment.pending!

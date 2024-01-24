@@ -172,8 +172,6 @@ RSpec.describe Transaction, type: :model do
 
           subject { outcome.update!(amount: 10_000) }
 
-          before { outcome.payments.hold.first.applied! }
-
           it 'should update payment amount' do
             expect(outcome.payments.applied.first.amount).to eq 5_000
             subject

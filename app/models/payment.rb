@@ -7,22 +7,26 @@ class Payment < ApplicationRecord
 
   enum status: { hold: 0, pending: 1, applied: 2, expired: 3, refund: 4 }, _default: :hold
 
-  after_create :attach_to_balance_amount, if: -> { refund? }
-  before_update :detach_from_balance_amount, if: -> { applied? && status_was != 'applied' }
+  before_update :attach_to_balance_amount, if: -> { refund? && status_was == 'hold' }
+  before_update :detach_from_balance_amount, if: -> { applied? && (status_was == 'hold' || status_was == 'pending') }
   before_update :update_balance_amount, if: -> { applied? && status_was.eql?('applied') }
 
-  validate :only_one_payment_for_current, on: :create, if: -> { paymentable&.transaction_type.eql?('current') }
+  validate :only_one_applied_for_current, on: :create, if: -> { paymentable&.transaction_type.eql?('current') }
   validate :only_one_refund_for_current, on: :create, if: -> { paymentable&.transaction_type.eql?('current') }
 
   scope :applicable, -> { where.not(status: %i[expired refund]) }
 
-  default_scope { order(created_at: :desc) }
+  default_scope { order(paid_at: :desc) }
 
   def payment_number
     "#{paymentable.payments.applicable.where('id <= ?', id).count}/#{paymentable.payments.applicable.count}"
   end
 
   private
+
+  def balance
+    balances.first
+  end
 
   def outcome?
     paymentable.type.eql?('Outcome')
@@ -32,43 +36,43 @@ class Payment < ApplicationRecord
     paymentable.type.eql?('Income')
   end
 
-  def save_balance
-    paymentable.balance.save
+  def save_balance(quantity = nil)
+    balance.update!(current_amount: quantity || balance.current_amount)
   end
 
   def attach_to_balance_amount
     if outcome?
-      paymentable.balance.current_amount += amount
+      quantity = balance.current_amount += amount
     elsif income?
-      paymentable.balance.current_amount -= amount
+      quantity = balance.current_amount -= amount
     end
 
-    save_balance
+    save_balance(quantity)
   end
 
   def detach_from_balance_amount
     if outcome?
-      paymentable.balance.current_amount -= amount
+      quantity = balance.current_amount -= amount
     elsif income?
-      paymentable.balance.current_amount += amount
+      quantity = balance.current_amount += amount
     end
 
-    save_balance
+    save_balance(quantity)
   end
 
   def update_balance_amount
     if outcome?
-      paymentable.balance.current_amount += (amount_was - amount)
+      quantity = paymentable.balance.current_amount += (amount_was - amount)
     elsif income?
-      paymentable.balance.current_amount -= (amount_was - amount)
+      quantity = paymentable.balance.current_amount -= (amount_was - amount)
     end
 
-    save_balance
+    save_balance(quantity)
   end
 
-  def only_one_payment_for_current
+  def only_one_applied_for_current
     if paymentable.payments.count.positive? &&
-       status != 'refund'
+       status == 'applied'
       errors.add(:paymentable, 'of type current can only have one payment')
     end
   end

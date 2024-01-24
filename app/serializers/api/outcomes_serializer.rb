@@ -12,26 +12,9 @@ module Api
       @outcomes.map do |outcome|
         outcome.serializable_hash(
           include: {
-            payments: {
-              only: %i[
-                id
-                amount
-                status
-              ]
-            },
-            billings: {
-              except: %i[
-                user_id
-                created_at
-                updated_at
-              ]
-            },
-            categories: {
-              only: %i[
-                id
-                name
-              ]
-            }
+            payments: payments,
+            billings: billings,
+            categories: categories
           },
           except: %i[
             balance_id
@@ -43,6 +26,39 @@ module Api
           ]
         )
       end
+    end
+
+    private
+
+    def payments
+      {
+        only: %i[
+          id
+          amount
+          status
+          folio
+          paid_at
+        ]
+      }
+    end
+
+    def billings
+      {
+        except: %i[
+          user_id
+          created_at
+          updated_at
+        ]
+      }
+    end
+
+    def categories
+      {
+        only: %i[
+          id
+          name
+        ]
+      }
     end
   end
 end

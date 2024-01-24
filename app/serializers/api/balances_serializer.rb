@@ -13,7 +13,6 @@ module Api
         balance.serializable_hash(
           methods: %i[
             amount_incomes
-            amount_outcomes
             amount_paid
             amount_to_be_paid
             amount_for_payments
