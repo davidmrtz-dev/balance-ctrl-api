@@ -83,13 +83,13 @@ ActiveRecord::Schema.define(version: 2024_01_01_045435) do
   create_table "payments", force: :cascade do |t|
     t.string "paymentable_type", null: false
     t.bigint "paymentable_id", null: false
+    t.uuid "folio", default: -> { "gen_random_uuid()" }, null: false
     t.decimal "amount", precision: 8, scale: 2, default: "0.0", null: false
     t.integer "status", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "refund_id"
     t.datetime "paid_at"
-    t.uuid "folio", default: -> { "gen_random_uuid()" }, null: false
     t.index ["paymentable_type", "paymentable_id"], name: "index_payments_on_paymentable"
     t.index ["refund_id"], name: "index_payments_on_refund_id"
   end
@@ -101,7 +101,7 @@ ActiveRecord::Schema.define(version: 2024_01_01_045435) do
     t.decimal "amount", precision: 10, scale: 2, default: "0.0", null: false
     t.string "description"
     t.integer "frequency"
-    t.date "transaction_date"
+    t.datetime "transaction_date"
     t.integer "quotas"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
