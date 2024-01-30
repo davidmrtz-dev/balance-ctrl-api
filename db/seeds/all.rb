@@ -20,7 +20,7 @@ creator.create_operations_for(
   date: 2.months.ago,
   income_amount: 55_000,
   current_outcomes: 0,
-  fixed_outcomes: 0
+  fixed_outcomes: 1
 )
 creator.create_operations_for(
   date: 1.months.ago,
@@ -34,3 +34,7 @@ creator.create_operations_for(
   current_outcomes: 0,
   fixed_outcomes: 0
 )
+
+attacher = Seeds::AttacherManager.new(user)
+
+attacher.attach_payments

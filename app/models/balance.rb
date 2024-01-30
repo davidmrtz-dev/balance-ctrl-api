@@ -6,7 +6,7 @@ class Balance < ApplicationRecord
   has_many :balance_payments, dependent: :destroy
   has_many :payments, through: :balance_payments
 
-  default_scope -> { order(created_at: :desc) }
+  default_scope -> { order(id: :desc) }
 
   def amount_incomes
     applied_incomes.sum(&:amount)
