@@ -6,7 +6,7 @@ RSpec.describe Outcome, type: :model do
 
   describe 'associations' do
     it { is_expected.to belong_to(:balance) }
-    it { should have_db_column(:transaction_date).of_type(:date) }
+    it { should have_db_column(:transaction_date).of_type(:datetime) }
   end
 
   describe 'validations' do

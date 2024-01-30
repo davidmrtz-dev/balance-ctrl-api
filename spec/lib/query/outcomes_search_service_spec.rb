@@ -5,7 +5,7 @@ describe Query::OutcomesSearchService do
   let(:user) { UserFactory.create(email: 'user@example.com', password: 'password') }
   let(:balance) { BalanceFactory.create(user: user, current_amount: 10_000) }
   let!(:outcome) do
-    OutcomeFactory.create(balance: balance, transaction_date: Time.zone.today, description: 'Baby Clothes')
+    OutcomeFactory.create(balance: balance, transaction_date: Time.zone.now, description: 'Baby Clothes')
   end
 
   describe 'when params are not valid' do
@@ -39,7 +39,7 @@ describe Query::OutcomesSearchService do
         result = described_class.new(user, {
           keyword: '',
           start_date: 1.day.ago.to_s,
-          end_date: Time.zone.today.to_s
+          end_date: 1.day.from_now.to_s
         }).call
 
         expect(result.count).to eq 1
@@ -52,7 +52,7 @@ describe Query::OutcomesSearchService do
         result = described_class.new(user, {
           keyword: 'Clothes',
           start_date: 1.day.ago.to_s,
-          end_date: Time.zone.today.to_s
+          end_date: 1.day.from_now.to_s
         }).call
 
         expect(result.count).to eq 1

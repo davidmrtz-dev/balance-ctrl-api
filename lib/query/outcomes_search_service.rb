@@ -17,16 +17,16 @@ module Query
             .from_user(user)
             .where('LOWER(transactions.description) LIKE :word', word: "%#{params[:keyword].downcase}%")
         elsif query_by_dates?
-          start_date = Date.parse(params[:start_date])
-          end_date = Date.parse(params[:end_date])
+          start_date = DateTime.parse(params[:start_date])
+          end_date = DateTime.parse(params[:end_date])
 
           Outcome
             .with_balance_and_user
             .from_user(user)
             .where(transaction_date: start_date..end_date)
         else
-          start_date = Date.parse(params[:start_date])
-          end_date = Date.parse(params[:end_date])
+          start_date = DateTime.parse(params[:start_date])
+          end_date = DateTime.parse(params[:end_date])
 
           Outcome
             .with_balance_and_user
