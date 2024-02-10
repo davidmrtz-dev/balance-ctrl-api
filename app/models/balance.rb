@@ -17,7 +17,7 @@ class Balance < ApplicationRecord
   end
 
   def amount_to_be_paid
-    pending_outcomes.sum(&:amount)
+    payments.pending.sum(&:amount)
   end
 
   def amount_for_payments
@@ -50,10 +50,6 @@ class Balance < ApplicationRecord
 
   def applied_outcomes_ids
     transaction_ids(type: 'Outcome')
-  end
-
-  def pending_outcomes
-    payments.pending.where(paymentable: outcomes)
   end
 
   def transaction_ids(type:)
