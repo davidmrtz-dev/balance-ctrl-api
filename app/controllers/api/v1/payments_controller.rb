@@ -41,7 +41,7 @@ module Api
         )
 
         render json: {
-          payments: ::Api::PaymentsSerializer.json(payments),
+          payments: ::Api::PaymentsSerializer.json(paginated),
           meta: {
             current_page: page,
             per_page: page_size,
