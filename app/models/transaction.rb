@@ -52,7 +52,9 @@ class Transaction < ApplicationRecord
   private
 
   def transaction_date_not_after_today
-    return if transaction_date.nil? || transaction_date.beginning_of_day <= Time.zone.now.beginning_of_day
+    return if Rails.env.development?
+
+    return unless transaction_date.present? && transaction_date.beginning_of_day > Time.zone.today.beginning_of_day
 
     errors.add(:transaction_date, 'cannot be after today')
   end

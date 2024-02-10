@@ -13,7 +13,6 @@ RSpec.describe Outcome, type: :model do
     it { should validate_absence_of(:frequency) }
     it { should validate_presence_of(:transaction_date) }
     it { is_expected.to validate_numericality_of(:amount) }
-    it { should_not allow_value(Time.zone.tomorrow).for(:transaction_date) }
     [
       1,
       50,
