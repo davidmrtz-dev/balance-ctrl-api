@@ -92,7 +92,7 @@ module Seeds
           transaction_date: transaction_date,
           amount: Faker::Commerce.price(range: 2000.00..8000.00, as_string: false),
           transaction_type: :fixed,
-          quotas: [6].sample # TODO: change to 3..24
+          quotas: [12].sample
         )
       end
 

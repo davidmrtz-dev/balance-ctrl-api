@@ -10,30 +10,20 @@ user = User.first || User.create!(
 creator = Seeds::CreatorManager.new(user)
 
 creator.create_billings_and_categories
-creator.create_operations_for(
-  date: 3.months.ago,
-  income_amount: 55_000,
-  current_outcomes: 0,
-  fixed_outcomes: 1
-)
-creator.create_operations_for(
-  date: 2.months.ago,
-  income_amount: 55_000,
-  current_outcomes: 0,
-  fixed_outcomes: 1
-)
-creator.create_operations_for(
-  date: 1.months.ago,
-  income_amount: 55_000,
-  current_outcomes: 0,
-  fixed_outcomes: 0
-)
-creator.create_operations_for(
-  date: Time.zone.now,
-  income_amount: 55_000,
-  current_outcomes: 0,
-  fixed_outcomes: 0
-)
+
+months = 7
+months_ago = months - 1
+months.times do |i|
+  creator.create_operations_for(
+    date: months_ago.months.ago.beginning_of_month,
+    income_amount: (35_000..75_000).to_a.sample,
+    current_outcomes: (5..15).to_a.sample,
+    fixed_outcomes: 1
+  )
+
+  puts "=====> Created transactions for #{months_ago.months.ago.beginning_of_month.strftime('%B') + ' ' + months_ago.months.ago.year.to_s}"
+  months_ago -= 1
+end
 
 attacher = Seeds::AttacherManager.new(user)
 

@@ -6,38 +6,37 @@ module Seeds
       @user = user
     end
 
+    # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     def attach_payments
       balances = user.balances.reverse
       fixed_outcomes = balances.map(&:outcomes).flatten.select(&:fixed?)
 
       fixed_outcomes.each do |outcome|
         bal_ids = get_balances_from(balances.pluck(:id), outcome.balance_id)
+
         payments = outcome.payments.first(bal_ids.size)
 
-        create_balance_payments(payments, bal_ids)
+        all_appplied = bal_ids.size > payments.size
+
+        payments.each_with_index do |payment, index|
+          BalancePayment.create!(balance_id: bal_ids[index], payment_id: payment.id)
+          payment_status = if all_appplied
+                             :applied
+                           else
+                             (index == payments.size - 1 ? :pending : :applied)
+                           end
+
+          if payment_status.eql?(:applied)
+            payment.update!(paid_at: bal_ids[index].months.ago, status: payment_status)
+          else
+            payment.update!(status: payment_status)
+          end
+        end
       end
     end
+    # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
     private
-
-    def create_balance_payments(payments, bal_ids)
-      payments.each_with_index do |payment, index|
-        attach_and_update(payment, bal_ids[index], index, payments.size)
-      end
-    end
-
-    def attach_and_update(payment, bal_id, idx, size)
-      BalancePayment.create!(
-        balance_id: bal_id,
-        payment_id: payment.id
-      )
-
-      if idx.eql?(size - 1)
-        payment.pending!
-      else
-        payment.applied!
-      end
-    end
 
     def get_balances_from(balance_ids, start_id)
       start_index = balance_ids.index(start_id)
