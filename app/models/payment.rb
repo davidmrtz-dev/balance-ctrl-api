@@ -15,6 +15,7 @@ class Payment < ApplicationRecord
   validate :only_one_refund_for_current, on: :create, if: -> { paymentable&.transaction_type.eql?('current') }
 
   scope :applicable, -> { where.not(status: %i[expired refund]) }
+  scope :pending_or_applied, -> { where(status: %i[pending applied]) }
 
   default_scope { order(status: :desc, paid_at: :asc) }
 
