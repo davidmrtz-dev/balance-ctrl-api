@@ -15,6 +15,7 @@ module Api
             amount_incomes
             amount_outcomes_current
             amount_outcomes_fixed
+            line_chart_data
             amount_after_payments
             amount_paid
             amount_to_be_paid

@@ -17,8 +17,8 @@ months.times do |i|
   creator.create_operations_for(
     date: months_ago.months.ago.beginning_of_month,
     income_amount: (35_000..75_000).to_a.sample,
-    current_outcomes: (5..15).to_a.sample,
-    fixed_outcomes: 1
+    current_outcomes: (12..25).to_a.sample,
+    fixed_outcomes: (5..10).to_a.sample
   )
 
   puts "=====> Created transactions for #{months_ago.months.ago.beginning_of_month.strftime('%B') + ' ' + months_ago.months.ago.year.to_s}"
