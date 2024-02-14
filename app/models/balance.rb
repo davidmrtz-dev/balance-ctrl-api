@@ -13,11 +13,25 @@ class Balance < ApplicationRecord
   end
 
   def amount_outcomes_current
-    outcomes_payments(applied_outcomes_current_ids).sum(&:amount)
+    outcomes_payments(outcomes_current_ids).sum(&:amount)
+  end
+
+  def line_chart_data
+    current_payments = outcomes_payments(outcomes_current_ids)
+    fixed_payments = outcomes_payments(outcomes_fixed_ids)
+
+    current_payments_by_week = calculate_payments_by_week(current_payments)
+    fixed_payments_by_week = calculate_payments_by_week(fixed_payments)
+
+    {
+      weeks: current_payments_by_week.keys.sort.map { |week| "Week #{week}" },
+      current: current_payments_by_week.values,
+      fixed: fixed_payments_by_week.values
+    }
   end
 
   def amount_outcomes_fixed
-    outcomes_payments(applied_outcomes_fixed_ids).sum(&:amount)
+    outcomes_payments(outcomes_fixed_ids).sum(&:amount)
   end
 
   def amount_after_payments
@@ -46,6 +60,19 @@ class Balance < ApplicationRecord
 
   private
 
+  def calculate_payments_by_week(payments)
+    payments_by_week = Hash.new(0)
+
+    payments.each do |payment|
+      next if payment.paid_at.nil?
+
+      week_number = ((payment.paid_at.day - 1) / 7) + 1
+      payments_by_week[week_number] += payment.amount
+    end
+
+    payments_by_week
+  end
+
   def applied_incomes_payments
     income_ids = applied_incomes_ids
     payments.applied.where(paymentable_id: income_ids)
@@ -68,11 +95,11 @@ class Balance < ApplicationRecord
     t_applied_payments_ids(type: 'Outcome')
   end
 
-  def applied_outcomes_current_ids
+  def outcomes_current_ids
     t_payments_ids(type: 'Outcome', transaction_type: 'current')
   end
 
-  def applied_outcomes_fixed_ids
+  def outcomes_fixed_ids
     t_payments_ids(type: 'Outcome', transaction_type: 'fixed')
   end
 

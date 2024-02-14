@@ -27,7 +27,7 @@ module Seeds
                            end
 
           if payment_status.eql?(:applied)
-            payment.update!(paid_at: bal_ids[index].months.ago, status: payment_status)
+            payment.update!(paid_at: payment.paymentable.transaction_date, status: payment_status)
           else
             payment.update!(status: payment_status)
           end
