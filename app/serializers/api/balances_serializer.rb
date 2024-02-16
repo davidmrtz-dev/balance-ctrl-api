@@ -20,6 +20,7 @@ module Api
             amount_paid
             amount_to_be_paid
             amount_for_payments
+            comparison_percentage
             current?
           ],
           except: %i[
