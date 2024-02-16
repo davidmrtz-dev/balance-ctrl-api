@@ -54,6 +54,19 @@ class Balance < ApplicationRecord
     applied_outcomes_payments
   end
 
+  def comparison_percentage
+    return unless before_balance
+
+    c_amount = amount_for_payments
+    l_amount = before_balance.amount_for_payments
+
+    change = ((c_amount - l_amount).to_f / l_amount.abs) * 100
+    prefix = change.positive? ? '-' : '+'
+    change = change.abs
+
+    "#{prefix}#{change.round(2)}"
+  end
+
   def current?
     Time.zone.now.month == month && Time.zone.now.year == year
   end
@@ -71,6 +84,14 @@ class Balance < ApplicationRecord
     end
 
     payments_by_week
+  end
+
+  def before_balance
+    user.balances.where('id < ?', id).first
+  end
+
+  def next_balance
+    user.balances.where('id > ?', id).last
   end
 
   def applied_incomes_payments
