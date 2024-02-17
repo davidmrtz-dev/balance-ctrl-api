@@ -3,6 +3,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.7.4'
 
+gem 'administrate'
 gem 'attr_encrypted'
 gem 'devise', '~> 4.7', '>= 4.7.3'
 gem 'devise_token_auth'
