@@ -4,6 +4,7 @@ module Api
       include PaginationV1
 
       before_action :authenticate_user!
+      before_action :verify_demo_mode, only: %i[update]
 
       def applied
         payments = current_user.balances.find(params[:balance_id]).outcomes_applied_payments
@@ -81,6 +82,12 @@ module Api
 
       def set_total_pages(count, page_size)
         (count / page_size) + ((count % page_size).positive? ? 1 : 0)
+      end
+
+      def verify_demo_mode
+        return unless Flipper.enabled?(:demo_mode)
+
+        render json: { errors: ['Operation not allowed in demo mode'] }, status: :forbidden
       end
     end
   end

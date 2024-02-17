@@ -24,5 +24,15 @@ Rails.application.routes.draw do
     end
   end
 
-  mount Flipper::UI.app(Flipper) => 'admin/flipper', as: 'flipper_ui'
+  flipper_app = Flipper::UI.app(Flipper.instance) do |builder|
+    builder.use Rack::Auth::Basic do |username, password|
+      ActiveSupport::SecurityUtils.secure_compare(
+        Digest::SHA256.hexdigest(username), Digest::SHA256.hexdigest(ENV.fetch('FLIPPER_USER'))
+      ) & ActiveSupport::SecurityUtils.secure_compare(
+        Digest::SHA256.hexdigest(password), Digest::SHA256.hexdigest(ENV.fetch('FLIPPER_PASSWORD'))
+      )
+    end
+  end
+
+  mount flipper_app, at: 'admin/flipper', as: 'flipper_ui'
 end

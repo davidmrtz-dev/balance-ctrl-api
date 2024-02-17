@@ -4,6 +4,7 @@ module Api
       include Pagination
 
       before_action :authenticate_user!
+      before_action :verify_demo_mode, only: %i[create update destroy]
 
       def index
         incomes = Income
@@ -69,6 +70,12 @@ module Api
           :transaction_date,
           :frequency
         )
+      end
+
+      def verify_demo_mode
+        return unless Flipper.enabled?(:demo_mode)
+
+        render json: { errors: ['Operation not allowed in demo mode'] }, status: :forbidden
       end
     end
   end
