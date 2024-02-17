@@ -1,4 +1,4 @@
-require "administrate/base_dashboard"
+require 'administrate/base_dashboard'
 
 class BalanceDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
@@ -22,6 +22,15 @@ class BalanceDashboard < Administrate::BaseDashboard
     year: Field::Number,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
+    amount_incomes: Field::Number,
+    amount_outcomes_current: Field::Number,
+    amount_outcomes_fixed: Field::Number,
+    amount_after_payments: Field::Number,
+    amount_paid: Field::Number,
+    amount_to_be_paid: Field::Number,
+    amount_for_payments: Field::Number,
+    comparison_percentage: Field::String,
+    current?: Field::Boolean
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -53,6 +62,15 @@ class BalanceDashboard < Administrate::BaseDashboard
     year
     created_at
     updated_at
+    amount_incomes
+    amount_outcomes_current
+    amount_outcomes_fixed
+    amount_after_payments
+    amount_paid
+    amount_to_be_paid
+    amount_for_payments
+    comparison_percentage
+    current?
   ].freeze
 
   # FORM_ATTRIBUTES

@@ -1,4 +1,4 @@
-require "administrate/base_dashboard"
+require 'administrate/base_dashboard'
 
 class CategoryDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
@@ -14,7 +14,7 @@ class CategoryDashboard < Administrate::BaseDashboard
     name: Field::String,
     transactions_records: Field::HasMany,
     created_at: Field::DateTime,
-    updated_at: Field::DateTime,
+    updated_at: Field::DateTime
   }.freeze
 
   # COLLECTION_ATTRIBUTES

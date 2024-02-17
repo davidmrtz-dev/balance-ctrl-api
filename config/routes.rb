@@ -12,7 +12,7 @@ Rails.application.routes.draw do
     resources :transactions
     resources :users
 
-    root to: "balances#index"
+    root to: 'balances#index'
   end
 
   mount_devise_token_auth_for 'User', at: 'api/v1/auth'

@@ -1,4 +1,4 @@
-require "administrate/base_dashboard"
+require 'administrate/base_dashboard'
 
 class PaymentDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
@@ -16,9 +16,14 @@ class PaymentDashboard < Administrate::BaseDashboard
     paid_at: Field::DateTime,
     paymentable: Field::Polymorphic,
     refund: Field::BelongsTo,
-    status: Field::Select.with_options(searchable: false, collection: ->(field) { field.resource.class.send(field.attribute.to_s.pluralize).keys }),
+    status: Field::Select.with_options(
+      searchable: false,
+      collection: lambda { |field|
+                    field.resource.class.send(field.attribute.to_s.pluralize).keys
+                  }
+    ),
     created_at: Field::DateTime,
-    updated_at: Field::DateTime,
+    updated_at: Field::DateTime
   }.freeze
 
   # COLLECTION_ATTRIBUTES

@@ -1,4 +1,4 @@
-require "administrate/base_dashboard"
+require 'administrate/base_dashboard'
 
 class CategorizationDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
@@ -13,7 +13,7 @@ class CategorizationDashboard < Administrate::BaseDashboard
     transaction_id: Field::Number,
     transaction_record: Field::BelongsTo,
     created_at: Field::DateTime,
-    updated_at: Field::DateTime,
+    updated_at: Field::DateTime
   }.freeze
 
   # COLLECTION_ATTRIBUTES

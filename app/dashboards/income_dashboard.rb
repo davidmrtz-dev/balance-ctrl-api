@@ -1,4 +1,4 @@
-require "administrate/base_dashboard"
+require 'administrate/base_dashboard'
 
 class IncomeDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
@@ -17,14 +17,25 @@ class IncomeDashboard < Administrate::BaseDashboard
     categorizations: Field::HasMany,
     description: Field::String,
     discarded_at: Field::DateTime,
-    frequency: Field::Select.with_options(searchable: false, collection: ->(field) { field.resource.class.send(field.attribute.to_s.pluralize).keys }),
+    frequency: Field::Select.with_options(
+      searchable: false,
+      collection: lambda { |field|
+                    field.resource.class.send(field.attribute.to_s.pluralize).keys
+                  }
+    ),
     payments: Field::HasMany,
     quotas: Field::Number,
     transaction_date: Field::DateTime,
-    transaction_type: Field::Select.with_options(searchable: false, collection: ->(field) { field.resource.class.send(field.attribute.to_s.pluralize).keys }),
+    transaction_type: Field::Select.with_options(
+      searchable: false,
+      collection: lambda { |field|
+                    field.resource.class.send(field.attribute.to_s.pluralize).keys
+                  }
+    ),
     type: Field::String,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
+    status: Field::String
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -37,6 +48,7 @@ class IncomeDashboard < Administrate::BaseDashboard
     amount
     balance
     billing_transactions
+    status
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -59,6 +71,7 @@ class IncomeDashboard < Administrate::BaseDashboard
     type
     created_at
     updated_at
+    status
   ].freeze
 
   # FORM_ATTRIBUTES

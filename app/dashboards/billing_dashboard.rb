@@ -1,4 +1,4 @@
-require "administrate/base_dashboard"
+require 'administrate/base_dashboard'
 
 class BillingDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
@@ -10,7 +10,12 @@ class BillingDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     billing_transactions: Field::HasMany,
-    billing_type: Field::Select.with_options(searchable: false, collection: ->(field) { field.resource.class.send(field.attribute.to_s.pluralize).keys }),
+    billing_type: Field::Select.with_options(
+      searchable: false,
+      collection: lambda { |field|
+                    field.resource.class.send(field.attribute.to_s.pluralize).keys
+                  }
+    ),
     cycle_end_date: Field::Date,
     discarded_at: Field::DateTime,
     encrypted_credit_card_number: Field::String,
@@ -20,7 +25,7 @@ class BillingDashboard < Administrate::BaseDashboard
     related_transactions: Field::HasMany,
     user: Field::BelongsTo,
     created_at: Field::DateTime,
-    updated_at: Field::DateTime,
+    updated_at: Field::DateTime
   }.freeze
 
   # COLLECTION_ATTRIBUTES
