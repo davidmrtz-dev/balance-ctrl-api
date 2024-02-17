@@ -36,3 +36,6 @@ group :development do
 end
 
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
+
+gem 'flipper-active_record', '~> 1.1.0'
+gem 'flipper-ui', '~> 1.1.0'

@@ -23,4 +23,6 @@ Rails.application.routes.draw do
       resources :billings, only: %i[index create update destroy]
     end
   end
+
+  mount Flipper::UI.app(Flipper) => 'admin/flipper', as: 'flipper_ui'
 end
