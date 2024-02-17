@@ -14,7 +14,7 @@ Bundler.require(*Rails.groups)
 module BalanceCtrlEnhancedApi
   class Application < Rails::Application
     config.load_defaults 6.1
-    config.api_only = true
+    config.api_only = false
     config.autoloader = :zeitwerk
     config.eager_load_paths << Rails.root.join('lib')
     config.time_zone = 'Mexico/General'
