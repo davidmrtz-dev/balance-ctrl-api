@@ -1,4 +1,20 @@
 Rails.application.routes.draw do
+  namespace :admin do
+    resources :balances
+    resources :balance_payments
+    resources :billings
+    resources :billing_transactions
+    resources :categorizations
+    resources :categories
+    resources :incomes
+    resources :outcomes
+    resources :payments
+    resources :transactions
+    resources :users
+
+    root to: "balances#index"
+  end
+
   mount_devise_token_auth_for 'User', at: 'api/v1/auth'
 
   namespace :api, defaults: { format: :json } do
