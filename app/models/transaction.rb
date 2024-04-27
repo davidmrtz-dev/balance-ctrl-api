@@ -7,7 +7,7 @@ class Transaction < ApplicationRecord
   after_update :update_payment, if: -> { transaction_type.eql?('current') && payments.applied.any? }
 
   belongs_to :balance
-  has_many :payments, as: :paymentable, dependent: :destroy
+  has_many :payments, as: :paymentable, dependent: :destroy, inverse_of: :paymentable
   has_many :billing_transactions, dependent: :destroy
   has_many :billings, through: :billing_transactions
   has_many :categorizations, dependent: :destroy
@@ -52,7 +52,9 @@ class Transaction < ApplicationRecord
   private
 
   def transaction_date_not_after_today
-    return if transaction_date.nil? || transaction_date <= Time.zone.now.beginning_of_day
+    return if Rails.env.development?
+
+    return unless transaction_date.present? && transaction_date.beginning_of_day > Time.zone.today.beginning_of_day
 
     errors.add(:transaction_date, 'cannot be after today')
   end

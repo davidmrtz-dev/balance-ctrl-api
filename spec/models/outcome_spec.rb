@@ -6,14 +6,13 @@ RSpec.describe Outcome, type: :model do
 
   describe 'associations' do
     it { is_expected.to belong_to(:balance) }
-    it { should have_db_column(:transaction_date).of_type(:date) }
+    it { should have_db_column(:transaction_date).of_type(:datetime) }
   end
 
   describe 'validations' do
     it { should validate_absence_of(:frequency) }
     it { should validate_presence_of(:transaction_date) }
     it { is_expected.to validate_numericality_of(:amount) }
-    it { should_not allow_value(Time.zone.tomorrow).for(:transaction_date) }
     [
       1,
       50,

@@ -1,4 +1,20 @@
 Rails.application.routes.draw do
+  namespace :admin do
+    resources :balances
+    resources :balance_payments
+    resources :billings
+    resources :billing_transactions
+    resources :categorizations
+    resources :categories
+    resources :incomes
+    resources :outcomes
+    resources :payments
+    resources :transactions
+    resources :users
+
+    root to: 'balances#index'
+  end
+
   mount_devise_token_auth_for 'User', at: 'api/v1/auth'
 
   namespace :api, defaults: { format: :json } do
@@ -23,4 +39,16 @@ Rails.application.routes.draw do
       resources :billings, only: %i[index create update destroy]
     end
   end
+
+  flipper_app = Flipper::UI.app(Flipper.instance) do |builder|
+    builder.use Rack::Auth::Basic do |username, password|
+      ActiveSupport::SecurityUtils.secure_compare(
+        Digest::SHA256.hexdigest(username), Digest::SHA256.hexdigest(ENV.fetch('FLIPPER_USER'))
+      ) & ActiveSupport::SecurityUtils.secure_compare(
+        Digest::SHA256.hexdigest(password), Digest::SHA256.hexdigest(ENV.fetch('FLIPPER_PASSWORD'))
+      )
+    end
+  end
+
+  mount flipper_app, at: 'admin/flipper', as: 'flipper_ui'
 end

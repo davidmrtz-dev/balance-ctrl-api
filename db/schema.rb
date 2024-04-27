@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_01_01_045435) do
+ActiveRecord::Schema.define(version: 2024_02_17_021128) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -80,16 +80,32 @@ ActiveRecord::Schema.define(version: 2024_01_01_045435) do
     t.index ["transaction_id"], name: "index_categorizations_on_transaction_id"
   end
 
+  create_table "flipper_features", force: :cascade do |t|
+    t.string "key", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["key"], name: "index_flipper_features_on_key", unique: true
+  end
+
+  create_table "flipper_gates", force: :cascade do |t|
+    t.string "feature_key", null: false
+    t.string "key", null: false
+    t.text "value"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true
+  end
+
   create_table "payments", force: :cascade do |t|
     t.string "paymentable_type", null: false
     t.bigint "paymentable_id", null: false
+    t.uuid "folio", default: -> { "gen_random_uuid()" }, null: false
     t.decimal "amount", precision: 8, scale: 2, default: "0.0", null: false
     t.integer "status", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "refund_id"
     t.datetime "paid_at"
-    t.uuid "folio", default: -> { "gen_random_uuid()" }, null: false
     t.index ["paymentable_type", "paymentable_id"], name: "index_payments_on_paymentable"
     t.index ["refund_id"], name: "index_payments_on_refund_id"
   end
@@ -101,7 +117,7 @@ ActiveRecord::Schema.define(version: 2024_01_01_045435) do
     t.decimal "amount", precision: 10, scale: 2, default: "0.0", null: false
     t.string "description"
     t.integer "frequency"
-    t.date "transaction_date"
+    t.datetime "transaction_date"
     t.integer "quotas"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

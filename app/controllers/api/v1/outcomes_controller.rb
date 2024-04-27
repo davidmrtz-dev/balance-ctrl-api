@@ -4,6 +4,7 @@ module Api
       include PaginationV1
 
       before_action :authenticate_user!
+      before_action :verify_demo_mode, only: %i[create update destroy]
 
       def index
         outcomes = Outcome
@@ -174,6 +175,12 @@ module Api
           total_pages: total_pages,
           total_per_page: total_per_page
         }
+      end
+
+      def verify_demo_mode
+        return unless Flipper.enabled?(:demo_mode)
+
+        render json: { errors: ['Operation not allowed in demo mode'] }, status: :forbidden
       end
     end
   end

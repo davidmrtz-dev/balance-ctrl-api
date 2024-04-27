@@ -111,32 +111,32 @@ end
 two_months_ago = 2.months.ago
 past_past_balance = create_balance(user,  generate_title(two_months_ago), 'Description', 11, 2023)
 f_p = create_fixed_outcome(past_past_balance)
-Timecop.freeze(two_months_ago) do
-  create_income(past_past_balance, generate_title(two_months_ago))
-  create_outcomes(past_past_balance)
-  attach_relations_to_transactions(past_past_balance)
-  payment = Payment.find(f_p.first)
-  payment.update!(paid_at: Time.zone.now + 10.seconds)
-  BalancePayment.create!(balance: past_past_balance, payment: payment)
-  payment.applied!
-end
+# Timecop.freeze(two_months_ago) do
+#   create_income(past_past_balance, generate_title(two_months_ago))
+#   create_outcomes(past_past_balance)
+#   attach_relations_to_transactions(past_past_balance)
+#   payment = Payment.find(f_p.first)
+#   payment.update!(paid_at: Time.zone.now + 10.seconds)
+#   BalancePayment.create!(balance: past_past_balance, payment: payment)
+#   payment.applied!
+# end
 
-one_month_ago = 1.month.ago
-past_balance = create_balance(user, generate_title(one_month_ago), 'Description', 12, 2023)
-Timecop.freeze(one_month_ago) do
-  create_income(past_balance, generate_title(one_month_ago))
-  create_outcomes(past_balance)
-  attach_relations_to_transactions(past_balance)
-  payment = Payment.find(f_p.second)
-  payment.update!(paid_at: Time.zone.now + 10.seconds)
-  BalancePayment.create!(balance: past_balance, payment: payment)
-  payment.applied!
-end
+# one_month_ago = 1.month.ago
+# past_balance = create_balance(user, generate_title(one_month_ago), 'Description', 12, 2023)
+# Timecop.freeze(one_month_ago) do
+#   create_income(past_balance, generate_title(one_month_ago))
+#   create_outcomes(past_balance)
+#   attach_relations_to_transactions(past_balance)
+#   payment = Payment.find(f_p.second)
+#   payment.update!(paid_at: Time.zone.now + 10.seconds)
+#   BalancePayment.create!(balance: past_balance, payment: payment)
+#   payment.applied!
+# end
 
-current_balance = create_balance(user, generate_title(Time.zone.now), 'Description', 1, 2024)
-create_income(current_balance, generate_title(Time.zone.now))
-create_outcomes(current_balance)
-attach_relations_to_transactions(current_balance)
-payment = Payment.find(f_p.third)
-BalancePayment.create!(balance: current_balance, payment: payment)
-payment.pending!
+# current_balance = create_balance(user, generate_title(Time.zone.now), 'Description', 1, 2024)
+# create_income(current_balance, generate_title(Time.zone.now))
+# create_outcomes(current_balance)
+# attach_relations_to_transactions(current_balance)
+# payment = Payment.find(f_p.third)
+# BalancePayment.create!(balance: current_balance, payment: payment)
+# payment.pending!
