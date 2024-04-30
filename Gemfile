@@ -24,6 +24,7 @@ group :development, :test do
   gem 'database_cleaner-active_record'
   gem 'guard'
   gem 'guard-rspec', require: false
+  gem 'rails-erd'
   gem 'rspec-rails'
   gem 'rubocop'
   gem 'rubocop-rails'
