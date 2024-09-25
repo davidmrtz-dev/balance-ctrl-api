@@ -81,6 +81,9 @@ Rails/UniqueValidationWithoutIndex:
 Rails/EnvironmentVariableAccess:
   Enabled: false
 
+Rails/WhereRange:
+  Enabled: false
+
 Rails/SkipsModelValidations:
   Exclude:
     - spec/**/*

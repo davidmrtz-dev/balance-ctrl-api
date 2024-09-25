@@ -38,7 +38,7 @@ jobs:
       - name: Build App
         env:
           RAILS_ENV: test
-          DB_NAME: balance-ctrl-enhanced-test
+          DB_NAME: balance_ctrl_api_test
           DB_HOSTNAME: localhost
           DB_USERNAME: postgres
           DB_PASSWORD: postgres
@@ -51,7 +51,7 @@ jobs:
       - name: Build and run tests
         env:
           RAILS_ENV: test
-          DB_NAME: balance-ctrl-enhanced-test
+          DB_NAME: balance_ctrl_api_test
           DB_HOSTNAME: localhost
           DB_USERNAME: postgres
           DB_PASSWORD: postgres
