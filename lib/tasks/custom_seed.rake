@@ -1,6 +1,6 @@
 namespace :db do
   namespace :seed do
-    Dir[Rails.root.join('db/seeds/*.rb')].each do |filename|
+    Rails.root.glob('db/seeds/*.rb').each do |filename|
       task_name = File.basename(filename, '.rb').intern
 
       task task_name => :environment do
