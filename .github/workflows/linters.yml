@@ -12,12 +12,10 @@ jobs:
       - uses: actions/setup-ruby@v1
         with:
           ruby-version: ">=2.7.x"
-      - name: Clear Cache
-        run: rm -rf ~/.rubocop_cache
       - name: Setup Rubocop
         run: |
           gem install --no-document rubocop -v '>= 1.0, < 2.0' # https://docs.rubocop.org/en/stable/installation/
           gem install --no-document rubocop-rails -v '>= 2.0, < 3.0'
           [ -f .rubocop.yml ] || wget https://raw.githubusercontent.com/davidmrtz-dev/balance-ctrl-api/main/.rubocop.yml
       - name: Rubocop Report
-        run: rubocop --config .rubocop.yml --color
+        run: rubocop --color
