@@ -389,8 +389,8 @@ DEPENDENCIES
   rails (~> 6.1.1)
   rails-erd
   rspec-rails
-  rubocop (~> 1.0, < 2.0)
-  rubocop-rails (~> 2.0, < 3.0)
+  rubocop (~> 1.22)
+  rubocop-rails (~> 2.10)
   shoulda-matchers
   solargraph
   spring
