@@ -26,8 +26,8 @@ group :development, :test do
   gem 'guard-rspec', require: false
   gem 'rails-erd'
   gem 'rspec-rails'
-  gem 'rubocop'
-  gem 'rubocop-rails'
+  gem 'rubocop', '~> 1.0', '< 2.0'
+  gem 'rubocop-rails', '~> 2.0', '< 3.0'
   gem 'shoulda-matchers'
   gem 'solargraph'
   gem 'timecop'
