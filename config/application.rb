@@ -29,5 +29,8 @@ module BalanceCtrlEnhancedApi
       g.helper false
       g.view false
     end
+
+    config.application_name = ENV.fetch('APPLICATION_NAME', '')
+    config.api_version = ENV.fetch('API_VERSION', 'version not set')
   end
 end
