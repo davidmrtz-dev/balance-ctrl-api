@@ -1,4 +1,5 @@
 version: "3.8"
+
 services:
   postgres_db:
     image: postgres:latest
@@ -6,9 +7,20 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5439:5432"
+      - "${DB_PORT_EXPOSE}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  rails_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${API_PORT}:3000"
+    env_file:
+      - .env
+    depends_on:
+      - postgres_db
 
 volumes:
   postgres_data:
