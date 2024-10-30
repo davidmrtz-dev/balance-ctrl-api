@@ -1,20 +1,23 @@
-FROM ruby:3.2.0-slim-buster
+FROM ruby:2.7.4-slim-buster
 
-WORKDIR app
+WORKDIR /app
 
-RUN apt update && apt install ruby-dev -y build-essential libpq-dev
+RUN apt update && apt install -y \
+    ruby-dev \
+    build-essential \
+    libpq-dev \
+    curl && \
+    curl -o /usr/local/bin/wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh && \
+    chmod +x /usr/local/bin/wait-for-it.sh
 
 COPY Gemfile Gemfile
 COPY Gemfile.lock Gemfile.lock
-ARG API_VERSION
-ENV API_VERSION $API_VERSION
-RUN gem install bundler
-RUN bundle install
+RUN gem install bundler -v 2.1.4 && bundle install
+
 COPY . .
-
 RUN chmod +x entrypoint.sh
-ENTRYPOINT ["./entrypoint.sh"]
 
-# Let's check what's going on here before we reenable gunicorn
-# RUN pipenv install gunicorn
+EXPOSE 3000
+
+ENTRYPOINT ["./entrypoint.sh"]
 CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]
