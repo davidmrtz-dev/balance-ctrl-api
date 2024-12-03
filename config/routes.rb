@@ -20,6 +20,7 @@ Rails.application.routes.draw do
 
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
+      post 'webhooks/notifications/email', to: 'balances#webhook'
       get 'balance', to: 'balances#balance'
       resources :outcomes, only: %i[index create update destroy] do
         collection do
